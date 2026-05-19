@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Stats — Casaviola Properties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:      #faf7f2;
+  --white:      #ffffff;
+  --light:      #f2ede6;
+  --border:     #e4ddd3;
+  --border2:    #cfc7bb;
+  --ink:        #1c1814;
+  --ink2:       #5a5248;
+  --ink3:       #9a9088;
+  --purple:     #4a2d8a;
+  --purple-lt:  #6b4db5;
+  --purple-dim: rgba(74,45,138,0.07);
+  --gold:       #a87828;
+  --gold-lt:    #c9943a;
+  --gold-dim:   rgba(168,120,40,0.08);
+  --green:      #2a6b47;
+  --green-lt:   #3a9962;
+  --green-dim:  rgba(42,107,71,0.08);
+  --coral:      #b83228;
+  --font-disp:  'Playfair Display', serif;
+  --font-body:  'DM Sans', sans-serif;
+  --shadow:     0 2px 20px rgba(28,24,20,0.07);
+  --shadow-lg:  0 8px 48px rgba(28,24,20,0.1);
+  --radius:     14px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+/* ══ LOADING STATE ══ */
+#loading-state {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loading-emblem {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--purple), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-disp);
+  font-size: 22px; font-weight: 700;
+  color: white;
+  animation: pulse 1.5s ease infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(0.95);opacity:0.7} }
+
+.loading-text {
+  font-size: 14px; color: var(--ink3);
+  letter-spacing: 0.5px; font-weight: 300;
+}
+
+/* ══ ERROR STATE ══ */
+#error-state {
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+}
+.error-icon  { font-size: 52px; margin-bottom: 20px; opacity: 0.3; }
+.error-title { font-family: var(--font-disp); font-size: 28px; font-weight: 500; margin-bottom: 10px; }
+.error-sub   { font-size: 14px; color: var(--ink2); max-width: 340px; line-height: 1.7; font-weight: 300; }
+
+/* ══ MAIN CONTENT ══ */
+#main-content { display: none; }
+
+/* ── Header ── */
+.page-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative texture */
+.page-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(168,120,40,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,120,40,0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 100% 100% at 100% 0%, black 20%, transparent 70%);
+}
+
+/* Purple accent line */
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--gold-lt), transparent);
+}
+
+.header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 24px 36px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.brand-emblem {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--purple) 0%, #2d1a66 50%, #6b4500 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-disp);
+  font-size: 16px; font-weight: 700;
+  color: var(--gold-lt);
+  box-shadow: 0 0 0 1px rgba(168,120,40,0.2), var(--shadow);
+  flex-shrink: 0;
+}
+
+.brand-name { font-family: var(--font-disp); font-size: 15px; font-weight: 500; color: var(--ink); }
+.brand-sub  { font-size: 9px; color: var(--ink3); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 1px; }
+
+.header-left { flex: 1; }
+
+/* Influencer profile */
+.inf-profile { display: flex; align-items: center; gap: 18px; }
+.inf-av {
+  width: 64px; height: 64px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-disp); font-size: 24px; font-weight: 700;
+  flex-shrink: 0;
+  border: 3px solid var(--white);
+  box-shadow: 0 0 0 1px var(--border), var(--shadow);
+}
+.inf-name    { font-family: var(--font-disp); font-size: 26px; font-weight: 500; letter-spacing: -0.3px; line-height: 1.1; }
+.inf-handle  { font-size: 14px; color: var(--ink2); margin-top: 4px; font-weight: 300; }
+.inf-platform {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 99px;
+  border: 1px solid var(--border);
+  color: var(--ink2); margin-top: 8px;
+  background: var(--light);
+}
+
+/* Status badge */
+.status-badge {
+  padding: 6px 14px; border-radius: 99px;
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.badge-active   { background: var(--green-dim); color: var(--green);  border-color: rgba(42,107,71,0.2); }
+.badge-inactive { background: #f5f0ea;          color: var(--ink3);   border-color: var(--border); }
+
+/* ── Content ── */
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+}
+
+/* ── Stat cards ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.15s; }
+.stat-card:nth-child(3) { animation-delay: 0.2s; }
+
+/* Decorative corner accent */
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60px; height: 60px;
+  border-radius: 0 var(--radius) 0 60px;
+  opacity: 0.08;
+}
+.sc-purple::after { background: var(--purple); }
+.sc-gold::after   { background: var(--gold); }
+.sc-green::after  { background: var(--green); }
+
+.stat-icon {
+  font-size: 22px;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.stat-val {
+  font-family: var(--font-disp);
+  font-size: 44px; font-weight: 700;
+  line-height: 1; letter-spacing: -1.5px;
+  margin-bottom: 6px;
+}
+.sc-purple .stat-val { color: var(--purple); }
+.sc-gold   .stat-val { color: var(--gold-lt); }
+.sc-green  .stat-val { color: var(--green-lt); }
+
+.stat-label { font-size: 12px; color: var(--ink3); font-weight: 400; }
+.stat-sub   { font-size: 11px; color: var(--ink3); margin-top: 3px; font-style: italic; }
+
+/* Conversion rate special card */
+.rate-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.rate-bar-bg   { flex: 1; height: 5px; background: var(--light); border-radius: 99px; overflow: hidden; }
+.rate-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), #52c28a); border-radius: 99px; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+.rate-pct      { font-size: 11px; font-weight: 600; color: var(--green); flex-shrink: 0; }
+
+/* ── Referral link card ── */
+.link-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.5s ease 0.25s both;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold left accent */
+.link-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--gold), var(--purple));
+}
+
+.link-card-title {
+  font-family: var(--font-disp);
+  font-size: 17px; font-weight: 500;
+  margin-bottom: 6px;
+}
+.link-card-sub { font-size: 13px; color: var(--ink2); margin-bottom: 16px; font-weight: 300; line-height: 1.6; }
+
+.link-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.link-url {
+  flex: 1; font-size: 12.5px; color: var(--purple);
+  font-family: monospace; word-break: break-all;
+  line-height: 1.5;
+}
+.copy-btn {
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border2);
+  background: var(--white); color: var(--ink2);
+  cursor: pointer; transition: all 0.15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.copy-btn:hover  { background: var(--purple-dim); color: var(--purple); border-color: rgba(74,45,138,0.3); }
+.copy-btn.copied { background: var(--green-dim);  color: var(--green);  border-color: rgba(42,107,71,0.3); }
+
+.share-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 9px;
+  font-size: 12.5px; font-weight: 500;
+  text-decoration: none; border: 1px solid var(--border);
+  transition: all 0.15s; cursor: pointer; background: var(--white);
+}
+.share-btn:hover { transform: translateY(-1px); }
+.share-wa  { color: #25D366; border-color: rgba(37,211,102,0.3); background: rgba(37,211,102,0.05); }
+.share-wa:hover  { background: rgba(37,211,102,0.1); box-shadow: 0 4px 14px rgba(37,211,102,0.2); }
+.share-copy{ color: var(--purple); border-color: rgba(74,45,138,0.2); background: var(--purple-dim); }
+.share-copy:hover { background: rgba(74,45,138,0.12); box-shadow: 0 4px 14px rgba(74,45,138,0.15); }
+
+/* ── Inquiries list ── */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title { font-family: var(--font-disp); font-size: 20px; font-weight: 500; }
+.section-count { font-size: 12px; color: var(--ink3); }
+
+.inq-list { display: flex; flex-direction: column; gap: 10px; animation: fadeUp 0.5s ease 0.3s both; }
+
+.inq-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 16px 18px;
+  display: flex; align-items: center; gap: 14px;
+  transition: all 0.15s;
+}
+.inq-item:hover { border-color: var(--border2); }
+
+.inq-av {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-disp); font-size: 13px; font-weight: 600;
+  flex-shrink: 0;
+}
+.inq-info { flex: 1; min-width: 0; }
+.inq-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; }
+.inq-meta { font-size: 11.5px; color: var(--ink3); display: flex; gap: 10px; flex-wrap: wrap; }
+.inq-interest { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 99px; background: var(--purple-dim); color: var(--purple-lt); }
+.inq-date   { font-size: 11.5px; color: var(--ink3); white-space: nowrap; flex-shrink: 0; }
+
+.inq-status { font-size: 10.5px; font-weight: 500; padding: 3px 9px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+.s-new       { background: rgba(168,120,40,0.1); color: var(--gold-lt); }
+.s-contacted { background: rgba(74,45,138,0.08); color: var(--purple-lt); }
+.s-converted { background: var(--green-dim);      color: var(--green-lt); }
+.s-closed    { background: var(--light);           color: var(--ink3); }
+
+/* Empty inquiries */
+.inq-empty { text-align: center; padding: 48px 20px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); color: var(--ink3); }
+.inq-empty-icon { font-size: 36px; opacity: 0.25; margin-bottom: 12px; }
+.inq-empty-title { font-family: var(--font-disp); font-size: 18px; font-weight: 500; margin-bottom: 6px; color: var(--ink2); }
+.inq-empty-sub   { font-size: 13px; line-height: 1.6; font-weight: 300; }
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  padding: 0 24px 40px;
+  font-size: 12px;
+  color: var(--ink3);
+  line-height: 1.8;
+}
+.page-footer strong { color: var(--gold); font-weight: 500; }
+
+/* ── Gold divider ── */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-lt), transparent);
+  opacity: 0.3;
+  margin: 28px 0;
+}
+
+/* ── How it works ── */
+.how-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.5s ease 0.22s both;
+}
+.how-title { font-family: var(--font-disp); font-size: 17px; font-weight: 500; margin-bottom: 16px; }
+.how-steps { display: flex; flex-direction: column; gap: 12px; }
+.how-step  { display: flex; align-items: flex-start; gap: 12px; }
+.how-num   { width: 24px; height: 24px; border-radius: 50%; background: var(--purple-dim); color: var(--purple); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.how-text  { font-size: 13px; color: var(--ink2); line-height: 1.6; font-weight: 300; }
+.how-text strong { color: var(--ink); font-weight: 500; }
+
+/* ── Animations ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .header-inner { flex-direction: column; padding: 28px 20px 24px; }
+  .inf-profile  { gap: 12px; }
+  .inf-av       { width: 52px; height: 52px; font-size: 20px; }
+  .inf-name     { font-size: 22px; }
+  .stats-row    { grid-template-columns: 1fr 1fr; }
+  .stats-row .stat-card:last-child { grid-column: 1/-1; }
+  .content      { padding: 24px 16px 60px; }
+  .share-row    { flex-direction: column; }
+  .share-btn    { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-state">
+  <div class="loading-emblem">CV</div>
+  <div class="loading-text">Loading your stats...</div>
+</div>
+
+<!-- ERROR -->
+<div id="error-state">
+  <div class="error-icon">🔍</div>
+  <div class="error-title">Link Not Found</div>
+  <div class="error-sub">This referral link doesn't seem to be valid. Please check with Casaviola Properties for your correct link.</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="brand-row">
+          <div class="brand-emblem">CV</div>
+          <div>
+            <div class="brand-name">Casaviola Properties</div>
+            <div class="brand-sub">Partner Dashboard</div>
+          </div>
+        </div>
+        <div class="inf-profile">
+          <div class="inf-av" id="inf-av">—</div>
+          <div>
+            <div class="inf-name" id="inf-name">—</div>
+            <div class="inf-handle" id="inf-handle">—</div>
+            <div class="inf-platform" id="inf-platform">—</div>
+          </div>
+        </div>
+      </div>
+      <span class="status-badge" id="status-badge">—</span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Stat cards -->
+    <div class="stats-row">
+      <div class="stat-card sc-purple">
+        <span class="stat-icon">📋</span>
+        <div class="stat-val" id="s-total">0</div>
+        <div class="stat-label">Total Inquiries</div>
+        <div class="stat-sub">Through your link</div>
+      </div>
+      <div class="stat-card sc-gold">
+        <span class="stat-icon">📞</span>
+        <div class="stat-val" id="s-contacted">0</div>
+        <div class="stat-label">Contacted</div>
+        <div class="stat-sub">Our team reached out</div>
+      </div>
+      <div class="stat-card sc-green">
+        <span class="stat-icon">✅</span>
+        <div class="stat-val" id="s-converted">0</div>
+        <div class="stat-label">Converted</div>
+        <div class="stat-sub">Became active clients</div>
+        <div class="rate-display" style="margin-top:12px">
+          <div class="rate-bar-bg"><div class="rate-bar-fill" id="rate-bar" style="width:0%"></div></div>
+          <div class="rate-pct" id="rate-pct">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="how-card">
+      <div class="how-title">How Your Referral Works</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-num">1</div>
+          <div class="how-text"><strong>Share your link</strong> on your social media, stories, or content. Every click is tracked to you.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">2</div>
+          <div class="how-text"><strong>Your audience submits an inquiry</strong> — their details and interest are sent directly to the Casaviola team.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">3</div>
+          <div class="how-text"><strong>Casaviola contacts them</strong> within 24 hours with tailored property options.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">4</div>
+          <div class="how-text"><strong>Track your impact here</strong> — see how many people you've connected with Casaviola Properties.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral link card -->
+    <div class="link-card">
+      <div class="link-card-title">Your Referral Link</div>
+      <div class="link-card-sub">Share this link in your posts, bio, stories and content. Every submission through it is tracked to you automatically.</div>
+      <div class="link-box">
+        <div class="link-url" id="link-url">—</div>
+        <button class="copy-btn" id="copy-main-btn" onclick="copyMainLink()">Copy</button>
+      </div>
+      <div class="share-row">
+        <a class="share-btn share-wa" id="wa-share-btn" href="#" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Share on WhatsApp
+        </a>
+        <button class="share-btn share-copy" onclick="copyMainLink()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Link
+        </button>
+      </div>
+    </div>
+
+    <div class="gold-divider"></div>
+
+    <!-- Recent inquiries -->
+    <div class="section-head">
+      <div class="section-title">Recent Inquiries</div>
+      <div class="section-count" id="inq-count">—</div>
+    </div>
+
+    <div class="inq-list" id="inq-list">
+      <div class="inq-empty">
+        <div class="inq-empty-icon">📭</div>
+        <div class="inq-empty-title">No inquiries yet</div>
+        <div class="inq-empty-sub">Start sharing your link to see inquiries appear here.</div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+
+  <!-- Footer -->
+  <div class="page-footer">
+    <strong>Casaviola Properties</strong> · Partner Dashboard<br/>
+    Questions? Contact your Casaviola representative.
+  </div>
+
+</div><!-- end main-content -->
+
+<script type="module">
+import { db } from './js/firebase-config.js';
+import {
+  collection, query, where, orderBy, getDocs,
+  doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── Helpers ──
+const avatarColors = ['#4a2d8a','#b83228','#2a6b47','#a87828','#1a5c8a','#8a2d6b'];
+function getColor(s) { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n) { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function statusClass(s){ return {new:'s-new',contacted:'s-contacted',converted:'s-converted',closed:'s-closed'}[s]||'s-new'; }
+function statusLabel(s){ return {new:'New',contacted:'Contacted',converted:'Converted ✓',closed:'Closed'}[s]||capitalize(s); }
+
+function animCount(id, target, dur=900) {
+  const el = document.getElementById(id); if(!el) return; let start=null;
+  const step=ts=>{ if(!start)start=ts; const p=Math.min((ts-start)/dur,1); el.textContent=Math.floor(p*target); if(p<1)requestAnimationFrame(step); else el.textContent=target; };
+  requestAnimationFrame(step);
+}
+
+// ── Get referral code from URL ──
+const urlParams = new URLSearchParams(window.location.search);
+const refCode   = urlParams.get('ref');
+
+if (!refCode) {
+  showError();
+} else {
+  loadStats(refCode);
+}
+
+async function loadStats(ref) {
+  try {
+    // Find influencer by referral code
+    const infSnap = await getDocs(
+      query(collection(db,'influencers'), where('referralCode','==',ref))
+    );
+
+    if (infSnap.empty) { showError(); return; }
+
+    const inf = { id: infSnap.docs[0].id, ...infSnap.docs[0].data() };
+
+    // Load inquiries for this referral code
+    const inqSnap = await getDocs(
+      query(collection(db,'inquiries'), where('referralCode','==',ref), orderBy('createdAt','desc'))
+    );
+    const inquiries = inqSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Compute stats
+    const total     = inquiries.length;
+    const contacted = inquiries.filter(i => ['contacted','converted'].includes(i.status)).length;
+    const converted = inquiries.filter(i => i.status === 'converted').length;
+    const rate      = total > 0 ? Math.round(converted/total*100) : 0;
+
+    // Render
+    renderProfile(inf);
+    renderStats(total, contacted, converted, rate);
+    renderLink(ref);
+    renderInquiries(inquiries);
+    showMain();
+
+  } catch(e) {
+    console.error('Stats load error:', e);
+    showError();
+  }
+}
+
+function renderProfile(inf) {
+  const color = getColor(inf.name);
+  const active = inf.isActive !== false;
+
+  const av = document.getElementById('inf-av');
+  av.textContent   = initials(inf.name);
+  av.style.background = color + '22';
+  av.style.color   = color;
+
+  document.getElementById('inf-name').textContent    = inf.name;
+  document.getElementById('inf-handle').textContent  = inf.handle || '';
+  document.getElementById('inf-platform').textContent = inf.platform || 'Social Media';
+
+  const badge = document.getElementById('status-badge');
+  badge.textContent = active ? '✦ Active Partner' : '◌ Inactive';
+  badge.className   = 'status-badge ' + (active ? 'badge-active' : 'badge-inactive');
+}
+
+function renderStats(total, contacted, converted, rate) {
+  animCount('s-total',     total);
+  animCount('s-contacted', contacted);
+  animCount('s-converted', converted);
+
+  setTimeout(() => {
+    document.getElementById('rate-bar').style.width = rate + '%';
+    document.getElementById('rate-pct').textContent = rate + '%';
+  }, 400);
+}
+
+function renderLink(ref) {
+  const url = `${window.location.origin}/inquiry.html?ref=${ref}`;
+  document.getElementById('link-url').textContent = url;
+
+  const msg = encodeURIComponent(`Looking for your dream property in Ghana? 🏠\n\nCasaviola Properties has amazing listings — houses, land, commercial spaces & more.\n\nFill this quick form and their team will contact you within 24 hours:\n\n${url}`);
+  document.getElementById('wa-share-btn').href = `https://wa.me/?text=${msg}`;
+
+  window.copyMainLink = () => {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('copy-main-btn');
+      btn.textContent = '✅ Copied!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  };
+}
+
+function renderInquiries(inquiries) {
+  const list = document.getElementById('inq-list');
+  document.getElementById('inq-count').textContent = `${inquiries.length} total`;
+
+  if (inquiries.length === 0) {
+    list.innerHTML = `
+      <div class="inq-empty">
+        <div class="inq-empty-icon">📭</div>
+        <div class="inq-empty-title">No inquiries yet</div>
+        <div class="inq-empty-sub">Start sharing your referral link to see submissions appear here.</div>
+      </div>`;
+    return;
+  }
+
+  // Show first name + last initial only for privacy
+  function privateName(name) {
+    if (!name) return 'Anonymous';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0];
+    return `${parts[0]} ${parts[parts.length-1][0]}.`;
+  }
+
+  list.innerHTML = inquiries.map((inq, i) => {
+    const color = getColor(inq.name||'');
+    const name  = privateName(inq.name);
+    return `
+      <div class="inq-item" style="animation:fadeUp 0.3s ease ${i*0.04}s both">
+        <div class="inq-av" style="background:${color}22;color:${color}">${initials(name)}</div>
+        <div class="inq-info">
+          <div class="inq-name">${name}</div>
+          <div class="inq-meta">
+            ${inq.interest ? `<span class="inq-interest">${capitalize(inq.interest)}</span>` : ''}
+            ${inq.budget   ? `<span>${inq.budget}</span>` : ''}
+            ${inq.location ? `<span>📍 ${inq.location}</span>` : ''}
+          </div>
+        </div>
+        <div class="inq-date">${formatDate(inq.createdAt)}</div>
+        <span class="inq-status ${statusClass(inq.status)}">${statusLabel(inq.status)}</span>
+      </div>`;
+  }).join('');
+}
+
+function showMain()  {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('main-content').style.display  = 'block';
+}
+
+function showError() {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('error-state').style.display   = 'flex';
+}
+</script>
+</body>
+</html>

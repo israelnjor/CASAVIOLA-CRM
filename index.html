@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Casaviola Properties — Staff Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:          #0e0c14;
+    --panel:       #13111c;
+    --surface:     #1a1726;
+    --border:      rgba(180,150,255,0.1);
+    --border-gold: rgba(212,175,95,0.25);
+    --text:        #ede9f6;
+    --muted:       #7c748f;
+    --purple:      #7c5cbf;
+    --purple-lt:   #a07de0;
+    --gold:        #d4af5f;
+    --gold-lt:     #e8cb82;
+    --font-disp:   'Cormorant Garamond', serif;
+    --font-body:   'Outfit', sans-serif;
+  }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: var(--font-body);
+    color: var(--text);
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  /* Left panel */
+  .left-panel {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    overflow: hidden;
+  }
+  .left-panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 40%, rgba(124,92,191,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 70% 70%, rgba(212,175,95,0.10) 0%, transparent 60%);
+    z-index: 0;
+  }
+  .grid-lines {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.05;
+    background-image: linear-gradient(var(--gold) 1px, transparent 1px), linear-gradient(90deg, var(--gold) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+  }
+  .shape { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.13; z-index: 0; animation: drift 9s ease-in-out infinite alternate; }
+  .shape-1 { width: 320px; height: 320px; background: var(--purple); top: -80px; left: -80px; animation-delay: 0s; }
+  .shape-2 { width: 220px; height: 220px; background: var(--gold); bottom: 50px; right: 30px; animation-delay: -4s; }
+  .shape-3 { width: 160px; height: 160px; background: var(--purple-lt); bottom: 35%; left: 18%; animation-delay: -6s; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(18px,28px) scale(1.08); } }
+
+  .brand { position: relative; z-index: 1; text-align: center; animation: fadeUp 0.9s ease both; }
+  .brand-emblem {
+    width: 76px; height: 76px; margin: 0 auto 28px; border-radius: 20px;
+    background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8b6914 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-disp); font-size: 30px; font-weight: 600; color: var(--gold-lt); letter-spacing: 2px;
+    box-shadow: 0 0 0 1px rgba(212,175,95,0.2), 0 0 40px rgba(124,92,191,0.35), 0 0 80px rgba(212,175,95,0.1);
+  }
+  .brand-name {
+    font-family: var(--font-disp); font-size: 44px; font-weight: 600; line-height: 1.1; letter-spacing: 0.3px;
+    background: linear-gradient(160deg, var(--text) 30%, var(--gold-lt) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px;
+  }
+  .brand-tagline { font-size: 11px; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; font-weight: 300; }
+  .brand-divider { width: 48px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 28px auto; opacity: 0.5; }
+  .brand-desc { font-size: 15px; color: var(--muted); line-height: 1.75; max-width: 270px; margin: 0 auto; font-weight: 400; font-style: italic; font-family: var(--font-disp); }
+
+  .brand-stats { display: flex; gap: 36px; margin-top: 52px; position: relative; z-index: 1; animation: fadeUp 0.9s ease 0.2s both; }
+  .brand-stat { text-align: center; }
+  .brand-stat-val { font-family: var(--font-disp); font-size: 26px; font-weight: 600; color: var(--gold-lt); line-height: 1; }
+  .brand-stat-label { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 5px; }
+  .stat-sep { width: 1px; background: var(--border-gold); align-self: stretch; }
+
+  /* Right panel */
+  .right-panel {
+    width: 460px; flex-shrink: 0; background: var(--panel);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 50px; position: relative;
+  }
+  .right-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--purple) 30%, var(--gold) 60%, transparent 100%);
+    background-size: 200%; animation: shimmer 4s ease infinite;
+  }
+  .right-panel::after {
+    content: 'CV'; position: absolute; bottom: 28px; right: 28px;
+    font-family: var(--font-disp); font-size: 48px; font-weight: 600;
+    color: rgba(212,175,95,0.04); letter-spacing: 2px; pointer-events: none; user-select: none;
+  }
+  @keyframes shimmer { 0% { background-position: 100% 50%; } 100% { background-position: -100% 50%; } }
+
+  .login-box { width: 100%; animation: fadeUp 0.7s ease 0.1s both; }
+  .login-heading { font-family: var(--font-disp); font-size: 34px; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
+  .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 38px; font-weight: 300; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .form-input {
+    width: 100%; background: var(--surface); border: 1px solid rgba(180,150,255,0.12);
+    border-radius: 10px; padding: 13px 16px; color: var(--text);
+    font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-input::placeholder { color: var(--muted); opacity: 0.6; }
+  .form-input:focus { border-color: rgba(160,125,224,0.5); box-shadow: 0 0 0 3px rgba(124,92,191,0.1); }
+
+  .pw-wrap { position: relative; }
+  .pw-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); display: flex; padding: 4px; transition: color 0.18s; }
+  .pw-toggle:hover { color: var(--text); }
+
+  .forgot { text-align: right; margin-top: -12px; margin-bottom: 28px; }
+  .forgot a { font-size: 12px; color: var(--gold); text-decoration: none; opacity: 0.75; transition: opacity 0.18s; }
+  .forgot a:hover { opacity: 1; }
+
+  .btn-login {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--purple) 0%, #9060d8 100%);
+    border: 1px solid rgba(212,175,95,0.15); border-radius: 10px;
+    color: #fff; font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,92,191,0.35), 0 0 0 1px rgba(212,175,95,0.2); }
+  .btn-login:active { transform: translateY(0); }
+  .btn-login:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .gold-separator { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+  .gold-separator::before, .gold-separator::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,175,95,0.2)); }
+  .gold-separator::after { background: linear-gradient(90deg, rgba(212,175,95,0.2), transparent); }
+  .gold-separator span { font-size: 14px; color: rgba(212,175,95,0.2); font-family: var(--font-disp); }
+
+  .alert-msg { border-radius: 8px; padding: 11px 14px; font-size: 13px; margin-bottom: 20px; display: none; }
+  .alert-msg.visible { display: block; animation: shake 0.4s ease; }
+  .alert-msg.error { background: rgba(220,60,60,0.1); border: 1px solid rgba(220,60,60,0.2); color: #ff8888; }
+  .alert-msg.success { background: rgba(67,200,140,0.1); border: 1px solid rgba(67,200,140,0.2); color: #43d9a2; }
+
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+  .spinner { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .login-footer { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(180,150,255,0.07); text-align: center; font-size: 11px; color: var(--muted); line-height: 1.8; }
+  .login-footer em { color: rgba(212,175,95,0.55); font-style: normal; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 768px) {
+    .left-panel { display: none; }
+    .right-panel { width: 100%; padding: 40px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Left branding panel -->
+<div class="left-panel">
+  <div class="grid-lines"></div>
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="brand">
+    <div class="brand-emblem">CV</div>
+    <div class="brand-name">Casaviola<br>Properties</div>
+    <div class="brand-tagline">Internal Staff Portal</div>
+    <div class="brand-divider"></div>
+    <div class="brand-desc">"Where every client, listing,<br>and deal comes together."</div>
+  </div>
+  <div class="brand-stats">
+    <div class="brand-stat">
+      <div class="brand-stat-val">CRM</div>
+      <div class="brand-stat-label">Platform</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="brand-stat">
+      <div class="brand-stat-val">v1.0</div>
+      <div class="brand-stat-label">Version</div>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="brand-stat">
+      <div class="brand-stat-val">2026</div>
+      <div class="brand-stat-label">Season</div>
+    </div>
+  </div>
+</div>
+
+<!-- Right login panel -->
+<div class="right-panel">
+  <div class="login-box">
+    <div class="login-heading">Welcome back</div>
+    <div class="login-sub">Sign in to your Casaviola account</div>
+
+    <div class="alert-msg" id="alert-msg"></div>
+
+    <div class="form-group">
+      <label class="form-label" for="email">Email Address</label>
+      <input class="form-input" type="email" id="email" placeholder="you@casaviola.com" autocomplete="email"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px"/>
+        <button class="pw-toggle" type="button" onclick="togglePw()" tabindex="-1">
+          <svg id="eye-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="forgot">
+      <a href="#" onclick="handleForgot(event)">Forgot password?</a>
+    </div>
+
+    <button class="btn-login" id="login-btn" onclick="handleLogin()">Sign In</button>
+
+    <div class="gold-separator"><span>✦</span></div>
+
+    <div class="login-footer">
+      Access is restricted to <em>Casaviola Properties</em> staff only.<br/>
+      Contact your administrator if you need access.
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db } from './js/firebase-config.js';
+  import { signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists() && snap.data().isActive) window.location.href = './pages/dashboard.html';
+    } catch (_) {}
+  });
+
+  window.togglePw = () => {
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('eye-icon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`
+      : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  };
+
+  window.handleLogin = async () => {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('login-btn');
+    clearAlert();
+    if (!email || !password) { showAlert('Please enter your email and password.', 'error'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Signing in...';
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const snap = await getDoc(doc(db, 'users', cred.user.uid));
+      if (!snap.exists()) { await auth.signOut(); showAlert('Account not found. Contact your administrator.', 'error'); resetBtn(); return; }
+      if (!snap.data().isActive) { await auth.signOut(); showAlert('Your account is deactivated. Contact admin.', 'error'); resetBtn(); return; }
+      window.location.href = './pages/dashboard.html';
+    } 
+    catch (err) {
+      console.log("FULL ERROR:", err);
+      console.log("ERROR CODE:", err.code);
+      console.log("ERROR MESSAGE:", err.message);
+
+      showAlert(friendlyError(err.code), 'error');
+      resetBtn();
+    }
+  };
+
+  window.handleForgot = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    if (!email) { showAlert('Enter your email above, then click "Forgot password".', 'error'); return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showAlert('Password reset email sent! Check your inbox.', 'success');
+    } catch (_) {
+      showAlert('Could not send reset email. Check the address and try again.', 'error');
+    }
+  };
+
+  document.getElementById('email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+  document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') window.handleLogin(); });
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('alert-msg');
+    el.textContent = msg; el.className = `alert-msg ${type} visible`;
+  }
+  function clearAlert() { document.getElementById('alert-msg').className = 'alert-msg'; }
+  function resetBtn() { const b = document.getElementById('login-btn'); b.disabled = false; b.innerHTML = 'Sign In'; }
+  function friendlyError(code) {
+    const map = {
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/invalid-credential': 'Invalid email or password.',
+      'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+      'auth/user-disabled': 'This account has been disabled.',
+      'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+</script>
+</body>
+</html>

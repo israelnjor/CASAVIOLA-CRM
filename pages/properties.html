@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Properties — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:         #0b0b0f;
+  --surface:    #111118;
+  --surface2:   #18181f;
+  --surface3:   #1f1f28;
+  --border:     rgba(255,255,255,0.06);
+  --border2:    rgba(255,255,255,0.11);
+  --text:       #eeeaf5;
+  --text2:      #a09cb0;
+  --muted:      #5e5c6e;
+  --purple:     #7c5cbf;
+  --purple-lt:  #9d7de0;
+  --purple-dim: rgba(124,92,191,0.12);
+  --gold:       #c9a84c;
+  --gold-lt:    #e0c070;
+  --gold-dim:   rgba(201,168,76,0.1);
+  --green:      #3ecf8e;
+  --green-dim:  rgba(62,207,142,0.1);
+  --coral:      #f06b6b;
+  --coral-dim:  rgba(240,107,107,0.1);
+  --blue:       #5b9cf6;
+  --blue-dim:   rgba(91,156,246,0.1);
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Outfit', sans-serif;
+  --sidebar-w:  256px;
+  --radius:     12px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.brand-mark  { display: flex; align-items: center; gap: 12px; }
+.brand-icon  { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
+.brand-name  { font-family: var(--font-disp); font-size: 17px; font-weight: 600; color: var(--text); }
+.brand-sub   { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+.nav-section { padding: 0 12px; margin-bottom: 4px; }
+.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; font-weight: 400; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
+.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-spacer { flex: 1; }
+.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-meta   { flex: 1; min-width: 0; }
+.user-name   { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role   { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
+.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+
+/* ══ MAIN ══ */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 60px; max-width: calc(100vw - var(--sidebar-w)); }
+
+/* Topbar */
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; animation: fadeUp 0.4s ease both; }
+.page-title { font-family: var(--font-disp); font-size: 30px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 9px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.17s; white-space: nowrap; }
+.btn-primary { background: linear-gradient(135deg, var(--purple), #9060d8); color: #fff; border: 1px solid rgba(212,175,95,0.15); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,191,0.35); }
+.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+.btn-ghost.active { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+
+/* Filters row */
+.filters-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; animation: fadeUp 0.4s ease 0.05s both; flex-wrap: wrap; }
+
+.search-wrap { position: relative; flex: 1; max-width: 320px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 14px 9px 36px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: rgba(124,92,191,0.4); }
+
+.filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 14px; color: var(--text2); font-family: var(--font-body); font-size: 13px; outline: none; cursor: pointer; transition: border-color 0.15s; }
+.filter-select:focus { border-color: rgba(124,92,191,0.4); }
+.filter-select option { background: var(--surface2); }
+
+.view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 3px; gap: 2px; margin-left: auto; }
+.view-btn { background: none; border: none; padding: 6px 10px; border-radius: 7px; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.view-btn.active { background: var(--surface2); color: var(--text); }
+.view-btn:hover:not(.active) { color: var(--text2); }
+
+/* Stats strip */
+.stats-strip { display: flex; gap: 12px; margin-bottom: 24px; animation: fadeUp 0.4s ease 0.08s both; }
+.strip-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex: 1; }
+.strip-icon { font-size: 18px; }
+.strip-val  { font-family: var(--font-disp); font-size: 22px; font-weight: 600; line-height: 1; }
+.strip-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.strip-card.s-all    .strip-val { color: var(--text); }
+.strip-card.s-avail  .strip-val { color: var(--green); }
+.strip-card.s-sold   .strip-val { color: var(--coral); }
+.strip-card.s-rented .strip-val { color: var(--gold-lt); }
+
+/* ══ GRID VIEW ══ */
+.prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; animation: fadeUp 0.4s ease 0.12s both; }
+
+.prop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+.prop-card:hover { transform: translateY(-3px); border-color: var(--border2); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+
+.prop-img-wrap { height: 180px; background: var(--surface2); position: relative; overflow: hidden; }
+.prop-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.prop-card:hover .prop-img { transform: scale(1.04); }
+.prop-img-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 13px; }
+.prop-img-placeholder-icon { font-size: 32px; opacity: 0.3; }
+
+.prop-status-badge { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 99px; letter-spacing: 0.5px; text-transform: uppercase; backdrop-filter: blur(8px); }
+.badge-available { background: rgba(62,207,142,0.2);  color: var(--green); border: 1px solid rgba(62,207,142,0.3); }
+.badge-sold      { background: rgba(240,107,107,0.2); color: var(--coral); border: 1px solid rgba(240,107,107,0.3); }
+.badge-rented    { background: rgba(201,168,76,0.2);  color: var(--gold-lt); border: 1px solid rgba(201,168,76,0.3); }
+
+.prop-type-badge { position: absolute; top: 12px; left: 12px; font-size: 10px; font-weight: 500; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,0.5); color: var(--text2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); text-transform: capitalize; }
+
+.prop-body { padding: 16px; }
+.prop-title { font-family: var(--font-disp); font-size: 17px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-location { font-size: 12px; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
+
+.prop-meta { display: flex; align-items: center; justify-content: space-between; }
+.prop-price { font-family: var(--font-disp); font-size: 18px; font-weight: 600; color: var(--gold-lt); }
+.prop-size  { font-size: 11.5px; color: var(--text2); background: var(--surface2); padding: 3px 9px; border-radius: 6px; border: 1px solid var(--border); }
+
+.prop-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--border); }
+.prop-footer-date { font-size: 11px; color: var(--muted); }
+.prop-actions { display: flex; gap: 6px; }
+.prop-action-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 5px 10px; font-size: 11.5px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: var(--font-body); }
+.prop-action-btn:hover { color: var(--text); border-color: var(--border2); }
+.prop-action-btn.edit:hover  { color: var(--purple-lt); border-color: rgba(124,92,191,0.3); background: var(--purple-dim); }
+.prop-action-btn.delete:hover { color: var(--coral); border-color: rgba(240,107,107,0.3); background: var(--coral-dim); }
+
+/* ══ LIST VIEW ══ */
+.prop-list { display: flex; flex-direction: column; gap: 10px; animation: fadeUp 0.4s ease 0.12s both; }
+.prop-list-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; gap: 0; overflow: hidden; cursor: pointer; transition: all 0.18s; }
+.prop-list-item:hover { border-color: var(--border2); transform: translateX(3px); }
+.prop-list-thumb { width: 100px; height: 70px; background: var(--surface2); flex-shrink: 0; overflow: hidden; position: relative; }
+.prop-list-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.prop-list-thumb-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 22px; opacity: 0.2; }
+.prop-list-body { flex: 1; padding: 14px 18px; min-width: 0; display: flex; align-items: center; gap: 20px; }
+.prop-list-info { flex: 1; min-width: 0; }
+.prop-list-title    { font-family: var(--font-disp); font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.prop-list-location { font-size: 12px; color: var(--muted); }
+.prop-list-price  { font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); flex-shrink: 0; width: 120px; }
+.prop-list-type   { font-size: 11.5px; color: var(--text2); flex-shrink: 0; width: 80px; text-transform: capitalize; }
+.prop-list-size   { font-size: 12px; color: var(--text2); flex-shrink: 0; width: 80px; }
+.prop-list-actions { display: flex; gap: 6px; padding-right: 16px; flex-shrink: 0; }
+
+/* Empty / loading */
+.empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
+.empty-icon  { font-size: 48px; margin-bottom: 16px; opacity: 0.25; }
+.empty-title { font-family: var(--font-disp); font-size: 20px; font-weight: 600; margin-bottom: 6px; color: var(--text2); }
+.empty-sub   { font-size: 13px; font-weight: 300; }
+
+/* ══ MODAL ══ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.22s; backdrop-filter: blur(6px); }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 18px; padding: 32px; width: 520px; max-width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; transform: translateY(20px) scale(0.98); transition: transform 0.22s; position: relative; }
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+/* Shimmer top on modal */
+.modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: 18px 18px 0 0; background: linear-gradient(90deg, var(--purple), var(--gold), var(--purple)); background-size: 200%; animation: shimmer 3s ease infinite; }
+@keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 26px; }
+.modal-title { font-family: var(--font-disp); font-size: 22px; font-weight: 600; }
+.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.modal-close:hover { color: var(--coral); background: var(--coral-dim); border-color: rgba(240,107,107,0.3); }
+
+.form-group  { margin-bottom: 18px; }
+.form-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-label  { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.18s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: rgba(124,92,191,0.5); box-shadow: 0 0 0 3px rgba(124,92,191,0.08); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--muted); opacity: 0.6; }
+.form-select { appearance: none; cursor: pointer; }
+.form-select option { background: var(--surface2); }
+.form-textarea { resize: vertical; min-height: 80px; }
+
+/* Image upload */
+.img-upload-area { border: 2px dashed rgba(124,92,191,0.25); border-radius: 10px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; }
+.img-upload-area:hover { border-color: rgba(124,92,191,0.5); background: var(--purple-dim); }
+.img-upload-area.has-image { border-style: solid; border-color: var(--border2); padding: 0; }
+.img-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; display: none; }
+.upload-preview.visible { display: block; }
+.upload-placeholder { pointer-events: none; }
+.upload-icon  { font-size: 28px; margin-bottom: 8px; opacity: 0.4; }
+.upload-text  { font-size: 13px; color: var(--text2); margin-bottom: 3px; }
+.upload-sub   { font-size: 11px; color: var(--muted); }
+
+/* Progress bar for upload */
+.upload-progress { margin-top: 10px; height: 4px; background: var(--surface3); border-radius: 99px; overflow: hidden; display: none; }
+.upload-progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--gold)); border-radius: 99px; transition: width 0.3s ease; }
+
+.modal-footer { display: flex; gap: 10px; margin-top: 24px; }
+.modal-footer .btn { flex: 1; justify-content: center; }
+
+.error-msg { background: var(--coral-dim); border: 1px solid rgba(240,107,107,0.2); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: var(--coral); margin-bottom: 16px; display: none; }
+.error-msg.visible { display: block; }
+
+/* Detail modal image */
+.detail-img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; }
+.detail-no-img { width: 100%; height: 140px; background: var(--surface2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 36px; opacity: 0.2; margin-bottom: 20px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.detail-field label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px; }
+.detail-field span  { font-size: 14px; }
+.detail-price { font-family: var(--font-disp); font-size: 26px; font-weight: 600; color: var(--gold-lt); margin-bottom: 20px; }
+.status-row { display: flex; gap: 8px; margin-top: 6px; }
+.status-opt { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-size: 12px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.15s; font-family: var(--font-body); }
+.status-opt:hover { color: var(--text); }
+.status-opt.a-available { background: var(--green-dim); color: var(--green); border-color: rgba(62,207,142,0.3); }
+.status-opt.a-sold      { background: var(--coral-dim); color: var(--coral); border-color: rgba(240,107,107,0.3); }
+.status-opt.a-rented    { background: var(--gold-dim);  color: var(--gold-lt); border-color: rgba(201,168,76,0.3); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+  <link rel="stylesheet" href="../assets/mobile.css"/>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-name">Casaviola</div>
+        <div class="brand-sub">Properties CRM</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="clients.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clients
+    </a>
+    <a class="nav-item active" href="properties.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Properties
+    </a>
+    <a class="nav-item" href="leads.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Leads
+    </a>
+    <a class="nav-item" href="messages.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Messages
+    </a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Users
+    </a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>
+      <div class="page-title">Properties</div>
+      <div class="page-sub" id="page-sub">Loading listings...</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" id="add-btn" onclick="openAddModal()" style="display:none">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Property
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="strip-card s-all">
+      <div class="strip-icon">🏘️</div>
+      <div>
+        <div class="strip-val" id="s-total">—</div>
+        <div class="strip-label">Total</div>
+      </div>
+    </div>
+    <div class="strip-card s-avail">
+      <div class="strip-icon">✅</div>
+      <div>
+        <div class="strip-val" id="s-available">—</div>
+        <div class="strip-label">Available</div>
+      </div>
+    </div>
+    <div class="strip-card s-sold">
+      <div class="strip-icon">🔑</div>
+      <div>
+        <div class="strip-val" id="s-sold">—</div>
+        <div class="strip-label">Sold</div>
+      </div>
+    </div>
+    <div class="strip-card s-rented">
+      <div class="strip-icon">📋</div>
+      <div>
+        <div class="strip-val" id="s-rented">—</div>
+        <div class="strip-label">Rented</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-row">
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="search-input" type="text" placeholder="Search properties..." oninput="applyFilters()"/>
+    </div>
+    <select class="filter-select" id="filter-status" onchange="applyFilters()">
+      <option value="">All Statuses</option>
+      <option value="available">Available</option>
+      <option value="sold">Sold</option>
+      <option value="rented">Rented</option>
+    </select>
+    <select class="filter-select" id="filter-type" onchange="applyFilters()">
+      <option value="">All Types</option>
+      <option value="land">Land</option>
+      <option value="apartment">Apartment</option>
+      <option value="house">House</option>
+      <option value="commercial">Commercial</option>
+    </select>
+    <div class="view-toggle">
+      <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="Grid view">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </button>
+      <button class="view-btn" id="btn-list" onclick="setView('list')" title="List view">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Properties display -->
+  <div id="props-container">
+    <div class="prop-grid" id="props-grid"></div>
+  </div>
+
+</main>
+
+<!-- ══ ADD / EDIT MODAL ══ -->
+<div class="modal-overlay" id="form-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Add Property</div>
+      <button class="modal-close" onclick="closeFormModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="error-msg" id="form-error"></div>
+
+    <div class="form-group">
+      <label class="form-label">Property Title</label>
+      <input class="form-input" id="f-title" type="text" placeholder="e.g. East Legon 4-Bedroom House"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select class="form-select" id="f-type">
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="land">Land</option>
+          <option value="commercial">Commercial</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="f-status">
+          <option value="available">Available</option>
+          <option value="sold">Sold</option>
+          <option value="rented">Rented</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Location / Area</label>
+      <input class="form-input" id="f-location" type="text" placeholder="e.g. East Legon, Accra"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Price (GHS)</label>
+        <input class="form-input" id="f-price" type="number" placeholder="e.g. 450000" min="0"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Size</label>
+        <input class="form-input" id="f-size" type="text" placeholder="e.g. 250 sqm or 0.5 acres"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Property Image</label>
+      <div class="img-upload-area" id="upload-area">
+        <input type="file" id="f-image" accept="image/*" onchange="previewImage(event)"/>
+        <img class="upload-preview" id="upload-preview" src="" alt="Preview"/>
+        <div class="upload-placeholder" id="upload-placeholder">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-text">Click to upload image</div>
+          <div class="upload-sub">JPG, PNG, WEBP · Max 5MB</div>
+        </div>
+      </div>
+      <div class="upload-progress" id="upload-progress">
+        <div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (optional)</label>
+      <textarea class="form-textarea" id="f-notes" placeholder="Additional details about this property..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeFormModal()">Cancel</button>
+      <button class="btn btn-primary" id="form-submit-btn" onclick="submitProperty()">Add Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DETAIL MODAL ══ -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="detail-title">Property Detail</div>
+      <button class="modal-close" onclick="closeDetailModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db, storage } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, orderBy, getDocs, addDoc, doc,
+  getDoc, updateDoc, deleteDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  ref, uploadBytesResumable, getDownloadURL, deleteObject
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+// ── State ──
+let currentUser  = null;
+let currentRole  = null;
+let allProps     = [];
+let filtered     = [];
+let currentView  = 'grid';
+let editingId    = null;
+let selectedFile = null;
+let selectedProp = null;
+
+function initials(n) { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s) { if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts) { if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function formatPrice(p) { if(!p && p!==0) return '—'; return 'GHS ' + Number(p).toLocaleString(); }
+function canEdit() { return ['admin','listings'].includes(currentRole); }
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role;
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(data.role);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+  if (['admin','ceo'].includes(data.role)) document.getElementById('admin-nav').style.display = 'block';
+  if (canEdit()) document.getElementById('add-btn').style.display = '';
+  await loadProperties();
+});
+
+// ── Load properties ──
+async function loadProperties() {
+  try {
+    const snap = await getDocs(query(collection(db,'properties'), orderBy('createdAt','desc')));
+    allProps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    applyFilters();
+  } catch(e) {
+    console.error('Load error:', e);
+  }
+}
+
+function updateStats() {
+  const counts = { available: 0, sold: 0, rented: 0 };
+  allProps.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+  document.getElementById('s-total').textContent     = allProps.length;
+  document.getElementById('s-available').textContent = counts.available;
+  document.getElementById('s-sold').textContent      = counts.sold;
+  document.getElementById('s-rented').textContent    = counts.rented;
+  document.getElementById('page-sub').textContent    = `${allProps.length} listing${allProps.length !== 1 ? 's' : ''} · Casaviola Properties`;
+}
+
+// ── Filters ──
+window.applyFilters = () => {
+  const search = document.getElementById('search-input').value.toLowerCase().trim();
+  const status = document.getElementById('filter-status').value;
+  const type   = document.getElementById('filter-type').value;
+  filtered = allProps.filter(p => {
+    const matchSearch = !search || (p.title||'').toLowerCase().includes(search) || (p.location||'').toLowerCase().includes(search);
+    const matchStatus = !status || p.status === status;
+    const matchType   = !type   || p.type === type;
+    return matchSearch && matchStatus && matchType;
+  });
+  renderProperties();
+};
+
+// ── View toggle ──
+window.setView = (view) => {
+  currentView = view;
+  document.getElementById('btn-grid').classList.toggle('active', view === 'grid');
+  document.getElementById('btn-list').classList.toggle('active', view === 'list');
+  renderProperties();
+};
+
+// ── Render ──
+function renderProperties() {
+  const container = document.getElementById('props-container');
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">No properties found</div><div class="empty-sub">${allProps.length === 0 ? 'Add your first property to get started' : 'Try adjusting your filters'}</div></div>`;
+    return;
+  }
+  if (currentView === 'grid') {
+    container.innerHTML = `<div class="prop-grid">${filtered.map(renderCard).join('')}</div>`;
+  } else {
+    container.innerHTML = `<div class="prop-list">${filtered.map(renderListItem).join('')}</div>`;
+  }
+}
+
+function statusBadge(status) {
+  const map = { available: 'badge-available', sold: 'badge-sold', rented: 'badge-rented' };
+  return `<span class="prop-status-badge ${map[status]||''}">${capitalize(status)}</span>`;
+}
+
+function imgMarkup(p, h) {
+  if (p.imageUrl) return `<img class="prop-img" src="${p.imageUrl}" alt="${p.title}" loading="lazy"/>`;
+  return `<div class="prop-img-placeholder" style="height:${h}px"><div class="prop-img-placeholder-icon">🏠</div><span>No image</span></div>`;
+}
+
+function renderCard(p) {
+  const edit   = canEdit() ? `<button class="prop-action-btn edit"   onclick="event.stopPropagation();openEditModal('${p.id}')">Edit</button>` : '';
+  const del    = canEdit() ? `<button class="prop-action-btn delete" onclick="event.stopPropagation();confirmDelete('${p.id}')">Delete</button>` : '';
+  return `
+    <div class="prop-card" onclick="openDetailModal('${p.id}')">
+      <div class="prop-img-wrap">
+        ${imgMarkup(p, 180)}
+        ${statusBadge(p.status)}
+        <span class="prop-type-badge">${capitalize(p.type||'')}</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-title">${p.title||'Untitled'}</div>
+        <div class="prop-location">📍 ${p.location||'—'}</div>
+        <div class="prop-meta">
+          <div class="prop-price">${formatPrice(p.price)}</div>
+          ${p.size ? `<span class="prop-size">${p.size}</span>` : ''}
+        </div>
+      </div>
+      <div class="prop-footer">
+        <span class="prop-footer-date">${formatDate(p.createdAt)}</span>
+        <div class="prop-actions">${edit}${del}</div>
+      </div>
+    </div>`;
+}
+
+function renderListItem(p) {
+  const edit = canEdit() ? `<button class="prop-action-btn edit"   onclick="event.stopPropagation();openEditModal('${p.id}')">Edit</button>` : '';
+  const del  = canEdit() ? `<button class="prop-action-btn delete" onclick="event.stopPropagation();confirmDelete('${p.id}')">Delete</button>` : '';
+  return `
+    <div class="prop-list-item" onclick="openDetailModal('${p.id}')">
+      <div class="prop-list-thumb">
+        ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.title}" loading="lazy"/>` : `<div class="prop-list-thumb-placeholder">🏠</div>`}
+      </div>
+      <div class="prop-list-body">
+        <div class="prop-list-info">
+          <div class="prop-list-title">${p.title||'Untitled'}</div>
+          <div class="prop-list-location">📍 ${p.location||'—'}</div>
+        </div>
+        <div class="prop-list-price">${formatPrice(p.price)}</div>
+        <div class="prop-list-type">${capitalize(p.type||'')}</div>
+        <div class="prop-list-size">${p.size||'—'}</div>
+        <span class="prop-status-badge ${p.status==='available'?'badge-available':p.status==='sold'?'badge-sold':'badge-rented'}">${capitalize(p.status)}</span>
+      </div>
+      <div class="prop-list-actions">${edit}${del}</div>
+    </div>`;
+}
+
+// ── Image preview ──
+window.previewImage = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showFormError('Image must be under 5MB.');
+    e.target.value = ''; return;
+  }
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const preview = document.getElementById('upload-preview');
+    preview.src = ev.target.result;
+    preview.classList.add('visible');
+    document.getElementById('upload-placeholder').style.display = 'none';
+    document.getElementById('upload-area').classList.add('has-image');
+  };
+  reader.readAsDataURL(file);
+};
+
+// ── Upload image to Firebase Storage ──
+async function uploadImage(file, propId) {
+  return new Promise((resolve, reject) => {
+    const storageRef = ref(storage, `properties/${propId}_${Date.now()}`);
+    const task = uploadBytesResumable(storageRef, file);
+    const bar  = document.getElementById('upload-progress');
+    const fill = document.getElementById('upload-progress-fill');
+    bar.style.display = 'block';
+    task.on('state_changed',
+      snap => { fill.style.width = (snap.bytesTransferred/snap.totalBytes*100)+'%'; },
+      reject,
+      async () => { resolve(await getDownloadURL(task.snapshot.ref)); }
+    );
+  });
+}
+
+// ── Add modal ──
+window.openAddModal = () => {
+  editingId = null;
+  selectedFile = null;
+  resetForm();
+  document.getElementById('modal-title').textContent       = 'Add Property';
+  document.getElementById('form-submit-btn').textContent   = 'Add Property';
+  document.getElementById('form-modal').classList.add('open');
+};
+
+window.closeFormModal = () => {
+  document.getElementById('form-modal').classList.remove('open');
+  resetForm();
+};
+
+// ── Edit modal ──
+window.openEditModal = (id) => {
+  const p = allProps.find(x => x.id === id);
+  if (!p) return;
+  editingId    = id;
+  selectedFile = null;
+  resetForm();
+  document.getElementById('f-title').value    = p.title    || '';
+  document.getElementById('f-type').value     = p.type     || 'house';
+  document.getElementById('f-status').value   = p.status   || 'available';
+  document.getElementById('f-location').value = p.location || '';
+  document.getElementById('f-price').value    = p.price    || '';
+  document.getElementById('f-size').value     = p.size     || '';
+  document.getElementById('f-notes').value    = p.notes    || '';
+  if (p.imageUrl) {
+    document.getElementById('upload-preview').src = p.imageUrl;
+    document.getElementById('upload-preview').classList.add('visible');
+    document.getElementById('upload-placeholder').style.display = 'none';
+    document.getElementById('upload-area').classList.add('has-image');
+  }
+  document.getElementById('modal-title').textContent     = 'Edit Property';
+  document.getElementById('form-submit-btn').textContent = 'Save Changes';
+  document.getElementById('form-modal').classList.add('open');
+};
+
+function resetForm() {
+  ['f-title','f-location','f-price','f-size','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-type').value   = 'house';
+  document.getElementById('f-status').value = 'available';
+  document.getElementById('upload-preview').src = '';
+  document.getElementById('upload-preview').classList.remove('visible');
+  document.getElementById('upload-placeholder').style.display = '';
+  document.getElementById('upload-area').classList.remove('has-image');
+  document.getElementById('upload-progress').style.display = 'none';
+  document.getElementById('upload-progress-fill').style.width = '0%';
+  document.getElementById('f-image').value = '';
+  hideFormError();
+}
+
+// ── Submit ──
+window.submitProperty = async () => {
+  const title    = document.getElementById('f-title').value.trim();
+  const type     = document.getElementById('f-type').value;
+  const status   = document.getElementById('f-status').value;
+  const location = document.getElementById('f-location').value.trim();
+  const price    = parseFloat(document.getElementById('f-price').value) || 0;
+  const size     = document.getElementById('f-size').value.trim();
+  const notes    = document.getElementById('f-notes').value.trim();
+  const btn      = document.getElementById('form-submit-btn');
+
+  hideFormError();
+  if (!title)    { showFormError('Please enter a property title.'); return; }
+  if (!location) { showFormError('Please enter a location.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  try {
+    const propData = { title, type, status, location, price, size, notes, updatedAt: serverTimestamp() };
+
+    if (editingId) {
+      // ── Edit ──
+      if (selectedFile) {
+        // Delete old image if exists
+        const old = allProps.find(p => p.id === editingId);
+        if (old?.storagePath) {
+          try { await deleteObject(ref(storage, old.storagePath)); } catch(_) {}
+        }
+        const storagePath = `properties/${editingId}_${Date.now()}`;
+        const storageRef  = ref(storage, storagePath);
+        const task = uploadBytesResumable(storageRef, selectedFile);
+        document.getElementById('upload-progress').style.display = 'block';
+        await new Promise((res, rej) => {
+          task.on('state_changed',
+            s => { document.getElementById('upload-progress-fill').style.width = (s.bytesTransferred/s.totalBytes*100)+'%'; },
+            rej, res
+          );
+        });
+        propData.imageUrl    = await getDownloadURL(task.snapshot.ref);
+        propData.storagePath = storagePath;
+      }
+      await updateDoc(doc(db,'properties',editingId), propData);
+
+    } else {
+      // ── Add ──
+      propData.createdBy = currentUser.uid;
+      propData.createdAt = serverTimestamp();
+      propData.imageUrl  = null;
+      propData.storagePath = null;
+      const docRef = await addDoc(collection(db,'properties'), propData);
+
+      if (selectedFile) {
+        const storagePath = `properties/${docRef.id}_${Date.now()}`;
+        const storageRef  = ref(storage, storagePath);
+        const task = uploadBytesResumable(storageRef, selectedFile);
+        document.getElementById('upload-progress').style.display = 'block';
+        await new Promise((res, rej) => {
+          task.on('state_changed',
+            s => { document.getElementById('upload-progress-fill').style.width = (s.bytesTransferred/s.totalBytes*100)+'%'; },
+            rej, res
+          );
+        });
+        const imageUrl = await getDownloadURL(task.snapshot.ref);
+        await updateDoc(doc(db,'properties',docRef.id), { imageUrl, storagePath });
+      }
+    }
+
+    closeFormModal();
+    await loadProperties();
+  } catch(e) {
+    showFormError('Error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editingId ? 'Save Changes' : 'Add Property';
+  }
+};
+
+// ── Delete ──
+window.confirmDelete = async (id) => {
+  if (!confirm('Delete this property? This cannot be undone.')) return;
+  try {
+    const p = allProps.find(x => x.id === id);
+    if (p?.storagePath) {
+      try { await deleteObject(ref(storage, p.storagePath)); } catch(_) {}
+    }
+    await deleteDoc(doc(db,'properties',id));
+    allProps = allProps.filter(x => x.id !== id);
+    updateStats();
+    applyFilters();
+  } catch(e) { alert('Error deleting: ' + e.message); }
+};
+
+// ── Detail modal ──
+window.openDetailModal = (id) => {
+  selectedProp = allProps.find(p => p.id === id);
+  if (!selectedProp) return;
+  const p = selectedProp;
+  document.getElementById('detail-title').textContent = p.title || 'Property';
+  document.getElementById('detail-body').innerHTML = `
+    ${p.imageUrl
+      ? `<img class="detail-img" src="${p.imageUrl}" alt="${p.title}"/>`
+      : `<div class="detail-no-img">🏠</div>`}
+    <div class="detail-price">${formatPrice(p.price)}</div>
+    <div class="detail-grid">
+      <div class="detail-field"><label>Type</label><span>${capitalize(p.type||'—')}</span></div>
+      <div class="detail-field"><label>Size</label><span>${p.size||'—'}</span></div>
+      <div class="detail-field"><label>Location</label><span>${p.location||'—'}</span></div>
+      <div class="detail-field"><label>Added</label><span>${formatDate(p.createdAt)}</span></div>
+    </div>
+    ${canEdit() ? `
+    <div style="margin-bottom:20px">
+      <div class="form-label" style="margin-bottom:8px">Status</div>
+      <div class="status-row">
+        <button class="status-opt ${p.status==='available'?'a-available':''}" onclick="changeStatus('${p.id}','available')">Available</button>
+        <button class="status-opt ${p.status==='sold'    ?'a-sold'    :''}" onclick="changeStatus('${p.id}','sold')">Sold</button>
+        <button class="status-opt ${p.status==='rented'  ?'a-rented'  :''}" onclick="changeStatus('${p.id}','rented')">Rented</button>
+      </div>
+    </div>` : `<div style="margin-bottom:16px">${statusBadge(p.status)}</div>`}
+    ${p.notes ? `<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px">${p.notes}</div>` : ''}
+    ${canEdit() ? `
+    <div class="modal-footer" style="margin-top:0">
+      <button class="btn btn-ghost" onclick="closeDetailModal();openEditModal('${p.id}')">Edit Property</button>
+      <button class="btn btn-ghost" style="color:var(--coral);border-color:rgba(240,107,107,0.2)" onclick="closeDetailModal();confirmDelete('${p.id}')">Delete</button>
+    </div>` : ''}
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+};
+
+window.closeDetailModal = () => document.getElementById('detail-modal').classList.remove('open');
+
+window.changeStatus = async (id, newStatus) => {
+  await updateDoc(doc(db,'properties',id), { status: newStatus, updatedAt: serverTimestamp() });
+  const p = allProps.find(x => x.id === id);
+  if (p) p.status = newStatus;
+  updateStats();
+  applyFilters();
+  openDetailModal(id); // re-render detail
+};
+
+// ── Helpers ──
+function showFormError(msg) { const el = document.getElementById('form-error'); el.textContent = msg; el.classList.add('visible'); }
+function hideFormError()    { document.getElementById('form-error').classList.remove('visible'); }
+
+// Close on overlay click
+document.getElementById('form-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeFormModal(); });
+document.getElementById('detail-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetailModal(); });
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+</script>
+  <script src="../assets/mobile.js"></script>
+</body>
+</html>

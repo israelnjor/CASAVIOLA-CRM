@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Influencers — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0b0b0f;--surface:#111118;--surface2:#18181f;--surface3:#1f1f28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --text:#eeeaf5;--text2:#a09cb0;--muted:#5e5c6e;
+  --purple:#7c5cbf;--purple-lt:#9d7de0;--purple-dim:rgba(124,92,191,0.12);
+  --gold:#c9a84c;--gold-lt:#e0c070;--gold-dim:rgba(201,168,76,0.1);
+  --green:#3ecf8e;--green-dim:rgba(62,207,142,0.1);
+  --coral:#f06b6b;--coral-dim:rgba(240,107,107,0.1);
+  --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.1);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.1);
+  --pink:#e879f9;--pink-dim:rgba(232,121,249,0.1);
+  --font-disp:'Cormorant Garamond',serif;--font-body:'Outfit',sans-serif;
+  --sidebar-w:256px;--radius:13px;
+}
+body { background:var(--bg);color:var(--text);font-family:var(--font-body);display:flex;min-height:100vh;overflow-x:hidden; }
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;padding:0 0 24px}
+.sidebar-top{padding:28px 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple) 0%,#5a3e9e 50%,#8a6820 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:16px;font-weight:600;color:var(--gold-lt);box-shadow:0 0 0 1px rgba(201,168,76,0.2),0 4px 16px rgba(124,92,191,0.3);flex-shrink:0}
+.brand-name{font-family:var(--font-disp);font-size:17px;font-weight:600}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-section{padding:0 12px;margin-bottom:4px}
+.nav-section-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--text2);text-decoration:none;cursor:pointer;transition:all 0.15s;position:relative;margin-bottom:1px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--purple-dim);color:var(--text);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--purple-lt),var(--gold))}
+.nav-icon{width:17px;height:17px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-spacer{flex:1}
+.sidebar-user{margin:0 12px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.user-meta{flex:1;min-width:0}
+.user-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10.5px;color:var(--muted);margin-top:1px}
+.signout-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all 0.15s}
+.signout-btn:hover{color:var(--coral);background:var(--coral-dim)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:36px 40px 60px;max-width:calc(100vw - var(--sidebar-w))}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeUp 0.4s ease both}
+.page-title{font-family:var(--font-disp);font-size:30px;font-weight:600;letter-spacing:-0.3px}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px;font-weight:300}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#9060d8);color:#fff;border:1px solid rgba(201,168,76,0.15)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,191,0.35)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-danger{background:var(--coral-dim);color:var(--coral);border:1px solid rgba(240,107,107,0.2)}
+.btn-danger:hover{background:rgba(240,107,107,0.2)}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+/* Stats */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;animation:fadeUp 0.4s ease 0.05s both}
+.strip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:13px;position:relative;overflow:hidden;transition:all 0.15s}
+.strip-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius) var(--radius) 0 0}
+.sc-pink::after{background:var(--pink)}.sc-gold::after{background:var(--gold-lt)}.sc-green::after{background:var(--green)}.sc-blue::after{background:var(--blue)}
+.strip-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sc-pink .strip-icon{background:var(--pink-dim)}.sc-gold .strip-icon{background:var(--gold-dim)}.sc-green .strip-icon{background:var(--green-dim)}.sc-blue .strip-icon{background:var(--blue-dim)}
+.strip-val{font-family:var(--font-disp);font-size:28px;font-weight:600;line-height:1}
+.sc-pink .strip-val{color:var(--pink)}.sc-gold .strip-val{color:var(--gold-lt)}.sc-green .strip-val{color:var(--green)}.sc-blue .strip-val{color:var(--blue)}
+.strip-label{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;animation:fadeUp 0.4s ease 0.08s both;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:280px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(124,92,191,0.4)}
+.results-count{margin-left:auto;font-size:12px;color:var(--muted)}
+
+/* Cards grid */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;animation:fadeUp 0.4s ease 0.1s both}
+
+/* Influencer card */
+.inf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all 0.2s;cursor:pointer;position:relative}
+.inf-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.3)}
+.inf-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--pink))}
+
+.card-body{padding:20px}
+.card-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+.inf-av{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:17px;font-weight:600;flex-shrink:0}
+.inf-name{font-size:15px;font-weight:600;margin-bottom:3px}
+.inf-handle{font-size:12px;color:var(--muted)}
+.platform-pill{margin-left:auto;font-size:10px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.p-instagram{background:rgba(232,121,249,0.12);color:var(--pink)}
+.p-tiktok{background:rgba(91,156,246,0.12);color:var(--blue)}
+.p-youtube{background:rgba(240,107,107,0.12);color:var(--coral)}
+.p-twitter{background:rgba(91,156,246,0.12);color:var(--blue)}
+.p-facebook{background:rgba(124,92,191,0.12);color:var(--purple-lt)}
+.p-other{background:var(--surface3);color:var(--text2)}
+
+/* Stats row on card */
+.card-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:9px;overflow:hidden;margin-bottom:14px}
+.cs-item{background:var(--surface2);padding:10px 12px;text-align:center}
+.cs-val{font-family:var(--font-disp);font-size:20px;font-weight:600;color:var(--text);line-height:1}
+.cs-label{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* Ref code + link */
+.ref-row{display:flex;align-items:center;gap:8px}
+.ref-code{font-size:12px;font-family:monospace;color:var(--gold);background:var(--gold-dim);padding:4px 10px;border-radius:7px;letter-spacing:1px;flex-shrink:0}
+.link-text{flex:1;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.copy-sm{font-size:10px;padding:4px 9px;border-radius:6px;border:1px solid rgba(201,168,76,0.25);background:var(--gold-dim);color:var(--gold-lt);cursor:pointer;transition:all 0.12s;flex-shrink:0}
+.copy-sm:hover{background:rgba(201,168,76,0.18)}
+.copy-sm.copied{background:var(--green-dim);color:var(--green);border-color:rgba(62,207,142,0.3)}
+
+/* Active toggle */
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--border)}
+.status-toggle{display:flex;align-items:center;gap:7px;cursor:pointer}
+.toggle-track{width:32px;height:18px;border-radius:99px;background:var(--surface3);border:1px solid var(--border2);position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle-track.on{background:var(--green);border-color:var(--green)}
+.toggle-thumb{width:12px;height:12px;border-radius:50%;background:white;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.toggle-track.on .toggle-thumb{left:16px}
+.toggle-label{font-size:11.5px;color:var(--muted)}
+.toggle-track.on+.toggle-label{color:var(--green)}
+.card-actions{display:flex;gap:6px}
+.card-btn{padding:5px 10px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all 0.12s}
+.card-btn:hover{color:var(--text);border-color:var(--border2)}
+.card-btn.edit:hover{color:var(--purple-lt);border-color:rgba(124,92,191,0.3);background:var(--purple-dim)}
+
+/* Empty */
+.empty-grid{grid-column:1/-1;text-align:center;padding:72px 20px}
+.empty-icon{font-size:44px;opacity:0.18;margin-bottom:14px}
+.empty-title{font-family:var(--font-disp);font-size:22px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:32px;width:500px;max-width:calc(100vw - 32px);max-height:88vh;overflow-y:auto;transform:translateY(14px);transition:transform 0.2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.modal-title{font-family:var(--font-disp);font-size:22px;font-weight:600}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all 0.15s}
+.modal-close:hover{color:var(--text);background:var(--surface3)}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-input,.form-select{width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus{border-color:rgba(124,92,191,0.45);box-shadow:0 0 0 3px rgba(124,92,191,0.08)}
+.form-input::placeholder{color:var(--muted);opacity:0.6}
+.form-select{appearance:none;cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-error{color:var(--coral);font-size:12px;margin-bottom:14px;padding:10px 13px;background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);border-radius:8px;display:none}
+.form-error.visible{display:block}
+.modal-footer{display:flex;gap:10px;margin-top:26px}
+.modal-footer .btn{flex:1;justify-content:center}
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin:18px 0}
+
+/* Generated ref display */
+.gen-ref{background:var(--gold-dim);border:1px solid rgba(201,168,76,0.25);border-radius:9px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-top:-8px;margin-bottom:18px}
+.gen-ref-code{font-family:monospace;font-size:16px;font-weight:600;color:var(--gold-lt);letter-spacing:2px}
+.gen-ref-hint{font-size:11px;color:var(--muted);margin-top:2px}
+.regen-btn{font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid rgba(201,168,76,0.25);background:none;color:var(--gold);cursor:pointer;transition:all 0.12s}
+.regen-btn:hover{background:var(--gold-dim)}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Inquiries</a>
+    <a class="nav-item active" href="influencers.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Influencers</a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Influencers</div>
+      <div class="page-sub">Social media partners with unique referral links</div>
+    </div>
+    <button class="btn btn-primary" id="add-btn" onclick="openAddModal()" style="display:none">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Influencer
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="strip-card sc-pink"><div class="strip-icon">🌟</div><div><div class="strip-val" id="sc-total">—</div><div class="strip-label">Total Partners</div></div></div>
+    <div class="strip-card sc-gold"><div class="strip-icon">📋</div><div><div class="strip-val" id="sc-submissions">—</div><div class="strip-label">Total Submissions</div></div></div>
+    <div class="strip-card sc-green"><div class="strip-icon">✅</div><div><div class="strip-val" id="sc-converted">—</div><div class="strip-label">Converted</div></div></div>
+    <div class="strip-card sc-blue"><div class="strip-icon">✨</div><div><div class="strip-val" id="sc-active">—</div><div class="strip-label">Active</div></div></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="text" id="search-input" placeholder="Search by name or handle..." oninput="renderCards()"/>
+    </div>
+    <div class="results-count" id="results-count">— influencers</div>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-grid" id="cards-grid">
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Loading...</div>
+  </div>
+</main>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="inf-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Add Influencer</div>
+      <button class="modal-close" onclick="closeModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input class="form-input" type="text" id="f-name" placeholder="e.g. Kwame Creates"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Handle / Username *</label>
+        <input class="form-input" type="text" id="f-handle" placeholder="@kwamecreates"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Primary Platform *</label>
+        <select class="form-select" id="f-platform">
+          <option value="">Select platform...</option>
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube">YouTube</option>
+          <option value="Twitter/X">Twitter/X</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Followers (approx)</label>
+        <input class="form-input" type="text" id="f-followers" placeholder="e.g. 50k"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" type="tel" id="f-phone" placeholder="0244 000 000"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" id="f-email" placeholder="kwame@email.com"/>
+      </div>
+    </div>
+
+    <div class="gold-rule"></div>
+
+    <div class="form-group">
+      <label class="form-label">Referral Code</label>
+      <div class="gen-ref">
+        <div>
+          <div class="gen-ref-code" id="gen-ref-code">—</div>
+          <div class="gen-ref-hint">Auto-generated · used in their unique link</div>
+        </div>
+        <button class="regen-btn" onclick="regenCode()">🔄 Regenerate</button>
+      </div>
+    </div>
+
+    <div class="form-error" id="form-error"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveInfluencer()">Save Influencer</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, orderBy, getDocs, addDoc,
+  doc, getDoc, updateDoc, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+let currentUser = null, currentRole = null;
+let allInfluencers = [];
+let inquiriesMap   = {}; // referralCode → { total, converted }
+let editingId      = null;
+let generatedCode  = '';
+const BASE_URL     = window.location.origin;
+
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s){ if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n){ if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function animCount(id,val,dur=700){ const el=document.getElementById(id); if(!el) return; let start=null; const step=ts=>{if(!start)start=ts;const p=Math.min((ts-start)/dur,1);el.textContent=Math.floor(p*val);if(p<1)requestAnimationFrame(step);else el.textContent=val;}; requestAnimationFrame(step); }
+function platformClass(p){ return {'Instagram':'p-instagram','TikTok':'p-tiktok','YouTube':'p-youtube','Twitter/X':'p-twitter','Facebook':'p-facebook'}[p]||'p-other'; }
+
+function generateCode(name) {
+  const prefix = (name||'XX').trim().substring(0,2).toUpperCase();
+  const rand   = Math.random().toString(36).substring(2,6).toUpperCase();
+  return `${prefix}-${rand}`;
+}
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role;
+
+  if (!['admin','ceo','cs'].includes(currentRole)) { window.location.href = 'dashboard.html'; return; }
+
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(currentRole);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+  if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
+  if (currentRole === 'admin') document.getElementById('add-btn').style.display = '';
+
+  await Promise.all([loadInfluencers(), loadInquiryStats()]);
+});
+
+async function loadInfluencers() {
+  const snap = await getDocs(query(collection(db,'influencers'), orderBy('createdAt','desc')));
+  allInfluencers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  updateStats();
+  renderCards();
+}
+
+async function loadInquiryStats() {
+  // Load all inquiries once and build a map by referral code
+  try {
+    const snap = await getDocs(collection(db,'inquiries'));
+    snap.forEach(d => {
+      const inq = d.data();
+      const ref = inq.referralCode;
+      if (!ref) return;
+      if (!inquiriesMap[ref]) inquiriesMap[ref] = { total: 0, converted: 0 };
+      inquiriesMap[ref].total++;
+      if (inq.status === 'converted') inquiriesMap[ref].converted++;
+    });
+    renderCards(); // re-render with stats
+  } catch(e) { console.error('Inquiry stats error:', e); }
+}
+
+function updateStats() {
+  const active = allInfluencers.filter(i => i.isActive !== false).length;
+  let totalSubs = 0, totalConverted = 0;
+  Object.values(inquiriesMap).forEach(v => { totalSubs += v.total; totalConverted += v.converted; });
+  animCount('sc-total',      allInfluencers.length);
+  animCount('sc-submissions',totalSubs);
+  animCount('sc-converted',  totalConverted);
+  animCount('sc-active',     active);
+}
+
+window.renderCards = () => {
+  const search   = document.getElementById('search-input').value.toLowerCase().trim();
+  const filtered = allInfluencers.filter(i =>
+    !search || (i.name||'').toLowerCase().includes(search) || (i.handle||'').toLowerCase().includes(search)
+  );
+
+  document.getElementById('results-count').textContent = `${filtered.length} influencer${filtered.length!==1?'s':''}`;
+  const grid = document.getElementById('cards-grid');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-grid"><div class="empty-icon">🌟</div><div class="empty-title">No influencers yet</div><div class="empty-sub">Add social media partners to track their referral performance</div>${currentRole==='admin'?`<button class="btn btn-primary" style="margin:0 auto" onclick="openAddModal()">Add First Influencer</button>`:''}</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(inf => {
+    const color  = getColor(inf.name);
+    const ref    = inf.referralCode || '';
+    const stats  = inquiriesMap[ref] || { total: 0, converted: 0 };
+    const url    = `${BASE_URL}/inquiry.html?ref=${ref}`;
+    const active = inf.isActive !== false;
+
+    return `
+      <div class="inf-card">
+        <div class="card-body">
+          <div class="card-top">
+            <div class="inf-av" style="background:${color}22;color:${color}">${initials(inf.name)}</div>
+            <div style="flex:1;min-width:0">
+              <div class="inf-name">${inf.name}</div>
+              <div class="inf-handle">${inf.handle||'—'} ${inf.followers?`· ${inf.followers} followers`:''}</div>
+            </div>
+            <span class="platform-pill ${platformClass(inf.platform)}">${inf.platform||'Other'}</span>
+          </div>
+
+          <div class="card-stats">
+            <div class="cs-item"><div class="cs-val">${stats.total}</div><div class="cs-label">Submissions</div></div>
+            <div class="cs-item"><div class="cs-val" style="color:var(--green)">${stats.converted}</div><div class="cs-label">Converted</div></div>
+            <div class="cs-item"><div class="cs-val" style="color:var(--gold-lt)">${stats.total > 0 ? Math.round(stats.converted/stats.total*100) : 0}%</div><div class="cs-label">Rate</div></div>
+          </div>
+
+          <div class="ref-row">
+            <span class="ref-code">${ref}</span>
+            <span class="link-text">${url}</span>
+            <button class="copy-sm" onclick="copyRef(this,'${url}')">📋</button>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="status-toggle" onclick="${currentRole==='admin'?`toggleActive('${inf.id}',${active})`:'void(0)'}">
+            <div class="toggle-track ${active?'on':''}"><div class="toggle-thumb"></div></div>
+            <span class="toggle-label">${active?'Active':'Inactive'}</span>
+          </div>
+          <div class="card-actions">
+            <button class="card-btn" onclick="shareWhatsApp('${url}','${inf.name}')">📤 Share</button>
+            ${currentRole==='admin'?`<button class="card-btn edit" onclick="openEditModal('${inf.id}')">Edit</button>`:''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+};
+
+window.copyRef = (btn, url) => {
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = '✅'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 2000);
+  });
+};
+
+window.shareWhatsApp = (url, name) => {
+  const msg = encodeURIComponent(`Hi! Check out properties from Casaviola Properties — Ghana's trusted real estate company.\n\nFill this quick form and our team will reach out within 24 hours:\n${url}`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+};
+
+window.toggleActive = async (id, current) => {
+  if (!confirm(`${!current?'Activate':'Deactivate'} this influencer?`)) return;
+  await updateDoc(doc(db,'influencers',id), { isActive: !current, updatedAt: serverTimestamp() });
+  const idx = allInfluencers.findIndex(i => i.id === id);
+  if (idx !== -1) allInfluencers[idx].isActive = !current;
+  updateStats(); renderCards();
+};
+
+// ── Add/Edit modal ──
+window.openAddModal = () => {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Add Influencer';
+  document.getElementById('save-btn').textContent    = 'Save Influencer';
+  resetForm();
+  regenCode();
+  document.getElementById('inf-modal').classList.add('open');
+};
+
+window.openEditModal = (id) => {
+  const inf = allInfluencers.find(i => i.id === id);
+  if (!inf) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Edit Influencer';
+  document.getElementById('save-btn').textContent    = 'Update Influencer';
+  document.getElementById('f-name').value      = inf.name      || '';
+  document.getElementById('f-handle').value    = inf.handle    || '';
+  document.getElementById('f-platform').value  = inf.platform  || '';
+  document.getElementById('f-followers').value = inf.followers || '';
+  document.getElementById('f-phone').value     = inf.phone     || '';
+  document.getElementById('f-email').value     = inf.email     || '';
+  generatedCode = inf.referralCode || '';
+  document.getElementById('gen-ref-code').textContent = generatedCode;
+  document.getElementById('inf-modal').classList.add('open');
+};
+
+window.closeModal = () => {
+  document.getElementById('inf-modal').classList.remove('open');
+  setTimeout(resetForm, 250);
+};
+
+function resetForm() {
+  ['f-name','f-handle','f-followers','f-phone','f-email'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-platform').value = '';
+  document.getElementById('form-error').classList.remove('visible');
+  generatedCode = '';
+  document.getElementById('gen-ref-code').textContent = '—';
+}
+
+window.regenCode = () => {
+  const name = document.getElementById('f-name').value.trim();
+  generatedCode = generateCode(name || 'CV');
+  document.getElementById('gen-ref-code').textContent = generatedCode;
+};
+
+// Auto-generate code when name is typed
+document.getElementById('f-name')?.addEventListener('input', () => {
+  if (!editingId) regenCode();
+});
+
+window.saveInfluencer = async () => {
+  const name     = document.getElementById('f-name').value.trim();
+  const handle   = document.getElementById('f-handle').value.trim();
+  const platform = document.getElementById('f-platform').value;
+  const errEl    = document.getElementById('form-error');
+  const btn      = document.getElementById('save-btn');
+
+  errEl.classList.remove('visible');
+  if (!name)     { errEl.textContent = 'Name is required.';     errEl.classList.add('visible'); return; }
+  if (!handle)   { errEl.textContent = 'Handle is required.';   errEl.classList.add('visible'); return; }
+  if (!platform) { errEl.textContent = 'Platform is required.'; errEl.classList.add('visible'); return; }
+  if (!generatedCode) regenCode();
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving...';
+
+  try {
+    const data = {
+      name, handle, platform,
+      followers:    document.getElementById('f-followers').value.trim(),
+      phone:        document.getElementById('f-phone').value.trim(),
+      email:        document.getElementById('f-email').value.trim(),
+      referralCode: generatedCode,
+      isActive:     true,
+      updatedAt:    serverTimestamp(),
+    };
+
+    if (editingId) {
+      await updateDoc(doc(db,'influencers',editingId), data);
+      const idx = allInfluencers.findIndex(i => i.id === editingId);
+      if (idx !== -1) allInfluencers[idx] = { ...allInfluencers[idx], ...data };
+    } else {
+      data.createdBy = currentUser.uid;
+      data.createdAt = serverTimestamp();
+      const ref = await addDoc(collection(db,'influencers'), data);
+      allInfluencers.unshift({ id: ref.id, ...data, createdAt: { toDate: () => new Date() } });
+    }
+
+    updateStats(); renderCards(); closeModal();
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editingId ? 'Update Influencer' : 'Save Influencer';
+  }
+};
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+document.getElementById('inf-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+</script>
+<script src="../assets/mobile.js"></script>
+</body>
+</html>

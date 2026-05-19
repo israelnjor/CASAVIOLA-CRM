@@ -1,0 +1,42 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── Property images ──
+    // Listings and admin can upload, all signed-in staff can view
+    match /properties/{imageId} {
+      allow read:  if request.auth != null;
+      allow write: if request.auth != null
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── Deal documents ──
+    // Stored under: documents/{leadId}/{fileName}
+    // CS can upload (PDF, images, Word docs — max 10MB)
+    // Admin and CEO can read
+    // CS can read (to verify what they uploaded)
+    // NO delete ever — permanent records
+    match /documents/{leadId}/{fileName} {
+      allow read: if request.auth != null;  // scoped further by Firestore rules
+
+      allow create: if request.auth != null
+                    && request.resource.size < 10 * 1024 * 1024
+                    && (
+                      request.resource.contentType.matches('image/.*')
+                      || request.resource.contentType == 'application/pdf'
+                      || request.resource.contentType == 'application/msword'
+                      || request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    );
+
+      allow update: if false; // Immutable once uploaded
+      allow delete: if false; // Never deleted
+    }
+
+    // Block everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

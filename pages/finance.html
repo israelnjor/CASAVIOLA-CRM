@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Finance — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0b0b0f;--surface:#111118;--surface2:#18181f;--surface3:#1f1f28;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --text:#eeeaf5;--text2:#a09cb0;--muted:#5e5c6e;
+  --purple:#7c5cbf;--purple-lt:#9d7de0;--purple-dim:rgba(124,92,191,0.12);
+  --gold:#c9a84c;--gold-lt:#e0c070;--gold-dim:rgba(201,168,76,0.1);
+  --green:#3ecf8e;--green-dim:rgba(62,207,142,0.1);
+  --coral:#f06b6b;--coral-dim:rgba(240,107,107,0.1);
+  --blue:#5b9cf6;--blue-dim:rgba(91,156,246,0.1);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.1);
+  --font-disp:'Cormorant Garamond',serif;--font-body:'Outfit',sans-serif;
+  --sidebar-w:256px;--radius:13px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);display:flex;min-height:100vh;overflow-x:hidden}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;padding:0 0 24px}
+.sidebar-top{padding:28px 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple) 0%,#5a3e9e 50%,#8a6820 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:16px;font-weight:600;color:var(--gold-lt);box-shadow:0 0 0 1px rgba(201,168,76,0.2),0 4px 16px rgba(124,92,191,0.3);flex-shrink:0}
+.brand-name{font-family:var(--font-disp);font-size:17px;font-weight:600}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-section{padding:0 12px;margin-bottom:4px}
+.nav-section-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--text2);text-decoration:none;cursor:pointer;transition:all 0.15s;position:relative;margin-bottom:1px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--purple-dim);color:var(--text);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--purple-lt),var(--gold))}
+.nav-icon{width:17px;height:17px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-spacer{flex:1}
+.sidebar-user{margin:0 12px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.user-meta{flex:1;min-width:0}
+.user-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10.5px;color:var(--muted);margin-top:1px}
+.signout-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all 0.15s}
+.signout-btn:hover{color:var(--coral);background:var(--coral-dim)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:36px 40px 60px;max-width:calc(100vw - var(--sidebar-w))}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeUp 0.4s ease both}
+.page-title{font-family:var(--font-disp);font-size:30px;font-weight:600;letter-spacing:-0.3px}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px;font-weight:300}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#9060d8);color:#fff;border:1px solid rgba(201,168,76,0.15)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,191,0.35)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#b88020);color:#1a1000;font-weight:600;border:none}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,0.4)}
+.btn-green{background:linear-gradient(135deg,var(--green),#2ab878);color:#0a1f14;font-weight:600;border:none}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(62,207,142,0.3)}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+/* STATS */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;animation:fadeUp 0.4s ease 0.05s both}
+.strip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:13px;position:relative;overflow:hidden}
+.strip-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius) var(--radius) 0 0}
+.sc-gold::after{background:var(--gold-lt)}.sc-green::after{background:var(--green)}.sc-blue::after{background:var(--blue)}.sc-purple::after{background:var(--purple-lt)}.sc-amber::after{background:var(--amber)}
+.strip-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sc-gold .strip-icon{background:var(--gold-dim)}.sc-green .strip-icon{background:var(--green-dim)}.sc-blue .strip-icon{background:var(--blue-dim)}.sc-purple .strip-icon{background:var(--purple-dim)}.sc-amber .strip-icon{background:var(--amber-dim)}
+.strip-val{font-family:var(--font-disp);font-size:22px;font-weight:600;line-height:1}
+.sc-gold .strip-val{color:var(--gold-lt)}.sc-green .strip-val{color:var(--green)}.sc-blue .strip-val{color:var(--blue)}.sc-purple .strip-val{color:var(--purple-lt)}.sc-amber .strip-val{color:var(--amber)}
+.strip-label{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;animation:fadeUp 0.4s ease 0.08s both;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:280px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(124,92,191,0.4)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:11px}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 30px 9px 14px;color:var(--text2);font-family:var(--font-body);font-size:13px;outline:none;cursor:pointer;appearance:none}
+.filter-select:focus{border-color:rgba(124,92,191,0.4)}
+.results-count{margin-left:auto;font-size:12px;color:var(--muted)}
+
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp 0.4s ease 0.1s both}
+.deals-table{width:100%;border-collapse:collapse}
+.deals-table thead th{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:13px 20px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
+.deals-table thead th:first-child{padding-left:24px}
+.deals-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.12s;cursor:pointer}
+.deals-table tbody tr:last-child{border-bottom:none}
+.deals-table tbody tr:hover{background:var(--surface2)}
+.deals-table td{padding:14px 20px;font-size:13px;vertical-align:middle}
+.deals-table td:first-child{padding-left:24px}
+
+.client-cell{display:flex;align-items:center;gap:11px}
+.client-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;flex-shrink:0}
+.client-name{font-size:13.5px;font-weight:500}
+.client-prop{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+.status-pill{font-size:10.5px;font-weight:500;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.sp-pending  {background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,0.2)}
+.sp-validated{background:var(--green-dim);color:var(--green);border:1px solid rgba(62,207,142,0.2)}
+
+.inv-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px}
+.inv-yes{background:var(--green-dim);color:var(--green)}
+.inv-no {background:var(--coral-dim);color:var(--coral)}
+
+.progress-wrap{display:flex;align-items:center;gap:8px}
+.prog-bar-bg{width:80px;height:5px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),#52c28a);transition:width 0.8s ease}
+.prog-pct{font-size:11px;font-weight:600;color:var(--green);white-space:nowrap}
+
+.table-empty{padding:72px 20px;text-align:center}
+.empty-icon{font-size:40px;opacity:0.2;margin-bottom:14px}
+.empty-title{font-family:var(--font-disp);font-size:20px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--muted)}
+
+/* ══ DEAL MODAL ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;width:720px;max-width:calc(100vw - 32px);max-height:92vh;overflow-y:auto;transform:translateY(14px);transition:transform 0.2s;display:flex;flex-direction:column}
+.modal-overlay.open .modal{transform:translateY(0)}
+
+.modal-header{padding:22px 28px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.modal-deal-name{font-family:var(--font-disp);font-size:22px;font-weight:600}
+.modal-deal-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all 0.15s;flex-shrink:0}
+.modal-close:hover{color:var(--text);background:var(--surface3)}
+
+/* Deal summary strip */
+.deal-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.ds-box{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.ds-label{font-size:9.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.ds-val{font-family:var(--font-disp);font-size:18px;font-weight:600;line-height:1}
+.ds-val.gold{color:var(--gold-lt)}.ds-val.green{color:var(--green)}.ds-val.coral{color:var(--coral)}.ds-val.blue{color:var(--blue)}
+
+/* Tabs */
+.modal-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:9px;padding:3px;width:fit-content}
+.mtab{padding:7px 16px;border-radius:7px;font-size:12.5px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.mtab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.tab-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;background:var(--amber-dim);color:var(--amber)}
+
+.modal-body{padding:22px 28px;flex:1}
+
+/* Section headers */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--font-disp);font-size:17px;font-weight:600}
+
+/* Invoice form */
+.inv-form{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:16px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(124,92,191,0.45);box-shadow:0 0 0 3px rgba(124,92,191,0.08)}
+.form-input::placeholder{color:var(--muted);opacity:0.6}
+.form-select{appearance:none;cursor:pointer}
+.form-textarea{resize:vertical;min-height:72px;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Existing invoice display */
+.inv-display{background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.04));border:1px solid rgba(201,168,76,0.2);border-radius:11px;padding:18px;margin-bottom:16px}
+.inv-display-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.inv-no{font-family:monospace;font-size:13px;color:var(--gold-lt);background:var(--gold-dim);padding:4px 10px;border-radius:7px;letter-spacing:1px}
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.inv-cell{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 13px}
+.inv-cell-label{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.inv-cell-val{font-size:13px;font-weight:500}
+.inv-cell-val.large{font-family:var(--font-disp);font-size:17px;font-weight:600;color:var(--gold-lt)}
+.inv-terms{font-size:12.5px;color:var(--text2);margin-top:12px;line-height:1.6;padding:10px 13px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)}
+
+/* Ledger entries */
+.ledger-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:220px;overflow-y:auto}
+.ledger-entry{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.entry-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-income{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot-expense{background:var(--coral);box-shadow:0 0 6px var(--coral)}
+.entry-info{flex:1;min-width:0}
+.entry-desc{font-size:13px;font-weight:500}
+.entry-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.entry-amount{font-family:var(--font-disp);font-size:16px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.amount-income{color:var(--green)}
+.amount-expense{color:var(--coral)}
+.entry-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px 6px;border-radius:5px;transition:all 0.12s;font-size:11px;white-space:nowrap}
+.entry-btn:hover{color:var(--text);background:var(--surface3)}
+.entry-btn.receipt{color:var(--purple-lt);border:1px solid rgba(124,92,191,0.2);background:var(--purple-dim)}
+
+/* Add payment form */
+.add-payment{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:8px}
+.add-payment-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.payment-form-row{display:grid;grid-template-columns:120px 1fr 130px 120px auto;gap:10px;align-items:end}
+
+/* Receipts list */
+.receipts-list{display:flex;flex-direction:column;gap:8px}
+.receipt-item{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.receipt-icon{font-size:18px;flex-shrink:0}
+.receipt-info{flex:1;min-width:0}
+.receipt-name{font-size:13px;font-weight:500}
+.receipt-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.receipt-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px}
+.rs-generated{background:var(--purple-dim);color:var(--purple-lt)}
+.receipt-actions{display:flex;gap:6px;flex-shrink:0}
+.r-btn{padding:5px 10px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all 0.12s;text-decoration:none;display:inline-flex;align-items:center}
+.r-btn:hover{color:var(--text);border-color:var(--border2)}
+.r-btn.view{color:var(--purple-lt);border-color:rgba(124,92,191,0.3);background:var(--purple-dim)}
+
+/* Gold rule */
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin:18px 0}
+
+/* Override price */
+.price-override-box{background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.override-info{font-size:13px;color:var(--amber)}
+.override-info span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+
+.modal-footer{padding:14px 28px 20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0}
+.modal-footer .btn{flex:1;justify-content:center}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item active" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a class="nav-item" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Inquiries</a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Finance</div>
+      <div class="page-sub">Invoices · Ledger · Receipts per payment</div>
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="strip-card sc-gold"><div class="strip-icon">📄</div><div><div class="strip-val" id="sc-invoiced">—</div><div class="strip-label">Invoices Issued</div></div></div>
+    <div class="strip-card sc-green"><div class="strip-icon">💰</div><div><div class="strip-val" id="sc-collected">—</div><div class="strip-label">Total Collected (GHS)</div></div></div>
+    <div class="strip-card sc-amber"><div class="strip-icon">⏳</div><div><div class="strip-val" id="sc-pending">—</div><div class="strip-label">Awaiting Invoice</div></div></div>
+    <div class="strip-card sc-blue"><div class="strip-icon">🧾</div><div><div class="strip-val" id="sc-receipts">—</div><div class="strip-label">Receipts Generated</div></div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="text" id="search-input" placeholder="Search client or property..." oninput="renderTable()"/>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="inv-filter" onchange="renderTable()">
+        <option value="">All Deals</option>
+        <option value="no-invoice">No Invoice Yet</option>
+        <option value="invoiced">Invoice Issued</option>
+      </select>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="status-filter" onchange="renderTable()">
+        <option value="">All Statuses</option>
+        <option value="viewing">Viewing (pre-close)</option>
+        <option value="closed_pending">Pending Validation</option>
+        <option value="closed_validated">Validated</option>
+      </select>
+    </div>
+    <div class="results-count" id="results-count">— deals</div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="deals-table">
+      <thead>
+        <tr>
+          <th>Client / Property</th>
+          <th>Agreed Price</th>
+          <th>Invoice</th>
+          <th>Collected</th>
+          <th>Progress</th>
+          <th>Deal Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="deals-tbody">
+        <tr><td colspan="7"><div class="table-empty"><div class="empty-icon">⏳</div><div class="empty-title">Loading...</div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- DEAL FINANCE MODAL -->
+<div class="modal-overlay" id="deal-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-deal-name" id="modal-name">Deal</div>
+          <div class="modal-deal-meta" id="modal-meta">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Deal summary strip -->
+      <div class="deal-strip">
+        <div class="ds-box"><div class="ds-label">Agreed Price</div><div class="ds-val gold" id="ds-price">—</div></div>
+        <div class="ds-box"><div class="ds-label">Total Collected</div><div class="ds-val green" id="ds-collected">GHS 0</div></div>
+        <div class="ds-box"><div class="ds-label">Balance Due</div><div class="ds-val coral" id="ds-balance">—</div></div>
+        <div class="ds-box"><div class="ds-label">% Paid</div><div class="ds-val blue" id="ds-pct">0%</div></div>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="mtab active" id="tab-invoice" onclick="switchTab('invoice')">📄 Invoice</button>
+        <button class="mtab"        id="tab-ledger"  onclick="switchTab('ledger')">📒 Ledger</button>
+        <button class="mtab"        id="tab-receipts" onclick="switchTab('receipts')">🧾 Receipts <span class="tab-badge" id="receipts-count" style="display:none">0</span></button>
+      </div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ── INVOICE TAB ── -->
+      <div id="panel-invoice">
+        <div id="invoice-content">
+          <div style="text-align:center;padding:32px;color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+      <!-- ── LEDGER TAB ── -->
+      <div id="panel-ledger" style="display:none">
+        <div id="ledger-no-invoice" style="display:none;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--amber)">
+          ⚠️ An invoice must be issued before recording payments in the ledger.
+        </div>
+        <div class="ledger-list" id="ledger-list">
+          <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">No payments recorded yet.</div>
+        </div>
+        <div class="add-payment" id="add-payment-form">
+          <div class="add-payment-title">Record a Payment Received</div>
+          <div class="payment-form-row">
+            <div class="form-group">
+              <div class="form-label">Type</div>
+              <select class="form-select" id="entry-type">
+                <option value="income">💚 Income</option>
+                <option value="expense">🔴 Expense</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Description</div>
+              <input class="form-input" type="text" id="entry-desc" placeholder="e.g. Deposit payment, Survey fee..."/>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Amount (GHS)</div>
+              <input class="form-input" type="number" id="entry-amount" placeholder="0.00"/>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Method</div>
+              <select class="form-select" id="entry-method">
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="cash">Cash</option>
+                <option value="mobile_money">Mobile Money</option>
+                <option value="cheque">Cheque</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="addPayment()" style="align-self:flex-end">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RECEIPTS TAB ── -->
+      <div id="panel-receipts" style="display:none">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 14px">
+          💡 Each payment in the ledger can generate its own receipt. Receipts are per-payment records. 
+          The final full receipt for deal validation is generated when payment is complete.
+        </div>
+        <div class="receipts-list" id="receipts-list">
+          <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">No receipts yet.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-gold" id="footer-action-btn" onclick="footerAction()">—</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db, storage } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, where, orderBy, getDocs, addDoc, deleteDoc,
+  doc, getDoc, updateDoc, serverTimestamp, increment
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── State ──
+let currentUser = null, currentRole = null, currentName = '';
+let allDeals      = [];
+let propertiesMap = {};
+let selectedDeal  = null;
+let dealInvoice   = null;
+let ledgerEntries = [];
+let dealReceipts  = [];
+let activeTab     = 'invoice';
+
+// ── Helpers ──
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function formatGHS(n)  { return 'GHS ' + Number(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function methodLabel(m){ return {bank_transfer:'Bank Transfer',cash:'Cash',mobile_money:'Mobile Money',cheque:'Cheque'}[m]||capitalize(m||''); }
+
+function getTotalPaid() { return ledgerEntries.filter(e => e.type==='income').reduce((s,e)=>s+(e.amount||0),0); }
+function getTotalExpense(){ return ledgerEntries.filter(e => e.type==='expense').reduce((s,e)=>s+(e.amount||0),0); }
+
+function updateDealStrip() {
+  const price    = selectedDeal?.agreedPrice || 0;
+  const paid     = getTotalPaid();
+  const balance  = Math.max(0, price - paid);
+  const pct      = price > 0 ? Math.round(paid/price*100) : 0;
+  document.getElementById('ds-price').textContent     = formatGHS(price);
+  document.getElementById('ds-collected').textContent = formatGHS(paid);
+  document.getElementById('ds-balance').textContent   = formatGHS(balance);
+  document.getElementById('ds-pct').textContent       = pct + '%';
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role; currentName = data.name;
+
+  if (!['finance','admin','ceo'].includes(currentRole)) { window.location.href = 'dashboard.html'; return; }
+
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(currentRole);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+  if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
+
+  await loadPropertiesMap();
+  await loadDeals();
+});
+
+async function loadPropertiesMap() {
+  const snap = await getDocs(collection(db,'properties'));
+  snap.forEach(d => { propertiesMap[d.id] = d.data(); });
+}
+
+// ── Load deals — viewing + closed ──
+async function loadDeals() {
+  try {
+    const [viewingSnap, pendingSnap, validatedSnap] = await Promise.all([
+      getDocs(query(collection(db,'leads'), where('status','==','viewing'),           orderBy('createdAt','desc'))),
+      getDocs(query(collection(db,'leads'), where('status','==','closed_pending'),    orderBy('createdAt','desc'))),
+      getDocs(query(collection(db,'leads'), where('status','==','closed_validated'),  orderBy('createdAt','desc'))),
+    ]);
+
+    allDeals = [
+      ...viewingSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+      ...pendingSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+      ...validatedSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+    ];
+
+    // Enrich with property price as agreedPrice default
+    allDeals.forEach(deal => {
+      if (!deal.agreedPrice && deal.propertyId) {
+        const prop = propertiesMap[deal.propertyId];
+        if (prop?.price) deal.agreedPrice = prop.price;
+      }
+    });
+
+    // Stats
+    const invoiced  = allDeals.filter(d => d.invoiceIssued).length;
+    const noInvoice = allDeals.filter(d => !d.invoiceIssued && d.status !== 'viewing').length;
+    document.getElementById('sc-invoiced').textContent = invoiced;
+    document.getElementById('sc-pending').textContent  = noInvoice;
+
+    // Total collected + receipts across all deals
+    let totalCollected = 0, totalReceipts = 0;
+    for (const deal of allDeals.slice(0,20)) { // limit to avoid too many reads
+      try {
+        const lSnap = await getDocs(collection(db,'leads',deal.id,'ledger'));
+        lSnap.forEach(d => { if(d.data().type==='income') totalCollected += (d.data().amount||0); });
+        const rSnap = await getDocs(collection(db,'leads',deal.id,'receipts'));
+        totalReceipts += rSnap.size;
+      } catch(_) {}
+    }
+    document.getElementById('sc-collected').textContent = 'GHS ' + totalCollected.toLocaleString('en-GH');
+    document.getElementById('sc-receipts').textContent  = totalReceipts;
+
+    renderTable();
+  } catch(e) { console.error('loadDeals error:', e); }
+}
+
+// ── Render table ──
+window.renderTable = () => {
+  const search  = document.getElementById('search-input').value.toLowerCase().trim();
+  const invF    = document.getElementById('inv-filter').value;
+  const statusF = document.getElementById('status-filter').value;
+
+  const filtered = allDeals.filter(d => {
+    const matchSearch = !search
+      || (d.clientName||'').toLowerCase().includes(search)
+      || (d.propTitle||'').toLowerCase().includes(search);
+    const matchInv    = !invF
+      || (invF==='invoiced'    &&  d.invoiceIssued)
+      || (invF==='no-invoice'  && !d.invoiceIssued);
+    const matchStatus = !statusF || d.status === statusF;
+    return matchSearch && matchInv && matchStatus;
+  });
+
+  document.getElementById('results-count').textContent = `${filtered.length} deal${filtered.length!==1?'s':''}`;
+  const tbody = document.getElementById('deals-tbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="table-empty"><div class="empty-icon">💰</div><div class="empty-title">No deals found</div><div class="empty-sub">Deals at viewing stage and beyond appear here</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((d,i) => {
+    const color     = getColor(d.clientName);
+    const price     = d.agreedPrice || 0;
+    const paid      = d.totalPaid   || 0;
+    const pct       = price > 0 ? Math.round(paid/price*100) : 0;
+    const isValidated = d.status === 'closed_validated';
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.03}s both" onclick="openDeal('${d.id}')">
+        <td>
+          <div class="client-cell">
+            <div class="client-av" style="background:${color}22;color:${color}">${initials(d.clientName||'?')}</div>
+            <div>
+              <div class="client-name">${d.clientName||'Unknown'}</div>
+              <div class="client-prop">🏠 ${d.propTitle||'Unknown'}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-family:var(--font-disp);font-size:15px;font-weight:600;color:var(--gold-lt)">${price ? formatGHS(price) : '<span style="color:var(--muted);font-size:12px">Not set</span>'}</td>
+        <td><span class="inv-pill ${d.invoiceIssued?'inv-yes':'inv-no'}">${d.invoiceIssued?'✓ Issued':'✗ Pending'}</span></td>
+        <td style="font-size:12.5px;color:var(--green)">${paid ? formatGHS(paid) : '—'}</td>
+        <td>
+          <div class="progress-wrap">
+            <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
+            <div class="prog-pct">${pct}%</div>
+          </div>
+        </td>
+        <td><span class="status-pill ${isValidated?'sp-validated':'sp-pending'}">${isValidated?'✅ Validated':'⏳ Pending'}</span></td>
+        <td>
+          <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();openDeal('${d.id}')">
+            ${d.invoiceIssued ? 'Manage →' : 'Issue Invoice →'}
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+};
+
+// ── Open deal modal ──
+window.openDeal = async (dealId) => {
+  selectedDeal  = allDeals.find(d => d.id === dealId);
+  if (!selectedDeal) return;
+
+  document.getElementById('modal-name').textContent = selectedDeal.clientName || 'Deal';
+  document.getElementById('modal-meta').textContent = `🏠 ${selectedDeal.propTitle||'Unknown'} · ${selectedDeal.agentName||''}`;
+
+  switchTab('invoice');
+  document.getElementById('deal-modal').classList.add('open');
+
+  await Promise.all([loadInvoice(), loadLedger(), loadReceipts()]);
+  updateDealStrip();
+};
+
+window.closeModal = () => {
+  document.getElementById('deal-modal').classList.remove('open');
+  selectedDeal = null; dealInvoice = null; ledgerEntries = []; dealReceipts = [];
+};
+
+// ── Switch tab ──
+window.switchTab = (tab) => {
+  activeTab = tab;
+  ['invoice','ledger','receipts'].forEach(t => {
+    document.getElementById(`panel-${t}`).style.display  = t===tab ? 'block' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===tab);
+  });
+  updateFooterBtn();
+};
+
+function updateFooterBtn() {
+  const btn = document.getElementById('footer-action-btn');
+  const canEdit = ['finance','admin','ceo'].includes(currentRole);
+  if (activeTab === 'invoice') {
+    if (!dealInvoice && canEdit) { btn.textContent = '📄 Issue Invoice'; btn.style.display = ''; }
+    else if (dealInvoice && canEdit) { btn.textContent = '✏️ Edit Invoice'; btn.style.display = ''; }
+    else btn.style.display = 'none';
+  } else if (activeTab === 'ledger') {
+    btn.style.display = 'none';
+  } else if (activeTab === 'receipts') {
+    if (ledgerEntries.length > 0 && canEdit) { btn.textContent = '🧾 Generate Final Receipt'; btn.style.display = ''; }
+    else btn.style.display = 'none';
+  }
+}
+
+window.footerAction = () => {
+  if (activeTab === 'invoice') showInvoiceForm();
+  else if (activeTab === 'receipts') generateFinalReceipt();
+};
+
+// ─────────────────────────────────────────────
+// INVOICE
+// ─────────────────────────────────────────────
+async function loadInvoice() {
+  try {
+    const snap = await getDocs(collection(db,'leads',selectedDeal.id,'invoices'));
+    dealInvoice = snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
+    renderInvoiceTab();
+  } catch(e) { console.error('Invoice load error:', e); }
+}
+
+function renderInvoiceTab() {
+  const el      = document.getElementById('invoice-content');
+  const canEdit = ['finance','admin','ceo'].includes(currentRole);
+
+  if (!dealInvoice) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:40px;opacity:0.2;margin-bottom:14px">📄</div>
+        <div style="font-family:var(--font-disp);font-size:20px;font-weight:600;color:var(--text2);margin-bottom:6px">No Invoice Yet</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Issue an invoice to the client before the deal can be closed.</div>
+        ${canEdit ? `<button class="btn btn-gold" onclick="showInvoiceForm()">📄 Issue Invoice</button>` : ''}
+      </div>`;
+    updateFooterBtn();
+    return;
+  }
+
+  const inv    = dealInvoice;
+  const canOverridePrice = ['admin','ceo'].includes(currentRole);
+
+  el.innerHTML = `
+    ${canOverridePrice ? `
+      <div class="price-override-box">
+        <div class="override-info">
+          Agreed Price: <strong>${formatGHS(selectedDeal.agreedPrice||0)}</strong>
+          <span>Admin/CEO can override the property list price if negotiated differently</span>
+        </div>
+        <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px" onclick="overridePrice()">✏️ Override Price</button>
+      </div>` : ''}
+
+    <div class="inv-display">
+      <div class="inv-display-header">
+        <div style="font-family:var(--font-disp);font-size:17px;font-weight:600">Invoice Details</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="inv-no">${inv.invoiceNo}</span>
+          ${canEdit ? `<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="showInvoiceForm()">✏️ Edit</button>` : ''}
+          <button class="btn btn-primary" style="padding:6px 12px;font-size:12px" onclick="printInvoice()">🖨 Print</button>
+        </div>
+      </div>
+
+      <div class="inv-grid">
+        <div class="inv-cell">
+          <div class="inv-cell-label">Agreed Price</div>
+          <div class="inv-cell-val large">${formatGHS(inv.agreedPrice||selectedDeal.agreedPrice||0)}</div>
+        </div>
+        <div class="inv-cell">
+          <div class="inv-cell-label">Deposit Required</div>
+          <div class="inv-cell-val large" style="color:var(--amber)">${formatGHS(inv.depositAmount||0)}</div>
+        </div>
+        <div class="inv-cell">
+          <div class="inv-cell-label">Balance Due</div>
+          <div class="inv-cell-val large" style="color:var(--coral)">${formatGHS(inv.balanceAmount||0)}</div>
+        </div>
+        <div class="inv-cell">
+          <div class="inv-cell-label">Payment Method</div>
+          <div class="inv-cell-val">${methodLabel(inv.paymentMethod)}</div>
+        </div>
+        <div class="inv-cell">
+          <div class="inv-cell-label">Deposit Due</div>
+          <div class="inv-cell-val">${inv.depositDue||'—'}</div>
+        </div>
+        <div class="inv-cell">
+          <div class="inv-cell-label">Balance Due Date</div>
+          <div class="inv-cell-val">${inv.balanceDue||'—'}</div>
+        </div>
+      </div>
+
+      ${inv.terms ? `<div class="inv-terms"><strong style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">Terms & Conditions</strong><br/>${inv.terms}</div>` : ''}
+      <div style="font-size:11px;color:var(--muted);margin-top:10px">Issued ${formatDate(inv.createdAt)} by ${inv.issuedByName||'—'}</div>
+    </div>`;
+
+  updateFooterBtn();
+}
+
+// Invoice form (create/edit)
+function showInvoiceForm() {
+  const inv     = dealInvoice;
+  const price   = selectedDeal.agreedPrice || propertiesMap[selectedDeal.propertyId]?.price || 0;
+  const deposit = inv?.depositAmount || Math.round(price * 0.3);
+  const balance = inv?.balanceAmount || (price - deposit);
+
+  document.getElementById('invoice-content').innerHTML = `
+    <div class="inv-form">
+      <div style="font-family:var(--font-disp);font-size:17px;font-weight:600;margin-bottom:16px">${inv ? 'Edit Invoice' : 'Issue Invoice'}</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Agreed Price (GHS) *</label>
+          <input class="form-input" type="number" id="inv-price" value="${price}" placeholder="0.00"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Method *</label>
+          <select class="form-select" id="inv-method">
+            <option value="bank_transfer" ${inv?.paymentMethod==='bank_transfer'?'selected':''}>Bank Transfer</option>
+            <option value="installment"   ${inv?.paymentMethod==='installment'?'selected':''}>Installment Plan</option>
+            <option value="full_payment"  ${inv?.paymentMethod==='full_payment'?'selected':''}>Full Payment</option>
+            <option value="mobile_money"  ${inv?.paymentMethod==='mobile_money'?'selected':''}>Mobile Money</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">Deposit Amount (GHS)</label>
+          <input class="form-input" type="number" id="inv-deposit" value="${deposit}" oninput="calcBalance()" placeholder="0.00"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deposit Due Date</label>
+          <input class="form-input" type="date" id="inv-deposit-due" value="${inv?.depositDue||''}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Balance Due Date</label>
+          <input class="form-input" type="date" id="inv-balance-due" value="${inv?.balanceDue||''}"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Balance Amount (GHS) — auto-calculated</label>
+        <input class="form-input" type="number" id="inv-balance" value="${balance}" readonly style="opacity:0.7"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Terms & Conditions</label>
+        <textarea class="form-textarea" id="inv-terms" placeholder="Payment terms, conditions, notes...">${inv?.terms||'This invoice is valid for 14 days. All payments are non-refundable unless otherwise agreed in writing by management.'}</textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-ghost" onclick="loadInvoice()">Cancel</button>
+        <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="saveInvoice()">
+          ${inv ? '✏️ Update Invoice' : '📄 Issue Invoice'}
+        </button>
+      </div>
+    </div>`;
+
+  // Recalculate balance on price change
+  document.getElementById('inv-price').addEventListener('input', calcBalance);
+}
+
+window.calcBalance = () => {
+  const price   = parseFloat(document.getElementById('inv-price')?.value||0);
+  const deposit = parseFloat(document.getElementById('inv-deposit')?.value||0);
+  const balEl   = document.getElementById('inv-balance');
+  if (balEl) balEl.value = Math.max(0, price - deposit).toFixed(2);
+};
+
+window.saveInvoice = async () => {
+  const price      = parseFloat(document.getElementById('inv-price').value||0);
+  const method     = document.getElementById('inv-method').value;
+  const deposit    = parseFloat(document.getElementById('inv-deposit').value||0);
+  const depositDue = document.getElementById('inv-deposit-due').value;
+  const balanceDue = document.getElementById('inv-balance-due').value;
+  const balance    = Math.max(0, price - deposit);
+  const terms      = document.getElementById('inv-terms').value.trim();
+
+  if (!price || price <= 0) { alert('Please enter a valid agreed price.'); return; }
+  if (!method)              { alert('Please select a payment method.'); return; }
+
+  const invoiceNo = dealInvoice?.invoiceNo || `CV-INV-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+
+  try {
+    const data = {
+      invoiceNo, agreedPrice: price, paymentMethod: method,
+      depositAmount: deposit, depositDue, balanceAmount: balance, balanceDue, terms,
+      issuedBy: currentUser.uid, issuedByName: currentName,
+      updatedAt: serverTimestamp(),
+    };
+
+    if (dealInvoice) {
+      await updateDoc(doc(db,'leads',selectedDeal.id,'invoices',dealInvoice.id), data);
+      dealInvoice = { ...dealInvoice, ...data };
+    } else {
+      data.createdAt = serverTimestamp();
+      const ref = await addDoc(collection(db,'leads',selectedDeal.id,'invoices'), data);
+      dealInvoice = { id: ref.id, ...data, createdAt: { toDate: () => new Date() } };
+
+      // Mark lead as invoiced and set agreed price
+      await updateDoc(doc(db,'leads',selectedDeal.id), {
+        invoiceIssued: true,
+        invoiceId:     dealInvoice.id,
+        agreedPrice:   price,
+        paymentPlan: { depositAmount: deposit, depositDue, balanceDue, method },
+        updatedAt:     serverTimestamp(),
+      });
+      selectedDeal.invoiceIssued = true;
+      selectedDeal.agreedPrice   = price;
+      const idx = allDeals.findIndex(d => d.id === selectedDeal.id);
+      if (idx !== -1) { allDeals[idx].invoiceIssued = true; allDeals[idx].agreedPrice = price; }
+    }
+
+    renderInvoiceTab();
+    updateDealStrip();
+    renderTable();
+    alert(`✅ Invoice ${invoiceNo} ${dealInvoice ? 'updated' : 'issued'} successfully!`);
+  } catch(e) { alert('Error saving invoice: ' + e.message); }
+};
+
+window.printInvoice = () => {
+  if (!dealInvoice || !selectedDeal) return;
+  const params = new URLSearchParams({ dealId: selectedDeal.id, invoiceId: dealInvoice.id, type: 'invoice' });
+  window.open(`../receipt-template.html?${params}`, '_blank');
+};
+
+window.overridePrice = async () => {
+  const newPrice = parseFloat(prompt(`Current agreed price: ${formatGHS(selectedDeal.agreedPrice||0)}\n\nEnter new agreed price (GHS):`));
+  if (!newPrice || newPrice <= 0) return;
+  await updateDoc(doc(db,'leads',selectedDeal.id), {
+    agreedPrice: newPrice, priceOverride: true, updatedAt: serverTimestamp(),
+  });
+  selectedDeal.agreedPrice = newPrice;
+  const idx = allDeals.findIndex(d => d.id === selectedDeal.id);
+  if (idx !== -1) allDeals[idx].agreedPrice = newPrice;
+  updateDealStrip();
+  renderInvoiceTab();
+  renderTable();
+};
+
+// ─────────────────────────────────────────────
+// LEDGER
+// ─────────────────────────────────────────────
+async function loadLedger() {
+  try {
+    const snap = await getDocs(query(collection(db,'leads',selectedDeal.id,'ledger'), orderBy('createdAt','asc')));
+    ledgerEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderLedger();
+  } catch(e) { console.error('Ledger error:', e); }
+}
+
+function renderLedger() {
+  const hasInvoice = !!selectedDeal.invoiceIssued;
+  document.getElementById('ledger-no-invoice').style.display = hasInvoice ? 'none' : 'block';
+  document.getElementById('add-payment-form').style.display  = hasInvoice && ['finance','admin'].includes(currentRole) ? 'block' : 'none';
+
+  const list = document.getElementById('ledger-list');
+  if (ledgerEntries.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">No payments recorded yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = ledgerEntries.map(e => `
+    <div class="ledger-entry">
+      <div class="entry-dot dot-${e.type}"></div>
+      <div class="entry-info">
+        <div class="entry-desc">${e.description||'—'}</div>
+        <div class="entry-meta">${capitalize(e.type)} · ${methodLabel(e.method)} · ${formatDate(e.createdAt)} · ${e.createdByName||'—'}</div>
+      </div>
+      <div class="entry-amount amount-${e.type}">${e.type==='income'?'+':'-'} ${formatGHS(e.amount)}</div>
+      ${e.receiptId ? `<button class="entry-btn receipt" onclick="viewReceipt('${e.receiptId}')">🧾 View Receipt</button>` : `<button class="entry-btn" onclick="generateReceiptForEntry('${e.id}')">Generate Receipt</button>`}
+      ${['finance','admin'].includes(currentRole) ? `<button class="entry-btn" onclick="deleteEntry('${e.id}')">✕</button>` : ''}
+    </div>`).join('');
+
+  updateDealStrip();
+  updateFooterBtn();
+}
+
+window.addPayment = async () => {
+  const type   = document.getElementById('entry-type').value;
+  const desc   = document.getElementById('entry-desc').value.trim();
+  const amount = parseFloat(document.getElementById('entry-amount').value);
+  const method = document.getElementById('entry-method').value;
+
+  if (!desc)              { alert('Enter a description.'); return; }
+  if (!amount || amount<=0){ alert('Enter a valid amount.'); return; }
+
+  try {
+    const entry = { type, description: desc, amount, method,
+      createdBy: currentUser.uid, createdByName: currentName, receiptId: null, createdAt: serverTimestamp() };
+    const ref = await addDoc(collection(db,'leads',selectedDeal.id,'ledger'), entry);
+
+    // Update lead totalPaid
+    if (type === 'income') {
+      const newTotal = (selectedDeal.totalPaid||0) + amount;
+      const newBal   = Math.max(0,(selectedDeal.agreedPrice||0) - newTotal);
+      await updateDoc(doc(db,'leads',selectedDeal.id), {
+        totalPaid: newTotal, balanceDue: newBal, updatedAt: serverTimestamp(),
+      });
+      selectedDeal.totalPaid = newTotal;
+      const idx = allDeals.findIndex(d => d.id === selectedDeal.id);
+      if (idx !== -1) { allDeals[idx].totalPaid = newTotal; }
+    }
+
+    ledgerEntries.push({ id: ref.id, ...entry, createdAt: { toDate: () => new Date() } });
+    document.getElementById('entry-desc').value   = '';
+    document.getElementById('entry-amount').value = '';
+    renderLedger();
+    renderTable();
+  } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.deleteEntry = async (entryId) => {
+  if (!confirm('Delete this entry? This will not reverse the payment total automatically.')) return;
+  await deleteDoc(doc(db,'leads',selectedDeal.id,'ledger',entryId));
+  ledgerEntries = ledgerEntries.filter(e => e.id !== entryId);
+  renderLedger();
+};
+
+// ─────────────────────────────────────────────
+// RECEIPTS
+// ─────────────────────────────────────────────
+async function loadReceipts() {
+  try {
+    const snap = await getDocs(collection(db,'leads',selectedDeal.id,'receipts'));
+    dealReceipts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderReceiptsTab();
+    const badge = document.getElementById('receipts-count');
+    if (dealReceipts.length > 0) { badge.textContent = dealReceipts.length; badge.style.display = ''; }
+  } catch(e) { console.error('Receipts error:', e); }
+}
+
+function renderReceiptsTab() {
+  const list = document.getElementById('receipts-list');
+  if (dealReceipts.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px">No receipts yet. Add payments in the ledger tab then generate receipts.</div>`;
+    return;
+  }
+  list.innerHTML = dealReceipts.map(r => `
+    <div class="receipt-item">
+      <div class="receipt-icon">🧾</div>
+      <div class="receipt-info">
+        <div class="receipt-name">${r.receiptNo||'Receipt'} · ${formatGHS(r.amount||0)}</div>
+        <div class="receipt-meta">${r.description||'—'} · ${formatDate(r.createdAt)} · ${r.generatedByName||'—'}</div>
+      </div>
+      <span class="receipt-status rs-generated">Generated</span>
+      <div class="receipt-actions">
+        <button class="r-btn view" onclick="openReceiptPrint('${r.id}')">🖨 Print</button>
+      </div>
+    </div>`).join('');
+}
+
+// Generate receipt for a single payment entry
+window.generateReceiptForEntry = async (entryId) => {
+  const entry = ledgerEntries.find(e => e.id === entryId);
+  if (!entry) return;
+  if (!dealInvoice) { alert('Issue an invoice first before generating receipts.'); return; }
+
+  const receiptNo  = `CV-REC-${new Date().getFullYear()}-${String(dealReceipts.length+1).padStart(3,'0')}`;
+  const totalPaid  = getTotalPaid();
+  const balance    = Math.max(0,(selectedDeal.agreedPrice||0) - totalPaid);
+
+  try {
+    const receiptData = {
+      receiptNo, invoiceNo: dealInvoice.invoiceNo,
+      clientName: selectedDeal.clientName||'', clientPhone: selectedDeal.clientPhone||'',
+      propTitle:  selectedDeal.propTitle||'',  agentName:   selectedDeal.agentName||'',
+      amount:     entry.amount, description: entry.description, method: entry.method,
+      agreedPrice: selectedDeal.agreedPrice||0, totalPaid, balance,
+      entryId, generatedBy: currentUser.uid, generatedByName: currentName,
+      createdAt: serverTimestamp(),
+    };
+
+    const ref = await addDoc(collection(db,'leads',selectedDeal.id,'receipts'), receiptData);
+    const saved = { id: ref.id, ...receiptData, createdAt: { toDate: () => new Date() } };
+    dealReceipts.push(saved);
+
+    // Link receipt back to entry
+    await updateDoc(doc(db,'leads',selectedDeal.id,'ledger',entryId), { receiptId: ref.id });
+    const eIdx = ledgerEntries.findIndex(e => e.id === entryId);
+    if (eIdx !== -1) ledgerEntries[eIdx].receiptId = ref.id;
+
+    renderLedger();
+    renderReceiptsTab();
+
+    const badge = document.getElementById('receipts-count');
+    badge.textContent = dealReceipts.length; badge.style.display = '';
+
+    // Open print view
+    openReceiptPrint(ref.id);
+  } catch(e) { alert('Error generating receipt: ' + e.message); }
+};
+
+window.viewReceipt     = (receiptId) => openReceiptPrint(receiptId);
+window.openReceiptPrint = (receiptId) => {
+  const params = new URLSearchParams({ dealId: selectedDeal.id, receiptId, type: 'receipt' });
+  window.open(`../receipt-template.html?${params}`, '_blank');
+};
+
+window.generateFinalReceipt = async () => {
+  alert('Final receipt generation — upload final signed copy to document tab for deal validation.');
+  switchTab('receipts');
+};
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+document.getElementById('deal-modal').addEventListener('click', e => { if(e.target === e.currentTarget) closeModal(); });
+</script>
+<script src="../assets/mobile.js"></script>
+</body>
+</html>

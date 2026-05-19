@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Inquiries — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0b0b0f;
+  --surface:    #111118;
+  --surface2:   #18181f;
+  --surface3:   #1f1f28;
+  --border:     rgba(255,255,255,0.06);
+  --border2:    rgba(255,255,255,0.11);
+  --text:       #eeeaf5;
+  --text2:      #a09cb0;
+  --muted:      #5e5c6e;
+  --purple:     #7c5cbf;
+  --purple-lt:  #9d7de0;
+  --purple-dim: rgba(124,92,191,0.12);
+  --gold:       #c9a84c;
+  --gold-lt:    #e0c070;
+  --gold-dim:   rgba(201,168,76,0.1);
+  --green:      #3ecf8e;
+  --green-dim:  rgba(62,207,142,0.1);
+  --coral:      #f06b6b;
+  --coral-dim:  rgba(240,107,107,0.1);
+  --blue:       #5b9cf6;
+  --blue-dim:   rgba(91,156,246,0.1);
+  --amber:      #f59e0b;
+  --amber-dim:  rgba(245,158,11,0.1);
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Outfit', sans-serif;
+  --sidebar-w:  256px;
+  --radius:     13px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
+.brand-name { font-family: var(--font-disp); font-size: 17px; font-weight: 600; }
+.brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+.nav-section { padding: 0 12px; margin-bottom: 4px; }
+.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
+.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-badge-count { margin-left: auto; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+.nav-spacer { flex: 1; }
+.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-meta { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
+.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+
+/* ══ MAIN ══ */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 60px; max-width: calc(100vw - var(--sidebar-w)); }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; animation: fadeUp 0.4s ease both; }
+.page-title { font-family: var(--font-disp); font-size: 30px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 9px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: linear-gradient(135deg, var(--purple), #9060d8); color: #fff; border: 1px solid rgba(201,168,76,0.15); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,191,0.35); }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface3); border-color: var(--border2); }
+.btn-green { background: linear-gradient(135deg, var(--green), #2ab878); color: #0a1f14; font-weight: 600; border: none; }
+.btn-green:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(62,207,142,0.3); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* ── Stats strip ── */
+.stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; animation: fadeUp 0.4s ease 0.05s both; }
+.strip-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; align-items: center; gap: 13px; transition: all 0.15s; position: relative; overflow: hidden; }
+.strip-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--radius) var(--radius) 0 0; }
+.sc-amber::after  { background: var(--amber); }
+.sc-blue::after   { background: var(--blue); }
+.sc-green::after  { background: var(--green); }
+.sc-purple::after { background: var(--purple-lt); }
+.strip-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sc-amber  .strip-icon { background: var(--amber-dim); }
+.sc-blue   .strip-icon { background: var(--blue-dim); }
+.sc-green  .strip-icon { background: var(--green-dim); }
+.sc-purple .strip-icon { background: var(--purple-dim); }
+.strip-val   { font-family: var(--font-disp); font-size: 28px; font-weight: 600; line-height: 1; }
+.sc-amber  .strip-val { color: var(--amber); }
+.sc-blue   .strip-val { color: var(--blue); }
+.sc-green  .strip-val { color: var(--green); }
+.sc-purple .strip-val { color: var(--purple-lt); }
+.strip-label { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+/* ── Toolbar ── */
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; animation: fadeUp 0.4s ease 0.08s both; flex-wrap: wrap; }
+.search-wrap { position: relative; flex: 1; max-width: 280px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 14px 9px 36px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: rgba(124,92,191,0.4); }
+.select-wrap { position: relative; }
+.select-wrap::after { content: '▾'; position: absolute; right: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 11px; }
+.filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 30px 9px 14px; color: var(--text2); font-family: var(--font-body); font-size: 13px; outline: none; cursor: pointer; appearance: none; }
+.filter-select:focus { border-color: rgba(124,92,191,0.4); }
+.results-count { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+/* ── Share link card ── */
+.share-card {
+  background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(124,92,191,0.06));
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeUp 0.4s ease 0.06s both;
+}
+.share-icon { font-size: 24px; flex-shrink: 0; }
+.share-info { flex: 1; min-width: 0; }
+.share-title { font-size: 13.5px; font-weight: 600; color: var(--gold-lt); margin-bottom: 4px; }
+.share-link-wrap { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.share-link {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 12px; font-size: 12px;
+  color: var(--text2); font-family: monospace; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.copy-btn {
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+  border: 1px solid rgba(201,168,76,0.3); background: var(--gold-dim);
+  color: var(--gold-lt); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+}
+.copy-btn:hover { background: rgba(201,168,76,0.18); }
+.copy-btn.copied { background: var(--green-dim); color: var(--green); border-color: rgba(62,207,142,0.3); }
+
+/* ── Inquiries table ── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; animation: fadeUp 0.4s ease 0.1s both; }
+.inq-table { width: 100%; border-collapse: collapse; }
+.inq-table thead th { font-size: 10px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); padding: 13px 20px; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.inq-table thead th:first-child { padding-left: 24px; }
+.inq-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; }
+.inq-table tbody tr:last-child { border-bottom: none; }
+.inq-table tbody tr:hover { background: var(--surface2); }
+.inq-table td { padding: 13px 20px; font-size: 13px; vertical-align: middle; }
+.inq-table td:first-child { padding-left: 24px; }
+
+/* Name cell */
+.name-cell { display: flex; align-items: center; gap: 11px; }
+.name-av { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.name-val  { font-size: 13.5px; font-weight: 500; }
+.phone-val { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+
+/* Status pill */
+.status-pill { font-size: 10.5px; font-weight: 500; padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+.s-new       { background: var(--amber-dim);  color: var(--amber);    border: 1px solid rgba(245,158,11,0.2); }
+.s-contacted { background: var(--blue-dim);   color: var(--blue);     border: 1px solid rgba(91,156,246,0.2); }
+.s-converted { background: var(--green-dim);  color: var(--green);    border: 1px solid rgba(62,207,142,0.2); }
+.s-closed    { background: var(--surface3);   color: var(--muted);    border: 1px solid var(--border); }
+
+/* Interest pill */
+.int-pill { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; background: var(--purple-dim); color: var(--purple-lt); }
+
+/* Ref badge */
+.ref-badge { font-size: 11px; font-family: monospace; color: var(--gold); background: var(--gold-dim); padding: 2px 8px; border-radius: 6px; letter-spacing: 0.5px; }
+
+/* Row actions */
+.row-actions { display: flex; gap: 6px; opacity: 0; transition: opacity 0.12s; }
+.inq-table tbody tr:hover .row-actions { opacity: 1; }
+.row-btn { padding: 5px 10px; border-radius: 7px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); transition: all 0.12s; white-space: nowrap; }
+.row-btn:hover { color: var(--text); border-color: var(--border2); }
+.row-btn.view:hover    { color: var(--purple-lt); border-color: rgba(124,92,191,0.3); background: var(--purple-dim); }
+.row-btn.convert:hover { color: var(--green);     border-color: rgba(62,207,142,0.3);  background: var(--green-dim); }
+
+/* ── Empty ── */
+.table-empty { padding: 72px 20px; text-align: center; }
+.empty-icon  { font-size: 40px; opacity: 0.2; margin-bottom: 14px; }
+.empty-title { font-family: var(--font-disp); font-size: 20px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+.empty-sub   { font-size: 13px; color: var(--muted); }
+
+/* ── Modal ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(6px); }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 18px; padding: 32px; width: 520px; max-width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; transform: translateY(14px); transition: transform 0.2s; }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.modal-title { font-family: var(--font-disp); font-size: 22px; font-weight: 600; }
+.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.modal-close:hover { color: var(--text); background: var(--surface3); }
+
+.gold-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 18px 0; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.detail-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.detail-value { font-size: 13.5px; color: var(--text); }
+.detail-value.muted { color: var(--text2); }
+.notes-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* Status selector in modal */
+.status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-opt { flex: 1; min-width: 80px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-size: 11.5px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.15s; }
+.status-opt:hover { color: var(--text); }
+.status-opt.active-new       { background: var(--amber-dim);  color: var(--amber);  border-color: rgba(245,158,11,0.3); }
+.status-opt.active-contacted { background: var(--blue-dim);   color: var(--blue);   border-color: rgba(91,156,246,0.3); }
+.status-opt.active-converted { background: var(--green-dim);  color: var(--green);  border-color: rgba(62,207,142,0.3); }
+.status-opt.active-closed    { background: var(--surface3);   color: var(--muted);  border-color: var(--border2); }
+
+.modal-footer { display: flex; gap: 10px; margin-top: 24px; }
+.modal-footer .btn { flex: 1; justify-content: center; }
+
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item active" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg>Inquiries<span class="nav-badge-count" id="new-badge" style="display:none">0</span></a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Inquiries</div>
+      <div class="page-sub" id="page-sub">Public form submissions from potential clients</div>
+    </div>
+    <a class="btn btn-ghost" href="../inquiry.html" target="_blank">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Public Form
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="strip-card sc-amber">
+      <div class="strip-icon">🆕</div>
+      <div><div class="strip-val" id="sc-new">—</div><div class="strip-label">New</div></div>
+    </div>
+    <div class="strip-card sc-blue">
+      <div class="strip-icon">📞</div>
+      <div><div class="strip-val" id="sc-contacted">—</div><div class="strip-label">Contacted</div></div>
+    </div>
+    <div class="strip-card sc-green">
+      <div class="strip-icon">✅</div>
+      <div><div class="strip-val" id="sc-converted">—</div><div class="strip-label">Converted</div></div>
+    </div>
+    <div class="strip-card sc-purple">
+      <div class="strip-icon">📋</div>
+      <div><div class="strip-val" id="sc-total">—</div><div class="strip-label">Total</div></div>
+    </div>
+  </div>
+
+  <!-- Referral share card (agents only) -->
+  <div class="share-card" id="share-card" style="display:none">
+    <div class="share-icon">🔗</div>
+    <div class="share-info">
+      <div class="share-title">Your Personal Inquiry Link</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Share this link with potential clients — all submissions are tagged to you automatically</div>
+      <div class="share-link-wrap">
+        <div class="share-link" id="share-link-url">—</div>
+        <button class="copy-btn" id="copy-btn" onclick="copyLink()">📋 Copy</button>
+      </div>
+    </div>
+    <a id="whatsapp-share" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#25D366;color:white;padding:9px 14px;border-radius:9px;font-size:12.5px;font-weight:500;text-decoration:none;transition:all 0.15s;white-space:nowrap;flex-shrink:0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Share
+    </a>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="text" id="search-input" placeholder="Search by name, phone or email..." oninput="renderTable()"/>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="status-filter" onchange="renderTable()">
+        <option value="">All Statuses</option>
+        <option value="new">New</option>
+        <option value="contacted">Contacted</option>
+        <option value="converted">Converted</option>
+        <option value="closed">Closed</option>
+      </select>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="interest-filter" onchange="renderTable()">
+        <option value="">All Interests</option>
+        <option value="buy">Buy</option>
+        <option value="rent">Rent</option>
+        <option value="land">Land</option>
+        <option value="commercial">Commercial</option>
+      </select>
+    </div>
+    <div class="results-count" id="results-count">— inquiries</div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="inq-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Interest</th>
+          <th>Budget</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Ref</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="inq-tbody">
+        <tr><td colspan="8"><div class="table-empty"><div class="empty-icon">⏳</div><div class="empty-title">Loading inquiries...</div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-name">Inquiry</div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, orderBy, getDocs, addDoc,
+  doc, getDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── State ──
+let currentUser = null, currentRole = null, currentUserData = null;
+let allInquiries = [];
+let selectedInquiry = null;
+const BASE_URL = window.location.origin;
+
+// ── Helpers ──
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function statusClass(s){ return { new:'s-new', contacted:'s-contacted', converted:'s-converted', closed:'s-closed' }[s] || 's-new'; }
+function animCount(id, val, dur=700) {
+  const el=document.getElementById(id); if(!el) return; let start=null;
+  const step=ts=>{ if(!start) start=ts; const p=Math.min((ts-start)/dur,1); el.textContent=Math.floor(p*val); if(p<1) requestAnimationFrame(step); else el.textContent=val; };
+  requestAnimationFrame(step);
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  currentUserData = snap.data();
+  currentRole = currentUserData.role;
+
+  // Only admin, ceo, cs can access this page
+  if (!['admin','ceo','cs','agent'].includes(currentRole)) {
+    window.location.href = 'dashboard.html'; return;
+  }
+
+  document.getElementById('sb-name').textContent   = currentUserData.name;
+  document.getElementById('sb-role').textContent   = capitalize(currentRole);
+  document.getElementById('sb-avatar').textContent = initials(currentUserData.name);
+  if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
+
+  // Show referral link for agents
+  if (currentRole === 'agent' && currentUserData.referralCode) {
+    setupAgentShareCard();
+  }
+
+  await loadInquiries();
+});
+
+// ── Agent share card ──
+function setupAgentShareCard() {
+  const card = document.getElementById('share-card');
+  const ref  = currentUserData.referralCode;
+  const url  = `${BASE_URL}/inquiry.html?ref=${ref}`;
+
+  card.style.display = 'flex';
+  document.getElementById('share-link-url').textContent = url;
+
+  const msg = encodeURIComponent(`Hi! I'm ${currentUserData.name} from Casaviola Properties. Looking for your dream property? Fill out this quick form and our team will get back to you within 24 hours:\n\n${url}`);
+  document.getElementById('whatsapp-share').href = `https://wa.me/?text=${msg}`;
+
+  window.copyLink = () => {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  };
+}
+
+// ── Load inquiries ──
+async function loadInquiries() {
+  try {
+    let q;
+    if (currentRole === 'agent') {
+      // Agents see only inquiries from their referral code
+      const { query: fQuery, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      q = fQuery(collection(db,'inquiries'), where('referralCode','==',currentUserData.referralCode||'__none__'), orderBy('createdAt','desc'));
+    } else {
+      q = query(collection(db,'inquiries'), orderBy('createdAt','desc'));
+    }
+
+    const snap = await getDocs(q);
+    allInquiries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    renderTable();
+  } catch(e) {
+    console.error('Inquiries load error:', e);
+  }
+}
+
+// ── Stats ──
+function updateStats() {
+  const c = { new:0, contacted:0, converted:0 };
+  allInquiries.forEach(i => { if(c[i.status]!==undefined) c[i.status]++; });
+  animCount('sc-new',       c.new);
+  animCount('sc-contacted', c.contacted);
+  animCount('sc-converted', c.converted);
+  animCount('sc-total',     allInquiries.length);
+
+  // New badge on nav
+  if (c.new > 0) {
+    const badge = document.getElementById('new-badge');
+    badge.textContent = c.new; badge.style.display = '';
+  }
+  document.getElementById('page-sub').textContent = `${allInquiries.length} total · ${c.new} new · ${c.converted} converted to clients`;
+}
+
+// ── Render table ──
+window.renderTable = () => {
+  const search  = document.getElementById('search-input').value.toLowerCase().trim();
+  const statusF = document.getElementById('status-filter').value;
+  const intF    = document.getElementById('interest-filter').value;
+
+  const filtered = allInquiries.filter(i => {
+    const matchSearch = !search
+      || (i.name  ||'').toLowerCase().includes(search)
+      || (i.phone ||'').toLowerCase().includes(search)
+      || (i.email ||'').toLowerCase().includes(search);
+    const matchStatus = !statusF || i.status === statusF;
+    const matchInt    = !intF    || i.interest === intF;
+    return matchSearch && matchStatus && matchInt;
+  });
+
+  document.getElementById('results-count').textContent = `${filtered.length} inquir${filtered.length!==1?'ies':'y'}`;
+  const tbody = document.getElementById('inq-tbody');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="table-empty"><div class="empty-icon">📋</div><div class="empty-title">No inquiries yet</div><div class="empty-sub">Share the inquiry form link to start receiving submissions</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((inq, i) => {
+    const color = getColor(inq.name);
+    const canConvert = ['admin','cs'].includes(currentRole) && inq.status !== 'converted';
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.03}s both" onclick="viewInquiry('${inq.id}')">
+        <td>
+          <div class="name-cell">
+            <div class="name-av" style="background:${color}22;color:${color}">${initials(inq.name)}</div>
+            <div>
+              <div class="name-val">${inq.name}</div>
+              <div class="phone-val">${inq.phone || '—'}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="int-pill">${capitalize(inq.interest||'—')}</span></td>
+        <td style="font-size:12px;color:var(--text2)">${inq.budget||'—'}</td>
+        <td style="font-size:12px;color:var(--text2);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${inq.location||'—'}</td>
+        <td><span class="status-pill ${statusClass(inq.status)}">${capitalize(inq.status||'new')}</span></td>
+        <td>${inq.referralCode ? `<span class="ref-badge">${inq.referralCode}</span>` : '<span style="color:var(--muted);font-size:11px">Direct</span>'}</td>
+        <td style="color:var(--muted);font-size:12px;white-space:nowrap">${formatDate(inq.createdAt)}</td>
+        <td>
+          <div class="row-actions">
+            <button class="row-btn view" onclick="event.stopPropagation();viewInquiry('${inq.id}')">View</button>
+            ${canConvert ? `<button class="row-btn convert" onclick="event.stopPropagation();convertToClient('${inq.id}')">→ Client</button>` : ''}
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+};
+
+// ── View inquiry detail ──
+window.viewInquiry = (id) => {
+  selectedInquiry = allInquiries.find(i => i.id === id);
+  if (!selectedInquiry) return;
+  const inq = selectedInquiry;
+  const canEdit = ['admin','cs'].includes(currentRole);
+
+  document.getElementById('modal-name').textContent = inq.name;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="detail-grid">
+      <div><div class="detail-label">Phone</div><div class="detail-value">${inq.phone||'—'}</div></div>
+      <div><div class="detail-label">Email</div><div class="detail-value muted">${inq.email||'—'}</div></div>
+      <div><div class="detail-label">Interest</div><div class="detail-value">${capitalize(inq.interest||'—')}</div></div>
+      <div><div class="detail-label">Budget</div><div class="detail-value">${inq.budget||'—'}</div></div>
+      <div><div class="detail-label">Location</div><div class="detail-value muted">${inq.location||'—'}</div></div>
+      <div><div class="detail-label">Timeline</div><div class="detail-value muted">${capitalize(inq.timeline||'Not specified')}</div></div>
+      <div><div class="detail-label">Contact Preference</div><div class="detail-value muted">${capitalize(inq.contactPref||'—')}</div></div>
+      <div><div class="detail-label">Source</div><div class="detail-value muted">${capitalize(inq.source||'—')}</div></div>
+      <div><div class="detail-label">Referral Code</div><div class="detail-value">${inq.referralCode ? `<span class="ref-badge">${inq.referralCode}</span>` : 'Direct'}</div></div>
+      <div><div class="detail-label">Inquiry Ref</div><div class="detail-value muted" style="font-size:12px">${inq.inquiryRef||'—'}</div></div>
+    </div>
+
+    ${inq.notes ? `
+      <div class="detail-label" style="margin-bottom:8px">Notes from Client</div>
+      <div class="notes-box" style="margin-bottom:18px">${inq.notes}</div>` : ''}
+
+    <div class="gold-rule"></div>
+
+    ${canEdit ? `
+      <div style="margin-bottom:16px">
+        <div class="detail-label" style="margin-bottom:8px">Update Status</div>
+        <div class="status-row">
+          <button class="status-opt ${inq.status==='new'?'active-new':''}"       onclick="updateStatus('new')">🆕 New</button>
+          <button class="status-opt ${inq.status==='contacted'?'active-contacted':''}" onclick="updateStatus('contacted')">📞 Contacted</button>
+          <button class="status-opt ${inq.status==='converted'?'active-converted':''}" onclick="updateStatus('converted')">✅ Converted</button>
+          <button class="status-opt ${inq.status==='closed'?'active-closed':''}"  onclick="updateStatus('closed')">🔒 Closed</button>
+        </div>
+      </div>` : ''}
+
+    <div class="modal-footer">
+      ${canEdit && inq.status !== 'converted' ? `
+        <button class="btn btn-green" id="convert-btn" onclick="convertToClient('${inq.id}')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Convert to Client
+        </button>` : ''}
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+    </div>`;
+
+  document.getElementById('detail-modal').classList.add('open');
+};
+
+// ── Update inquiry status ──
+window.updateStatus = async (newStatus) => {
+  if (!selectedInquiry) return;
+  const oldStatus = selectedInquiry.status;
+  await updateDoc(doc(db,'inquiries',selectedInquiry.id), { status: newStatus, updatedAt: serverTimestamp() });
+
+  // ── Sync influencer_stats aggregate counts ──
+  // When status changes to/from contacted or converted,
+  // update the public stats doc — no client data stored.
+  if (selectedInquiry.referralCode) {
+    try {
+      const { increment } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const statsRef = doc(db, 'influencer_stats', selectedInquiry.referralCode);
+      const updates  = { lastActivity: serverTimestamp() };
+
+      // contacted count
+      if (newStatus === 'contacted' && oldStatus === 'new')       updates.contacted = increment(1);
+      if (oldStatus === 'contacted' && newStatus === 'new')       updates.contacted = increment(-1);
+
+      // converted count
+      if (newStatus === 'converted' && oldStatus !== 'converted') updates.converted = increment(1);
+      if (oldStatus === 'converted' && newStatus !== 'converted') updates.converted = increment(-1);
+
+      await updateDoc(statsRef, updates);
+    } catch(e) { console.error('Stats sync error:', e); }
+  }
+
+  selectedInquiry.status = newStatus;
+  const idx = allInquiries.findIndex(i => i.id === selectedInquiry.id);
+  if (idx !== -1) allInquiries[idx].status = newStatus;
+  updateStats();
+  renderTable();
+  viewInquiry(selectedInquiry.id);
+};
+
+// ── Convert inquiry to client ──
+window.convertToClient = async (id) => {
+  const inq = allInquiries.find(i => i.id === id);
+  if (!inq) return;
+  if (!confirm(`Convert ${inq.name} to a client record? This will create a new client in the Clients module.`)) return;
+
+  const btn = document.getElementById('convert-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Converting...'; }
+
+  try {
+    // Create client document
+    await addDoc(collection(db,'clients'), {
+      name:        inq.name,
+      phone:       inq.phone  || '',
+      email:       inq.email  || '',
+      interest:    inq.interest || '',
+      source:      inq.source   || 'inquiry form',
+      notes:       `Converted from inquiry form. Budget: ${inq.budget||'—'}. Location: ${inq.location||'—'}. Timeline: ${inq.timeline||'—'}. ${inq.notes ? 'Client notes: ' + inq.notes : ''}`,
+      referralCode: inq.referralCode || null,
+      createdBy:   currentUser.uid,
+      createdAt:   serverTimestamp(),
+    });
+
+    // Mark inquiry as converted
+    await updateDoc(doc(db,'inquiries',id), {
+      status: 'converted',
+      convertedToClient: true,
+      convertedBy: currentUser.uid,
+      convertedAt: serverTimestamp(),
+    });
+
+    const idx = allInquiries.findIndex(i => i.id === id);
+    if (idx !== -1) allInquiries[idx].status = 'converted';
+    updateStats();
+    renderTable();
+    closeModal();
+
+    // Brief success toast
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:28px;right:28px;background:#1f1f28;border:1px solid rgba(62,207,142,0.3);border-radius:12px;padding:14px 20px;color:#3ecf8e;font-size:13px;font-weight:500;z-index:999;animation:fadeUp 0.3s ease both;display:flex;align-items:center;gap:8px';
+    toast.innerHTML = '✅ Client record created successfully!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+
+  } catch(e) {
+    alert('Error converting: ' + e.message);
+    if (btn) { btn.disabled = false; btn.innerHTML = '→ Convert to Client'; }
+  }
+};
+
+window.closeModal = () => {
+  document.getElementById('detail-modal').classList.remove('open');
+  selectedInquiry = null;
+};
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+document.getElementById('detail-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+</script>
+<script src="../assets/mobile.js"></script>
+</body>
+</html>

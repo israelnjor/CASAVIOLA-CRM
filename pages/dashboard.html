@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0b0b0f;
+  --surface:    #111118;
+  --surface2:   #18181f;
+  --surface3:   #1f1f28;
+  --border:     rgba(255,255,255,0.06);
+  --border2:    rgba(255,255,255,0.11);
+  --text:       #eeeaf5;
+  --text2:      #a09cb0;
+  --muted:      #5e5c6e;
+  --purple:     #7c5cbf;
+  --purple-lt:  #9d7de0;
+  --purple-dim: rgba(124,92,191,0.12);
+  --gold:       #c9a84c;
+  --gold-lt:    #e0c070;
+  --gold-dim:   rgba(201,168,76,0.1);
+  --green:      #3ecf8e;
+  --green-dim:  rgba(62,207,142,0.1);
+  --coral:      #f06b6b;
+  --coral-dim:  rgba(240,107,107,0.1);
+  --blue:       #5b9cf6;
+  --blue-dim:   rgba(91,156,246,0.1);
+  --amber:      #f59e0b;
+  --amber-dim:  rgba(245,158,11,0.1);
+  --pink:       #e879f9;
+  --pink-dim:   rgba(232,121,249,0.1);
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Outfit', sans-serif;
+  --sidebar-w:  256px;
+  --radius:     13px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
+.brand-name { font-family: var(--font-disp); font-size: 17px; font-weight: 600; color: var(--text); }
+.brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+.nav-section { padding: 0 12px; margin-bottom: 4px; }
+.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
+.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-badge { margin-left: auto; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.nav-spacer { flex: 1; }
+.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-meta { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
+.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+
+/* ══ MAIN ══ */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 60px; max-width: calc(100vw - var(--sidebar-w)); }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; animation: fadeUp 0.4s ease both; }
+.greeting { font-family: var(--font-disp); font-size: 30px; font-weight: 500; letter-spacing: -0.3px; line-height: 1.1; }
+.greeting em { font-style: normal; background: linear-gradient(135deg, var(--gold-lt), var(--purple-lt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.topbar-date { font-size: 13px; color: var(--muted); margin-top: 5px; font-weight: 300; }
+.role-chip { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 99px; border: 1px solid; }
+.chip-admin    { background: var(--purple-dim); color: var(--purple-lt); border-color: rgba(124,92,191,0.2); }
+.chip-agent    { background: var(--gold-dim);   color: var(--gold-lt);   border-color: rgba(201,168,76,0.2); }
+.chip-listings { background: var(--green-dim);  color: var(--green);     border-color: rgba(62,207,142,0.2); }
+.chip-cs       { background: var(--blue-dim);   color: var(--blue);      border-color: rgba(91,156,246,0.2); }
+.chip-finance  { background: var(--gold-dim);   color: var(--gold-lt);   border-color: rgba(201,168,76,0.2); }
+.chip-ceo      { background: var(--coral-dim);  color: var(--coral);     border-color: rgba(240,107,107,0.2); }
+
+/* ── Alert banner ── */
+.alert-banner { display: none; align-items: center; gap: 14px; background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.04)); border: 1px solid rgba(245,158,11,0.2); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 24px; cursor: pointer; transition: border-color 0.15s; animation: fadeUp 0.4s ease 0.03s both; }
+.alert-banner:hover { border-color: rgba(245,158,11,0.4); }
+.alert-banner.visible { display: flex; }
+.alert-icon { font-size: 22px; flex-shrink: 0; }
+.alert-text { flex: 1; }
+.alert-title { font-size: 13.5px; font-weight: 600; color: var(--amber); margin-bottom: 2px; }
+.alert-sub   { font-size: 12px; color: var(--text2); }
+.alert-arrow { color: var(--amber); font-size: 16px; flex-shrink: 0; }
+
+/* ── Notifications ── */
+.notif-strip { display: none; flex-direction: column; gap: 8px; margin-bottom: 20px; animation: fadeUp 0.4s ease 0.03s both; }
+.notif-strip.visible { display: flex; }
+.notif-item { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; padding: 12px 16px; cursor: pointer; transition: all 0.15s; }
+.notif-item:hover { border-color: rgba(245,158,11,0.4); background: var(--surface2); }
+.notif-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; box-shadow: 0 0 6px var(--amber); }
+.notif-msg  { flex: 1; font-size: 13px; color: var(--text2); }
+.notif-msg strong { color: var(--text); font-weight: 500; }
+.notif-time { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.notif-mark { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 10px; color: var(--muted); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+.notif-mark:hover { color: var(--text); border-color: var(--border2); }
+
+/* ── Stats grid ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 22px 20px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.4s ease both; }
+.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.stat-card:nth-child(1){animation-delay:0.06s}.stat-card:nth-child(2){animation-delay:0.10s}.stat-card:nth-child(3){animation-delay:0.14s}.stat-card:nth-child(4){animation-delay:0.18s}
+.stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--radius) var(--radius) 0 0; }
+.sc-purple::after { background: linear-gradient(90deg, var(--purple), var(--purple-lt)); }
+.sc-gold::after   { background: linear-gradient(90deg, var(--gold), var(--gold-lt)); }
+.sc-blue::after   { background: linear-gradient(90deg, var(--blue), #8db8f9); }
+.sc-green::after  { background: linear-gradient(90deg, var(--green), #6af7b8); }
+.sc-amber::after  { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+.sc-pink::after   { background: linear-gradient(90deg, var(--pink), #f0a0ff); }
+.sc-purple { background: linear-gradient(145deg, var(--surface) 60%, rgba(124,92,191,0.05)); }
+.sc-gold   { background: linear-gradient(145deg, var(--surface) 60%, rgba(201,168,76,0.04)); }
+.sc-blue   { background: linear-gradient(145deg, var(--surface) 60%, rgba(91,156,246,0.05)); }
+.sc-green  { background: linear-gradient(145deg, var(--surface) 60%, rgba(62,207,142,0.04)); }
+.sc-amber  { background: linear-gradient(145deg, var(--surface) 60%, rgba(245,158,11,0.05)); }
+.sc-pink   { background: linear-gradient(145deg, var(--surface) 60%, rgba(232,121,249,0.05)); }
+.stat-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 16px; }
+.sc-purple .stat-icon { background: var(--purple-dim); }
+.sc-gold   .stat-icon { background: var(--gold-dim); }
+.sc-blue   .stat-icon { background: var(--blue-dim); }
+.sc-green  .stat-icon { background: var(--green-dim); }
+.sc-amber  .stat-icon { background: var(--amber-dim); }
+.sc-pink   .stat-icon { background: var(--pink-dim); }
+.stat-val { font-family: var(--font-disp); font-size: 38px; font-weight: 600; line-height: 1; letter-spacing: -1px; margin-bottom: 5px; }
+.sc-purple .stat-val { color: var(--purple-lt); }
+.sc-gold   .stat-val { color: var(--gold-lt); }
+.sc-blue   .stat-val { color: var(--blue); }
+.sc-green  .stat-val { color: var(--green); }
+.sc-amber  .stat-val { color: var(--amber); }
+.sc-pink   .stat-val { color: var(--pink); }
+.stat-label { font-size: 12px; color: var(--text2); }
+.stat-badge { position: absolute; top: 18px; right: 18px; font-size: 10.5px; font-weight: 500; padding: 3px 8px; border-radius: 99px; }
+.badge-amber { background: var(--amber-dim); color: var(--amber); }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-blue  { background: var(--blue-dim);  color: var(--blue); }
+
+/* ── Lower grid ── */
+.lower-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; animation: fadeUp 0.4s ease 0.22s both; }
+
+/* ── Panel ── */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 16px; border-bottom: 1px solid var(--border); }
+.panel-title { font-family: var(--font-disp); font-size: 17px; font-weight: 600; }
+.panel-link  { font-size: 12px; color: var(--purple-lt); text-decoration: none; opacity: 0.8; transition: opacity 0.15s; }
+.panel-link:hover { opacity: 1; }
+
+/* ── Leads table ── */
+.leads-table { width: 100%; border-collapse: collapse; }
+.leads-table th { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 10px 22px; text-align: left; border-bottom: 1px solid var(--border); }
+.leads-table td { padding: 12px 22px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.leads-table tr:last-child td { border-bottom: none; }
+.leads-table tbody tr { transition: background 0.12s; cursor: pointer; }
+.leads-table tbody tr:hover { background: var(--surface2); }
+.td-client { display: flex; align-items: center; gap: 10px; }
+.td-av { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: var(--font-disp); flex-shrink: 0; }
+.td-name { font-size: 13px; font-weight: 500; }
+.td-prop { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.status-dot { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; white-space: nowrap; }
+.status-dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-interested::before      { background: var(--purple-lt); }
+.dot-viewing::before         { background: var(--gold-lt); }
+.dot-closed_pending::before  { background: var(--amber); box-shadow: 0 0 5px var(--amber); animation: pulse 2s ease infinite; }
+.dot-closed_validated::before{ background: var(--green); }
+.type-pill { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 99px; }
+.pill-agent   { background: var(--purple-dim); color: var(--purple-lt); }
+.pill-company { background: var(--gold-dim);   color: var(--gold-lt); }
+
+/* ── Pipeline ── */
+.pipeline-wrap { padding: 18px 22px 20px; }
+.pipeline-title { font-family: var(--font-disp); font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+.pipeline-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.pipeline-row:last-child { margin-bottom: 0; }
+.p-label { font-size: 11.5px; color: var(--text2); width: 110px; flex-shrink: 0; }
+.p-bar-bg { flex: 1; height: 5px; background: var(--surface3); border-radius: 99px; overflow: hidden; }
+.p-bar-fill { height: 100%; border-radius: 99px; transition: width 1.3s cubic-bezier(0.16,1,0.3,1); }
+.p-count { font-size: 12px; font-weight: 600; width: 24px; text-align: right; flex-shrink: 0; }
+
+/* ── CS tasks ── */
+.cs-tasks { padding: 16px 22px; }
+.task-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+.task-item:hover { border-color: var(--border2); background: var(--surface3); }
+.task-item:last-child { margin-bottom: 0; }
+.task-av { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: var(--font-disp); flex-shrink: 0; }
+.task-info { flex: 1; min-width: 0; }
+.task-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-prop { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.task-badge { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+.badge-docs    { background: var(--blue-dim);  color: var(--blue);  border: 1px solid rgba(91,156,246,0.2); }
+.badge-finance { background: var(--gold-dim);  color: var(--gold-lt); border: 1px solid rgba(201,168,76,0.2); }
+
+/* ── Messages ── */
+.msg-list { max-height: 220px; overflow-y: auto; }
+.msg-item { padding: 12px 20px; border-bottom: 1px solid var(--border); transition: background 0.12s; }
+.msg-item:last-child { border-bottom: none; }
+.msg-item:hover { background: var(--surface2); }
+.msg-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.msg-av { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: var(--font-disp); flex-shrink: 0; }
+.msg-author { font-size: 12.5px; font-weight: 500; }
+.msg-time   { font-size: 10.5px; color: var(--muted); margin-left: auto; }
+.msg-body   { font-size: 12.5px; color: var(--text2); line-height: 1.5; padding-left: 32px; }
+.msg-compose { display: flex; gap: 8px; padding: 12px 16px 14px; border-top: 1px solid var(--border); }
+.msg-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.msg-input::placeholder { color: var(--muted); }
+.msg-input:focus { border-color: rgba(124,92,191,0.4); }
+.msg-send { background: linear-gradient(135deg, var(--purple), #9060d8); border: none; border-radius: 8px; padding: 9px 14px; color: white; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.msg-send:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(124,92,191,0.35); }
+
+/* ── Empty ── */
+.empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 13px; }
+.empty-icon  { font-size: 28px; opacity: 0.2; margin-bottom: 8px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-name">Casaviola</div>
+        <div class="brand-sub">Properties CRM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item active" href="dashboard.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="clients.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clients
+    </a>
+    <a class="nav-item" href="properties.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Properties
+    </a>
+    <a class="nav-item" href="leads.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Leads
+      <span class="nav-badge" id="leads-badge" style="display:none">0</span>
+    </a>
+    <a class="nav-item" id="nav-finance" href="finance.html" style="display:none">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Finance
+    </a>
+    <a class="nav-item" id="nav-inquiries" href="inquiries.html" style="display:none">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg>
+      Inquiries
+    </a>
+    <a class="nav-item" id="nav-influencers" href="influencers.html" style="display:none">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Influencers
+    </a>
+    <a class="nav-item" href="messages.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Messages
+    </a>
+  </div>
+
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Users
+    </a>
+  </div>
+
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>
+      <div class="greeting" id="greeting">Good morning, <em>Staff</em></div>
+      <div class="topbar-date" id="topbar-date">—</div>
+    </div>
+    <span class="role-chip" id="role-chip">—</span>
+  </div>
+
+  <!-- Notifications (admin/ceo) -->
+  <div class="notif-strip" id="notif-strip"></div>
+
+  <!-- Alert banner -->
+  <div class="alert-banner" id="alert-banner" onclick="window.location.href=alertTarget()">
+    <div class="alert-icon">⏳</div>
+    <div class="alert-text">
+      <div class="alert-title" id="alert-title">—</div>
+      <div class="alert-sub"   id="alert-sub">—</div>
+    </div>
+    <div class="alert-arrow">→</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- Lower grid -->
+  <div class="lower-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title" id="left-panel-title">Recent Leads</div>
+        <a class="panel-link" id="left-panel-link" href="leads.html">View all →</a>
+      </div>
+      <div id="left-panel-content">
+        <div class="empty-state"><div class="empty-icon">⏳</div>Loading...</div>
+      </div>
+    </div>
+
+    <div class="panel" style="display:flex;flex-direction:column">
+      <div class="panel-head">
+        <div class="panel-title">Message Board</div>
+        <a class="panel-link" href="messages.html">See all</a>
+      </div>
+      <div class="msg-list" id="msg-list">
+        <div class="empty-state"><div class="empty-icon">💬</div>Loading...</div>
+      </div>
+      <div class="msg-compose">
+        <input class="msg-input" id="msg-input" type="text" placeholder="Post an announcement..." maxlength="300"/>
+        <button class="msg-send" onclick="postMessage()">Post</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, where, orderBy, limit,
+  getDocs, getCountFromServer, addDoc,
+  doc, getDoc, updateDoc, onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+let currentUser = null, currentRole = null, currentName = '';
+let alertLink = 'leads.html';
+
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function statusLabel(s){ return {interested:'Interested',viewing:'Viewing',closed_pending:'Closed · Pending',closed_validated:'Validated'}[s]||capitalize(s); }
+function animCount(id,target,dur=800){ const el=document.getElementById(id);if(!el)return;let start=null;const step=ts=>{if(!start)start=ts;const p=Math.min((ts-start)/dur,1);el.textContent=Math.floor(p*target);if(p<1)requestAnimationFrame(step);else el.textContent=target;};requestAnimationFrame(step); }
+
+window.alertTarget = () => alertLink;
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role; currentName = data.name;
+
+  // Sidebar user
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(data.role);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+
+  // Show admin nav
+  if (['admin','ceo'].includes(data.role)) document.getElementById('admin-nav').style.display = 'block';
+
+  // Show role-specific nav items
+  if (['admin','ceo','cs','finance'].includes(data.role)) document.getElementById('nav-inquiries').style.display = '';
+  if (['admin','ceo','cs'].includes(data.role))           document.getElementById('nav-influencers').style.display = '';
+  if (['admin','ceo','finance'].includes(data.role))      document.getElementById('nav-finance').style.display = '';
+
+  // Greeting
+  const hour = new Date().getHours();
+  const g    = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').innerHTML = `${g}, <em>${data.name.split(' ')[0]}</em>`;
+  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Role chip
+  const chipMap = { admin:'chip-admin', agent:'chip-agent', listings:'chip-listings', cs:'chip-cs', finance:'chip-finance', ceo:'chip-ceo' };
+  const roleLabels = { admin:'Admin', agent:'Agent', listings:'Listings', cs:'Customer Service', finance:'Finance', ceo:'CEO / GM' };
+  const chip = document.getElementById('role-chip');
+  chip.textContent = roleLabels[data.role] || capitalize(data.role);
+  chip.className   = 'role-chip ' + (chipMap[data.role] || 'chip-agent');
+
+  await Promise.all([buildStats(), buildLeftPanel(), loadMessages(), loadNotifications(), checkAlerts()]);
+});
+
+// ─────────────────────────────────────────────
+// STATS — fully role-scoped
+// ─────────────────────────────────────────────
+async function buildStats() {
+  const grid = document.getElementById('stats-grid');
+
+  const cardDefs = {
+    admin: [
+      { id:'sc1', cls:'sc-purple', icon:'👥', label:'Total Clients',       q: () => getCountFromServer(collection(db,'clients')) },
+      { id:'sc2', cls:'sc-gold',   icon:'🏠', label:'Properties',          q: () => getCountFromServer(collection(db,'properties')) },
+      { id:'sc3', cls:'sc-blue',   icon:'📊', label:'Active Leads',        q: () => getCountFromServer(query(collection(db,'leads'), where('status','in',['interested','viewing']))) },
+      { id:'sc4', cls:'sc-amber',  icon:'⏳', label:'Pending Validation',  q: () => getCountFromServer(query(collection(db,'leads'), where('status','==','closed_pending'))), badge:'amber' },
+    ],
+    ceo: [
+      { id:'sc1', cls:'sc-purple', icon:'👥', label:'Total Clients',       q: () => getCountFromServer(collection(db,'clients')) },
+      { id:'sc2', cls:'sc-gold',   icon:'🏠', label:'Properties',          q: () => getCountFromServer(collection(db,'properties')) },
+      { id:'sc3', cls:'sc-blue',   icon:'📊', label:'Active Leads',        q: () => getCountFromServer(query(collection(db,'leads'), where('status','in',['interested','viewing']))) },
+      { id:'sc4', cls:'sc-green',  icon:'✅', label:'Validated Deals',     q: () => getCountFromServer(query(collection(db,'leads'), where('status','==','closed_validated'))) },
+    ],
+    agent: [
+      { id:'sc1', cls:'sc-purple', icon:'👥', label:'My Clients',          q: () => getCountFromServer(query(collection(db,'clients'), where('createdBy','==',currentUser.uid))) },
+      { id:'sc2', cls:'sc-blue',   icon:'📊', label:'My Active Leads',     q: () => getCountFromServer(query(collection(db,'leads'), where('createdBy','==',currentUser.uid), where('status','in',['interested','viewing']))) },
+      { id:'sc3', cls:'sc-amber',  icon:'⏳', label:'Pending Deals',       q: () => getCountFromServer(query(collection(db,'leads'), where('createdBy','==',currentUser.uid), where('status','==','closed_pending'))), badge:'amber' },
+      { id:'sc4', cls:'sc-green',  icon:'✅', label:'Validated Deals',     q: () => getCountFromServer(query(collection(db,'leads'), where('createdBy','==',currentUser.uid), where('status','==','closed_validated'))) },
+    ],
+    listings: [
+      { id:'sc1', cls:'sc-gold',   icon:'🏠', label:'Properties',          q: () => getCountFromServer(collection(db,'properties')) },
+      { id:'sc2', cls:'sc-blue',   icon:'📊', label:'Active Leads',        q: () => getCountFromServer(query(collection(db,'leads'), where('leadType','==','company'), where('status','in',['interested','viewing']))) },
+      { id:'sc3', cls:'sc-amber',  icon:'⏳', label:'Pending Deals',       q: () => getCountFromServer(query(collection(db,'leads'), where('leadType','==','company'), where('status','==','closed_pending'))), badge:'amber' },
+      { id:'sc4', cls:'sc-green',  icon:'✅', label:'Validated Deals',     q: () => getCountFromServer(query(collection(db,'leads'), where('leadType','==','company'), where('status','==','closed_validated'))) },
+    ],
+    cs: [
+      { id:'sc1', cls:'sc-purple', icon:'👥', label:'Total Clients',       q: () => getCountFromServer(collection(db,'clients')) },
+      { id:'sc2', cls:'sc-amber',  icon:'⏳', label:'Needs Documents',     q: () => getCountFromServer(query(collection(db,'leads'), where('status','==','closed_pending'))), badge:'amber' },
+      { id:'sc3', cls:'sc-blue',   icon:'📋', label:'New Inquiries',       q: () => getCountFromServer(query(collection(db,'inquiries'), where('status','==','new'))), badge:'blue' },
+      { id:'sc4', cls:'sc-green',  icon:'✅', label:'Validated Deals',     q: () => getCountFromServer(query(collection(db,'leads'), where('status','==','closed_validated'))) },
+    ],
+    finance: [
+      { id:'sc1', cls:'sc-gold',   icon:'💰', label:'Closed Deals',        q: () => getCountFromServer(query(collection(db,'leads'), where('status','in',['closed_pending','closed_validated']))) },
+      { id:'sc2', cls:'sc-amber',  icon:'⏳', label:'Awaiting Ledger',     q: () => getCountFromServer(query(collection(db,'leads'), where('status','==','closed_pending'))), badge:'amber' },
+      { id:'sc3', cls:'sc-green',  icon:'✅', label:'Validated Deals',     q: () => getCountFromServer(query(collection(db,'leads'), where('status','==','closed_validated'))) },
+      { id:'sc4', cls:'sc-blue',   icon:'📊', label:'Active Pipeline',     q: () => getCountFromServer(query(collection(db,'leads'), where('status','in',['interested','viewing']))) },
+    ],
+  };
+
+  const cards = cardDefs[currentRole] || cardDefs.admin;
+
+  grid.innerHTML = cards.map((c,i) => `
+    <div class="stat-card ${c.cls}" style="animation-delay:${i*0.04+0.06}s">
+      ${c.badge ? `<span class="stat-badge badge-${c.badge}">Action needed</span>` : ''}
+      <div class="stat-icon">${c.icon}</div>
+      <div class="stat-val" id="${c.id}">—</div>
+      <div class="stat-label">${c.label}</div>
+    </div>`).join('');
+
+  const results = await Promise.all(cards.map(c => c.q().catch(() => null)));
+  results.forEach((r,i) => { if(r) animCount(cards[i].id, r.data().count); });
+
+  // Leads badge
+  const pendingCard = cards.find(c => c.label.includes('Pending') || c.label.includes('Documents') || c.label.includes('Ledger'));
+  if (pendingCard) {
+    const idx   = cards.indexOf(pendingCard);
+    const count = results[idx]?.data().count || 0;
+    if (count > 0) {
+      const badge = document.getElementById('leads-badge');
+      badge.textContent = count; badge.style.display = '';
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// LEFT PANEL — role-aware
+// ─────────────────────────────────────────────
+async function buildLeftPanel() {
+  if (currentRole === 'cs') {
+    document.getElementById('left-panel-title').textContent = 'Deals Needing Documents';
+    document.getElementById('left-panel-link').href = 'leads.html';
+    await loadPendingForCS();
+  } else if (currentRole === 'finance') {
+    document.getElementById('left-panel-title').textContent = 'Deals Awaiting Ledger';
+    document.getElementById('left-panel-link').href = 'finance.html';
+    document.getElementById('left-panel-link').textContent = 'Open Finance →';
+    await loadPendingForFinance();
+  } else {
+    await loadRecentLeads();
+    await loadPipeline();
+  }
+}
+
+async function loadPendingForCS() {
+  try {
+    const snap = await getDocs(query(collection(db,'leads'), where('status','==','closed_pending'), orderBy('createdAt','desc'), limit(8)));
+    const el   = document.getElementById('left-panel-content');
+    if (snap.empty) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div>No pending deals — all caught up!</div>`; return; }
+    const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    el.innerHTML = `<div class="cs-tasks">${tasks.map(t => {
+      const color = getColor(t.clientName||'');
+      return `<div class="task-item" onclick="window.location.href='leads.html'">
+        <div class="task-av" style="background:${color}22;color:${color}">${initials(t.clientName||'?')}</div>
+        <div class="task-info"><div class="task-name">${t.clientName||'Unknown'}</div><div class="task-prop">🏠 ${t.propTitle||'Unknown'}</div></div>
+        <span class="task-badge badge-docs">Upload docs</span>
+      </div>`;
+    }).join('')}</div>`;
+  } catch(e) { console.error('CS pending error:', e); }
+}
+
+async function loadPendingForFinance() {
+  try {
+    const snap = await getDocs(query(collection(db,'leads'), where('status','==','closed_pending'), orderBy('createdAt','desc'), limit(8)));
+    const el   = document.getElementById('left-panel-content');
+    if (snap.empty) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div>All deals have ledger entries!</div>`; return; }
+    const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    el.innerHTML = `<div class="cs-tasks">${tasks.map(t => {
+      const color = getColor(t.clientName||'');
+      return `<div class="task-item" onclick="window.location.href='finance.html'">
+        <div class="task-av" style="background:${color}22;color:${color}">${initials(t.clientName||'?')}</div>
+        <div class="task-info"><div class="task-name">${t.clientName||'Unknown'}</div><div class="task-prop">🏠 ${t.propTitle||'Unknown'}</div></div>
+        <span class="task-badge badge-finance">Add ledger</span>
+      </div>`;
+    }).join('')}</div>`;
+  } catch(e) { console.error('Finance pending error:', e); }
+}
+
+async function loadRecentLeads() {
+  try {
+    let q;
+    if (currentRole === 'agent')    q = query(collection(db,'leads'), where('createdBy','==',currentUser.uid), orderBy('createdAt','desc'), limit(6));
+    else if (currentRole === 'listings') q = query(collection(db,'leads'), where('leadType','==','company'), orderBy('createdAt','desc'), limit(6));
+    else                            q = query(collection(db,'leads'), orderBy('createdAt','desc'), limit(6));
+
+    const snap = await getDocs(q);
+    const el   = document.getElementById('left-panel-content');
+    if (snap.empty) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div>No leads yet</div>`; return; }
+
+    const rows = snap.docs.map(d => {
+      const l = { id: d.id, ...d.data() };
+      const color = getColor(l.clientName||'');
+      return `<tr onclick="window.location.href='leads.html'">
+        <td><div class="td-client">
+          <div class="td-av" style="background:${color}22;color:${color}">${initials(l.clientName||'?')}</div>
+          <div><div class="td-name">${l.clientName||'Unknown'}</div><div class="td-prop">${l.propTitle||'—'}</div></div>
+        </div></td>
+        <td><span class="status-dot dot-${l.status}">${statusLabel(l.status)}</span></td>
+        <td><span class="type-pill pill-${l.leadType}">${capitalize(l.leadType||'')}</span></td>
+        <td style="color:var(--muted);font-size:11.5px">${formatDate(l.createdAt)}</td>
+      </tr>`;
+    }).join('');
+
+    el.innerHTML = `<table class="leads-table">
+      <thead><tr><th>Client</th><th>Status</th><th>Type</th><th>Date</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  } catch(e) { console.error('Recent leads error:', e); }
+}
+
+async function loadPipeline() {
+  try {
+    let q = currentRole === 'agent'
+      ? query(collection(db,'leads'), where('createdBy','==',currentUser.uid))
+      : currentRole === 'listings'
+      ? query(collection(db,'leads'), where('leadType','==','company'))
+      : collection(db,'leads');
+
+    const snap = await getDocs(q);
+    const c = { interested:0, viewing:0, closed_pending:0, closed_validated:0 };
+    snap.forEach(d => { const s=d.data().status; if(c[s]!==undefined) c[s]++; });
+    const total = Object.values(c).reduce((a,b)=>a+b,1);
+
+    const pipelineHtml = `<div class="pipeline-wrap">
+      <div class="pipeline-title">Pipeline Breakdown</div>
+      <div class="pipeline-row"><div class="p-label">Interested</div><div class="p-bar-bg"><div class="p-bar-fill" id="bar-i" style="width:0%;background:var(--purple-lt)"></div></div><div class="p-count" id="cnt-i" style="color:var(--purple-lt)">0</div></div>
+      <div class="pipeline-row"><div class="p-label">Viewing</div><div class="p-bar-bg"><div class="p-bar-fill" id="bar-v" style="width:0%;background:var(--gold-lt)"></div></div><div class="p-count" id="cnt-v" style="color:var(--gold-lt)">0</div></div>
+      <div class="pipeline-row"><div class="p-label">Pending</div><div class="p-bar-bg"><div class="p-bar-fill" id="bar-p" style="width:0%;background:var(--amber)"></div></div><div class="p-count" id="cnt-p" style="color:var(--amber)">0</div></div>
+      <div class="pipeline-row"><div class="p-label">Validated</div><div class="p-bar-bg"><div class="p-bar-fill" id="bar-vl" style="width:0%;background:var(--green)"></div></div><div class="p-count" id="cnt-vl" style="color:var(--green)">0</div></div>
+    </div>`;
+
+    document.getElementById('left-panel-content').insertAdjacentHTML('beforeend', pipelineHtml);
+
+    setTimeout(() => {
+      document.getElementById('bar-i').style.width  = (c.interested/total*100)+'%';
+      document.getElementById('bar-v').style.width  = (c.viewing/total*100)+'%';
+      document.getElementById('bar-p').style.width  = (c.closed_pending/total*100)+'%';
+      document.getElementById('bar-vl').style.width = (c.closed_validated/total*100)+'%';
+      document.getElementById('cnt-i').textContent  = c.interested;
+      document.getElementById('cnt-v').textContent  = c.viewing;
+      document.getElementById('cnt-p').textContent  = c.closed_pending;
+      document.getElementById('cnt-vl').textContent = c.closed_validated;
+    }, 400);
+  } catch(e) { console.error('Pipeline error:', e); }
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS (admin/ceo)
+// ─────────────────────────────────────────────
+async function loadNotifications() {
+  if (!['admin','ceo'].includes(currentRole)) return;
+  try {
+    const q    = query(collection(db,'notifications'), where('userId','==',currentUser.uid), where('isRead','==',false), orderBy('createdAt','desc'), limit(3));
+    const snap = await getDocs(q);
+    const strip = document.getElementById('notif-strip');
+    if (snap.empty) return;
+    strip.classList.add('visible');
+    strip.innerHTML = snap.docs.map(d => {
+      const n = { id: d.id, ...d.data() };
+      return `<div class="notif-item" onclick="markRead('${n.id}',this)">
+        <div class="notif-dot"></div>
+        <div class="notif-msg">${n.message}</div>
+        <div class="notif-time">${formatDate(n.createdAt)}</div>
+        <button class="notif-mark" onclick="event.stopPropagation();markRead('${n.id}',this.closest('.notif-item'))">✓ Mark read</button>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error('Notifications error:', e); }
+}
+
+window.markRead = async (id, el) => {
+  await updateDoc(doc(db,'notifications',id), { isRead: true });
+  el.style.opacity = '0'; el.style.transition = 'opacity 0.3s';
+  setTimeout(() => el.remove(), 300);
+};
+
+// ─────────────────────────────────────────────
+// ALERT BANNER
+// ─────────────────────────────────────────────
+async function checkAlerts() {
+  if (!['cs','admin','listings','finance'].includes(currentRole)) return;
+  try {
+    const snap  = await getCountFromServer(query(collection(db,'leads'), where('status','==','closed_pending')));
+    const count = snap.data().count;
+    if (count > 0) {
+      document.getElementById('alert-banner').classList.add('visible');
+      if (currentRole === 'cs') {
+        alertLink = 'leads.html';
+        document.getElementById('alert-title').textContent = `${count} deal${count>1?'s':''} awaiting documents`;
+        document.getElementById('alert-sub').textContent   = 'Upload the required files to move these deals forward';
+      } else if (currentRole === 'finance') {
+        alertLink = 'finance.html';
+        document.getElementById('alert-title').textContent = `${count} deal${count>1?'s':''} awaiting ledger entries`;
+        document.getElementById('alert-sub').textContent   = 'Open the Finance page to add ledger entries and generate receipts';
+      } else {
+        alertLink = 'leads.html';
+        document.getElementById('alert-title').textContent = `${count} deal${count>1?'s':''} pending validation`;
+        document.getElementById('alert-sub').textContent   = 'Review uploaded documents and validate closed deals';
+      }
+    }
+  } catch(e) { console.error('Alert error:', e); }
+}
+
+// ─────────────────────────────────────────────
+// MESSAGES — real-time
+// ─────────────────────────────────────────────
+function loadMessages() {
+  const q = query(collection(db,'messages'), orderBy('createdAt','desc'), limit(5));
+  onSnapshot(q, snap => {
+    const el = document.getElementById('msg-list');
+    if (snap.empty) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div>No announcements yet</div>`; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const m = d.data(); const name = m.postedByName||'Staff'; const color = getColor(name);
+      return `<div class="msg-item">
+        <div class="msg-header">
+          <div class="msg-av" style="background:${color}22;color:${color}">${initials(name)}</div>
+          <span class="msg-author">${name}</span>
+          <span class="msg-time">${formatDate(m.createdAt)}</span>
+        </div>
+        <div class="msg-body">${m.content||''}</div>
+      </div>`;
+    }).join('');
+  });
+}
+
+window.postMessage = async () => {
+  const input = document.getElementById('msg-input');
+  const content = input.value.trim();
+  if (!content) return;
+  await addDoc(collection(db,'messages'), { content, postedBy: currentUser.uid, postedByName: currentName, pinned: false, createdAt: serverTimestamp() });
+  input.value = '';
+};
+document.getElementById('msg-input').addEventListener('keydown', e => { if(e.key==='Enter') window.postMessage(); });
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+</script>
+<script src="../assets/mobile.js"></script>
+</body>
+</html>

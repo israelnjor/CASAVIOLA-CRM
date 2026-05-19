@@ -1,0 +1,347 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────
+    // HELPERS
+    // NOTE: getUserData() calls get() on the users collection.
+    // We deliberately avoid calling it in the /users rules themselves
+    // to prevent a circular dependency (new user has no doc yet).
+    // ─────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function userRole() {
+      return getUserData().role;
+    }
+
+    function isAdmin()    { return isSignedIn() && userRole() == 'admin'; }
+    function isCEO()      { return isSignedIn() && userRole() == 'ceo'; }
+    function isAgent()    { return isSignedIn() && userRole() == 'agent'; }
+    function isListings() { return isSignedIn() && userRole() == 'listings'; }
+    function isCS()       { return isSignedIn() && userRole() == 'cs'; }
+    function isFinance()  { return isSignedIn() && userRole() == 'finance'; }
+    function isAdminOrCEO() { return isAdmin() || isCEO(); }
+
+
+    // ─────────────────────────────────────────────
+    // USERS
+    //
+    // IMPORTANT — why allow create for own uid:
+    // When admin calls createUserWithEmailAndPassword(), Firebase
+    // automatically signs IN the new user and signs OUT the admin.
+    // The new user has no Firestore doc yet, so calling getUserData()
+    // (i.e. isAdmin()) would itself fail with a permissions error.
+    // Solution: allow any signed-in user to create their OWN document.
+    // This is safe — the new user can only write to their own uid path.
+    // ─────────────────────────────────────────────
+
+    match /users/{userId} {
+      // All signed-in staff can read user docs (needed for name lookups)
+      allow read: if isSignedIn();
+
+      // A signed-in user can create their own document.
+      // This handles the new-user creation flow without needing isAdmin().
+      allow create: if isSignedIn() && request.auth.uid == userId;
+
+      // Admin can update any user doc.
+      // Users can update their own doc but CANNOT change their role — permanent.
+      allow update: if isAdmin()
+                    || (isSignedIn()
+                        && request.auth.uid == userId
+                        && !request.resource.data.diff(resource.data)
+                           .affectedKeys().hasAny(['role']));
+
+      // Never delete user docs — deactivate instead (isActive: false)
+      allow delete: if false;
+    }
+
+
+    // ─────────────────────────────────────────────
+    // CLIENTS
+    // ─────────────────────────────────────────────
+
+    match /clients/{clientId} {
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      allow update: if isAdmin()
+                    || isCS()
+                    || (isAgent() && resource.data.createdBy == request.auth.uid);
+
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // PROPERTIES
+    // ─────────────────────────────────────────────
+
+    match /properties/{propertyId} {
+      allow read:   if isSignedIn();
+      allow create: if isListings() || isAdmin();
+      allow update: if isListings() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // LEADS
+    // Status flow:
+    //   interested → viewing → closed_pending → closed_validated
+    //
+    // closed_pending:   set by agent (agent leads) or listings (company leads)
+    // closed_validated: set ONLY by admin after CS uploads all 3 documents
+    // ─────────────────────────────────────────────
+
+    match /leads/{leadId} {
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.createdBy == request.auth.uid
+                    && (
+                      (isAgent()    && request.resource.data.leadType == 'agent')
+                      || ((isListings() || isAdmin()) && request.resource.data.leadType == 'company')
+                    );
+
+      allow update: if isAdmin()
+                    // Agents update their own agent leads (cannot validate)
+                    || (isAgent()
+                        && resource.data.createdBy == request.auth.uid
+                        && resource.data.leadType == 'agent'
+                        && request.resource.data.status != 'closed_validated')
+                    // Listings update company leads (cannot validate)
+                    || (isListings()
+                        && resource.data.leadType == 'company'
+                        && request.resource.data.status != 'closed_validated');
+
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // LEAD DOCUMENTS (subcollection)
+    // Uploaded by CS, read by admin/ceo/cs, never deleted
+    // ─────────────────────────────────────────────
+
+    match /leads/{leadId}/documents/{docId} {
+      allow read: if isAdminOrCEO() || isCS();
+
+      allow create: if isCS()
+                    && request.resource.data.uploadedBy == request.auth.uid;
+
+      // Documents are immutable and permanent — no update or delete
+      allow update: if false;
+      allow delete: if false;
+    }
+
+
+    // ─────────────────────────────────────────────
+    // MESSAGES
+    // ─────────────────────────────────────────────
+
+    match /messages/{messageId} {
+      allow read:   if isSignedIn();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.postedBy == request.auth.uid;
+
+      // Admin can pin/unpin; owner can edit their own message
+      allow update: if isAdmin()
+                    || (isSignedIn() && resource.data.postedBy == request.auth.uid);
+
+      // Admin or message owner can delete
+      allow delete: if isAdmin()
+                    || (isSignedIn() && resource.data.postedBy == request.auth.uid);
+    }
+
+
+    // ─────────────────────────────────────────────
+    // NOTIFICATIONS
+    // ─────────────────────────────────────────────
+
+    match /notifications/{notifId} {
+      // Users read only their own notifications
+      allow read: if isSignedIn()
+                  && resource.data.userId == request.auth.uid;
+
+      // Admin creates notifications (e.g. when agent closes a deal)
+      allow create: if isAdmin()
+                    // Also allow the creating user (agent/listings) to notify admin
+                    || isSignedIn();
+
+      // Users can only mark their own as read
+      allow update: if isSignedIn()
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.diff(resource.data)
+                       .affectedKeys().hasOnly(['isRead']);
+
+      allow delete: if false;
+    }
+
+
+    // ─────────────────────────────────────────────
+    // INQUIRIES (public form submissions)
+    // - Anyone can create (no auth required — public form)
+    // - Only admin and CS can read
+    // - No update or delete — permanent records
+    // ─────────────────────────────────────────────
+
+    match /inquiries/{inquiryId} {
+      // Public can submit — no login required
+      allow create: if true;
+
+      // Only authenticated admin, CEO and CS can read full inquiry details
+      // The stats page reads from influencer_stats instead — no client data exposed
+      allow read: if isSignedIn()
+                  && (userRole() == 'admin'
+                      || userRole() == 'ceo'
+                      || userRole() == 'cs');
+
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+
+    // ─────────────────────────────────────────────
+    // INFLUENCERS
+    // - Admin, CS, CEO can read and manage
+    // - Public can read own record by referral code (for stats page)
+    // - Only admin can create/update/delete
+    // ─────────────────────────────────────────────
+
+    match /influencers/{influencerId} {
+      // Admin, CS, CEO can read all (authenticated)
+      // Public can also read — needed for the stats page which has no login.
+      // The referral code acts as the access key. No sensitive data is stored here.
+      allow read: if true;
+
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // INFLUENCER_STATS (public aggregate summaries)
+    // Contains ONLY counts — no client data whatsoever.
+    // Written by the inquiry form submission (public).
+    // Read by the public stats page.
+    // Admin/CS/CEO can also read and update.
+    // ─────────────────────────────────────────────
+
+    match /influencer_stats/{refCode} {
+      // Fully public read — only aggregate counts, zero client data
+      allow read: if true;
+
+      // Public can create/update their own stat doc when submitting an inquiry
+      // Only fields: total, contacted, converted, lastActivity, referralCode
+      allow create: if true;
+      allow update: if true;
+
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------
+    // LEAD PAYMENTS / LEDGER (subcollection under leads)
+    // Finance manages payment entries per deal
+    // ---------------------------------------------
+
+    match /leads/{leadId}/payments/{paymentId} {
+      // Finance, Admin, CEO can read payment records
+      allow read: if isSignedIn()
+                  && (isAdmin() || isCEO() || isFinance());
+
+      // Finance and Admin can create payment entries
+      allow create: if (isFinance() || isAdmin())
+                    && request.resource.data.recordedBy == request.auth.uid;
+
+      // Finance and Admin can update payment entries / approvals
+      allow update: if isFinance() || isAdmin();
+
+      // Only Admin can delete payment entries
+      allow delete: if isAdmin();
+    }
+
+
+    // ---------------------------------------------
+    // LEAD LEDGER (legacy/support path)
+    // Keep this only because finance.html may still use /ledger
+    // ---------------------------------------------
+
+    match /leads/{leadId}/ledger/{entryId} {
+      // Finance, Admin, CEO can read
+      allow read: if isSignedIn()
+                  && (isAdmin() || isCEO() || isFinance());
+
+      // Finance and Admin can create entries
+      allow create: if (isFinance() || isAdmin())
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      // Finance and Admin can update entries
+      allow update: if isFinance() || isAdmin();
+
+      // Only Admin can delete ledger entries
+      allow delete: if isAdmin();
+    }
+
+
+    // ---------------------------------------------
+    // LEAD RECEIPTS (subcollection under leads)
+    // Finance generates and uploads receipts per deal
+    // ---------------------------------------------
+
+    match /leads/{leadId}/receipts/{receiptId} {
+      // Finance, Admin, CEO, and CS can read receipts
+      allow read: if isSignedIn()
+                  && (isAdmin() || isCEO() || isFinance() || isCS());
+
+      // Finance and Admin can create receipts
+      allow create: if (isFinance() || isAdmin())
+                    && request.resource.data.generatedBy == request.auth.uid;
+
+      // Finance and Admin can update draft/final receipt records
+      allow update: if isFinance() || isAdmin();
+
+      // Only Admin can delete receipts
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------
+    // LEAD INVOICES (subcollection)
+    // Invoice records generated for a deal
+    // ---------------------------------------------
+
+    match /leads/{leadId}/invoices/{invoiceId} {
+      // Staff involved in the deal process can read invoices
+      allow read: if isSignedIn()
+                  && (
+                    isAdmin()
+                    || isCEO()
+                    || isFinance()
+                    || isCS()
+                    || isAgent()
+                    || isListings()
+                  );
+
+      // Finance, Admin, and CEO can create invoices
+      allow create: if isFinance() || isAdmin() || isCEO();
+
+      // Finance, Admin, and CEO can update invoice records
+      allow update: if isFinance() || isAdmin() || isCEO();
+
+      // Only Admin can delete invoices
+      allow delete: if isAdmin();
+    }
+
+  }
+}

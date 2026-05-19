@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Users — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0b0b0f;
+  --surface:    #111118;
+  --surface2:   #18181f;
+  --surface3:   #1f1f28;
+  --border:     rgba(255,255,255,0.06);
+  --border2:    rgba(255,255,255,0.11);
+  --text:       #eeeaf5;
+  --text2:      #a09cb0;
+  --muted:      #5e5c6e;
+  --purple:     #7c5cbf;
+  --purple-lt:  #9d7de0;
+  --purple-dim: rgba(124,92,191,0.12);
+  --gold:       #c9a84c;
+  --gold-lt:    #e0c070;
+  --gold-dim:   rgba(201,168,76,0.1);
+  --green:      #3ecf8e;
+  --green-dim:  rgba(62,207,142,0.1);
+  --coral:      #f06b6b;
+  --coral-dim:  rgba(240,107,107,0.1);
+  --blue:       #5b9cf6;
+  --blue-dim:   rgba(91,156,246,0.1);
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Outfit', sans-serif;
+  --sidebar-w:  256px;
+  --radius:     13px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
+.brand-name { font-family: var(--font-disp); font-size: 17px; font-weight: 600; }
+.brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+.nav-section { padding: 0 12px; margin-bottom: 4px; }
+.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
+.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-spacer { flex: 1; }
+.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-meta { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
+.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+
+/* ══ MAIN ══ */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 60px; max-width: calc(100vw - var(--sidebar-w)); }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; animation: fadeUp 0.4s ease both; }
+.page-title { font-family: var(--font-disp); font-size: 30px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 9px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: linear-gradient(135deg, var(--purple), #9060d8); color: #fff; border: 1px solid rgba(201,168,76,0.15); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,191,0.35); }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface3); border-color: var(--border2); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+/* ── Role stats ── */
+.role-stats { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 28px; animation: fadeUp 0.4s ease 0.05s both; }
+.role-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; transition: all 0.15s; position: relative; overflow: hidden; }
+.role-stat::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--radius) var(--radius) 0 0; }
+.role-stat.s-admin::after    { background: var(--purple-lt); }
+.role-stat.s-agent::after    { background: var(--gold-lt); }
+.role-stat.s-listings::after { background: var(--green); }
+.role-stat.s-cs::after       { background: var(--blue); }
+.role-stat.s-finance::after  { background: var(--green); }
+.role-stat.s-ceo::after      { background: var(--coral); }
+.role-stat.s-inactive::after { background: var(--muted); }
+.role-stat:hover { border-color: var(--border2); transform: translateY(-1px); }
+.rs-val   { font-family: var(--font-disp); font-size: 28px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+.rs-label { font-size: 11px; color: var(--muted); }
+.role-stat.s-admin    .rs-val { color: var(--purple-lt); }
+.role-stat.s-agent    .rs-val { color: var(--gold-lt); }
+.role-stat.s-listings .rs-val { color: var(--green); }
+.role-stat.s-cs       .rs-val { color: var(--blue); }
+.role-stat.s-finance  .rs-val { color: var(--green); }
+.role-stat.s-ceo      .rs-val { color: var(--coral); }
+.role-stat.s-inactive .rs-val { color: var(--muted); }
+
+/* ── Toolbar ── */
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; animation: fadeUp 0.4s ease 0.08s both; }
+.search-wrap { position: relative; flex: 1; max-width: 280px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 14px 9px 36px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: rgba(124,92,191,0.4); }
+.select-wrap { position: relative; }
+.select-wrap::after { content: '▾'; position: absolute; right: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 11px; }
+.filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 9px 30px 9px 14px; color: var(--text2); font-family: var(--font-body); font-size: 13px; outline: none; cursor: pointer; appearance: none; }
+.filter-select:focus { border-color: rgba(124,92,191,0.4); }
+.results-count { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+/* ── Table ── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; animation: fadeUp 0.4s ease 0.1s both; }
+.users-table { width: 100%; border-collapse: collapse; }
+.users-table thead th { font-size: 10px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); padding: 13px 20px; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.users-table thead th:first-child { padding-left: 24px; }
+.users-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+.users-table tbody tr:last-child { border-bottom: none; }
+.users-table tbody tr:hover { background: var(--surface2); }
+.users-table tbody tr.inactive-row { opacity: 0.45; }
+.users-table td { padding: 14px 20px; font-size: 13px; vertical-align: middle; }
+.users-table td:first-child { padding-left: 24px; }
+
+.user-cell { display: flex; align-items: center; gap: 12px; }
+.user-av { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 15px; font-weight: 600; flex-shrink: 0; }
+.cell-name  { font-size: 13.5px; font-weight: 500; }
+.cell-email { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+
+.role-chip { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 99px; white-space: nowrap; }
+.chip-admin    { background: var(--purple-dim); color: var(--purple-lt); border: 1px solid rgba(124,92,191,0.2); }
+.chip-agent    { background: var(--gold-dim);   color: var(--gold-lt);   border: 1px solid rgba(201,168,76,0.2); }
+.chip-listings { background: var(--green-dim);  color: var(--green);     border: 1px solid rgba(62,207,142,0.2); }
+.chip-cs       { background: var(--blue-dim);   color: var(--blue);      border: 1px solid rgba(91,156,246,0.2); }
+.chip-ceo      { background: var(--coral-dim);  color: var(--coral);     border: 1px solid rgba(240,107,107,0.2); }
+.chip-finance  { background: var(--green-dim);  color: var(--green);     border: 1px solid rgba(62,207,142,0.2); }
+
+.ref-code { font-size: 12px; font-family: monospace; color: var(--gold); background: var(--gold-dim); padding: 3px 8px; border-radius: 6px; letter-spacing: 1px; }
+.ref-none { color: var(--muted); font-size: 12px; }
+
+/* Status toggle */
+.status-toggle { display: flex; align-items: center; gap: 8px; }
+.toggle-track { width: 36px; height: 20px; border-radius: 99px; background: var(--surface3); border: 1px solid var(--border2); cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.toggle-track.on { background: var(--green); border-color: var(--green); }
+.toggle-thumb { width: 14px; height: 14px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+.toggle-track.on .toggle-thumb { left: 18px; }
+.toggle-label { font-size: 12px; color: var(--muted); }
+.toggle-track.on + .toggle-label { color: var(--green); }
+
+/* ── Empty / Access denied ── */
+.table-empty { padding: 72px 20px; text-align: center; }
+.empty-icon  { font-size: 40px; opacity: 0.2; margin-bottom: 14px; }
+.empty-title { font-family: var(--font-disp); font-size: 20px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+.empty-sub   { font-size: 13px; color: var(--muted); }
+
+.access-denied { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+.denied-icon  { font-size: 56px; margin-bottom: 20px; opacity: 0.3; }
+.denied-title { font-family: var(--font-disp); font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+.denied-sub   { font-size: 14px; color: var(--muted); }
+
+/* ══ CREATE USER MODAL ══ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(6px); }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 18px; padding: 32px; width: 500px; max-width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; transform: translateY(14px); transition: transform 0.2s; }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 26px; }
+.modal-title { font-family: var(--font-disp); font-size: 22px; font-weight: 600; }
+.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.modal-close:hover { color: var(--text); background: var(--surface3); }
+
+.info-box { background: var(--blue-dim); border: 1px solid rgba(91,156,246,0.2); border-radius: 9px; padding: 12px 14px; font-size: 12.5px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; display: flex; gap: 10px; }
+.info-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+.form-input, .form-select { width: 100%; background: var(--surface2); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-select:focus { border-color: rgba(124,92,191,0.45); box-shadow: 0 0 0 3px rgba(124,92,191,0.08); }
+.form-input::placeholder { color: var(--muted); opacity: 0.6; }
+.form-select { appearance: none; cursor: pointer; }
+.form-select option { background: var(--surface2); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Role permission preview */
+.perm-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 13px 14px; margin-top: -4px; margin-bottom: 18px; display: none; }
+.perm-title { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.perm-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.perm-item  { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+
+.gold-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 20px 0; }
+
+/* Password */
+.pw-wrap { position: relative; }
+.pw-toggle { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); display: flex; padding: 4px; transition: color 0.15s; }
+.pw-toggle:hover { color: var(--text); }
+.pw-strength { display: flex; gap: 4px; margin-top: 7px; }
+.pw-bar { flex: 1; height: 3px; border-radius: 99px; background: var(--surface3); transition: background 0.3s; }
+.pw-bar.weak   { background: var(--coral); }
+.pw-bar.medium { background: var(--amber, #f59e0b); }
+.pw-bar.strong { background: var(--green); }
+.pw-hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+.form-error   { color: var(--coral); font-size: 12px; margin-bottom: 14px; padding: 10px 13px; background: var(--coral-dim); border: 1px solid rgba(240,107,107,0.2); border-radius: 8px; display: none; }
+.form-error.visible { display: block; }
+.form-success { color: var(--green); font-size: 13px; margin-bottom: 14px; padding: 12px 14px; background: var(--green-dim); border: 1px solid rgba(62,207,142,0.2); border-radius: 8px; display: none; line-height: 1.5; }
+.form-success.visible { display: block; }
+
+.modal-footer { display: flex; gap: 10px; margin-top: 26px; }
+.modal-footer .btn { flex: 1; justify-content: center; }
+
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+  <link rel="stylesheet" href="../assets/mobile.css"/>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item active" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="main-content" style="display:none">
+
+  <div class="topbar">
+    <div>
+      <div class="page-title">Users</div>
+      <div class="page-sub">Staff accounts — roles are permanent once assigned</div>
+    </div>
+    <button class="btn btn-primary" id="add-user-btn" onclick="openModal()" style="display:none">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Staff
+    </button>
+  </div>
+
+  <!-- Role stats -->
+  <div class="role-stats">
+    <div class="role-stat s-admin">   <div class="rs-val" id="rs-admin">—</div>   <div class="rs-label">Admins</div></div>
+    <div class="role-stat s-agent">   <div class="rs-val" id="rs-agent">—</div>   <div class="rs-label">Agents</div></div>
+    <div class="role-stat s-listings"><div class="rs-val" id="rs-listings">—</div><div class="rs-label">Listings</div></div>
+    <div class="role-stat s-cs"> 
+    <div class="role-stat s-finance">     <div class="rs-val" id="rs-finance">—</div>     <div class="rs-label">Finance</div></div>
+    <div class="role-stat s-ceo">     <div class="rs-val" id="rs-ceo">—</div>     <div class="rs-label">CEO / GM</div></div>
+    <div class="role-stat s-inactive"><div class="rs-val" id="rs-inactive">—</div><div class="rs-label">Inactive</div></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="text" id="search-input" placeholder="Search by name or email..." oninput="renderTable()"/>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="role-filter" onchange="renderTable()">
+        <option value="">All Roles</option>
+        <option value="admin">Admin</option>
+        <option value="agent">Agent</option>
+        <option value="listings">Listings</option>
+        <option value="cs">Customer Service</option>
+        <option value="ceo">CEO / GM</option>
+      </select>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="status-filter" onchange="renderTable()">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="results-count" id="results-count">— users</div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Staff Member</th>
+          <th>Role</th>
+          <th>Referral Code</th>
+          <th>Joined</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody">
+        <tr><td colspan="5"><div class="table-empty"><div class="empty-icon">⏳</div><div class="empty-title">Loading staff...</div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- Access denied -->
+<div class="main access-denied" id="access-denied" style="display:none">
+  <div class="denied-icon">🔒</div>
+  <div class="denied-title">Access Restricted</div>
+  <div class="denied-sub">This page is only accessible to administrators.</div>
+</div>
+
+<!-- CREATE STAFF MODAL -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Add Staff Member</div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">ℹ️</div>
+      <div>After account creation, a <strong>password reset email</strong> is sent automatically. The staff member sets their own password privately — you never see it. Roles are <strong>permanent</strong> once assigned.</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input class="form-input" type="text" id="f-name" placeholder="e.g. Abena Asante"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address *</label>
+        <input class="form-input" type="email" id="f-email" placeholder="abena@casaviola.com"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Role * — permanent, choose carefully</label>
+      <select class="form-select" id="f-role" onchange="updatePermPreview()">
+        <option value="">Select a role...</option>
+        <option value="agent">Agent</option>
+        <option value="listings">Listings Management</option>
+        <option value="cs">Customer Service</option>
+        <option value="finance">Finance</option>
+        <option value="admin">Admin (Operations Manager)</option>
+        <option value="ceo">CEO / GM</option>
+      </select>
+    </div>
+
+    <!-- Permission preview -->
+    <div class="perm-box" id="perm-box">
+      <div class="perm-title">What this role can do</div>
+      <div class="perm-grid" id="perm-grid"></div>
+    </div>
+
+    <div class="gold-rule"></div>
+
+    <div class="form-group">
+      <label class="form-label">Your Admin Password * — to restore your session</label>
+      <input class="form-input" type="password" id="f-admin-password" placeholder="Your own current password"/>
+      <div class="pw-hint" style="margin-top:6px">⚠️ Firebase signs you out when creating accounts. This signs you back in immediately after.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">New Staff Temporary Password *</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" id="f-password" placeholder="Min. 8 characters" oninput="checkStrength()" style="padding-right:44px"/>
+        <button class="pw-toggle" type="button" onclick="togglePw()" tabindex="-1">
+          <svg id="pw-eye" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="pw-strength"><div class="pw-bar" id="pb1"></div><div class="pw-bar" id="pb2"></div><div class="pw-bar" id="pb3"></div><div class="pw-bar" id="pb4"></div></div>
+      <div class="pw-hint" id="pw-hint">Staff will be emailed to set their own password.</div>
+    </div>
+
+    <div class="form-error"   id="form-error"></div>
+    <div class="form-success" id="form-success"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="createUser()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, orderBy, getDocs,
+  doc, getDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── State ──
+let currentUser = null, currentRole = null;
+let allUsers = [];
+
+const ROLE_LABELS = {
+  admin: 'Admin',
+  agent: 'Agent',
+  listings: 'Listings',
+  cs: 'Customer Service',
+  finance: 'Finance',
+  ceo: 'CEO / GM'
+};
+
+const ROLE_PERMISSIONS = {
+  admin:    ['Full system access','Create staff accounts','All clients & leads','All properties','Validate closed deals','Message board'],
+  agent:    ['Own clients only','Own agent leads only','View all properties','Close agent deals','Message board'],
+  listings: ['All properties (manage)','Company leads (manage)','View all clients','Close company deals','Message board'],
+  cs:       ['All clients (read/create)','View all leads','View all properties','Upload deal documents','Message board'],
+  finance: ['View all clients','View all leads','View all properties','View deal documents','Message board', 'upload deal documents'],
+  ceo:      ['Full visibility (read-only)','All clients & leads','All properties','View deal documents','Message board'],
+};
+
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s)   { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n)   { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s) { if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function chipClass(role){
+  return {
+    admin: 'chip-admin',
+    agent: 'chip-agent',
+    listings: 'chip-listings',
+    cs: 'chip-cs',
+    finance: 'chip-finance',
+    ceo: 'chip-ceo'
+  }[role] || 'chip-agent';
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role;
+
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(data.role);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+
+  if (!['admin','ceo'].includes(data.role)) {
+    document.getElementById('access-denied').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('main-content').style.display = 'block';
+  if (data.role === 'admin') document.getElementById('add-user-btn').style.display = '';
+
+  await loadUsers();
+});
+
+// ── Load users ──
+async function loadUsers() {
+  try {
+    const snap = await getDocs(query(collection(db,'users'), orderBy('createdAt','desc')));
+    allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    renderTable();
+  } catch(e) { console.error('Users load error:', e); }
+}
+
+// ── Stats ──
+function updateStats() {
+  const c = { admin:0, agent:0, listings:0, cs:0, finance:0, ceo:0, inactive:0 };
+  allUsers.forEach(u => { if (!u.isActive) { c.inactive++; return; } if (c[u.role] !== undefined) c[u.role]++; });
+  Object.entries(c).forEach(([k,v]) => { const el = document.getElementById('rs-'+k); if(el) el.textContent = v; });
+}
+
+// ── Render table ──
+window.renderTable = () => {
+  const search  = document.getElementById('search-input').value.toLowerCase().trim();
+  const roleF   = document.getElementById('role-filter').value;
+  const statusF = document.getElementById('status-filter').value;
+
+  const filtered = allUsers.filter(u => {
+    const matchSearch = !search || (u.name||'').toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search);
+    const matchRole   = !roleF   || u.role === roleF;
+    const matchStatus = !statusF || (statusF==='active' && u.isActive!==false) || (statusF==='inactive' && u.isActive===false);
+    return matchSearch && matchRole && matchStatus;
+  });
+
+  document.getElementById('results-count').textContent = `${filtered.length} user${filtered.length!==1?'s':''}`;
+  const tbody   = document.getElementById('users-tbody');
+  const isAdmin = currentRole === 'admin';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="table-empty"><div class="empty-icon">👤</div><div class="empty-title">No users found</div><div class="empty-sub">Try adjusting your filters</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((u, i) => {
+    const color  = getColor(u.name);
+    const isMe   = u.id === currentUser.uid;
+    const active = u.isActive !== false;
+
+    const toggleHtml = isAdmin && !isMe
+      ? `<div class="status-toggle" onclick="toggleStatus('${u.id}',${active})" style="cursor:pointer">
+           <div class="toggle-track ${active?'on':''}"><div class="toggle-thumb"></div></div>
+           <span class="toggle-label">${active?'Active':'Inactive'}</span>
+         </div>`
+      : `<div class="status-toggle">
+           <div class="toggle-track ${active?'on':''}" style="cursor:default"><div class="toggle-thumb"></div></div>
+           <span class="toggle-label">${active?'Active':'Inactive'}${isMe?' (you)':''}</span>
+         </div>`;
+
+    return `
+      <tr class="${active?'':'inactive-row'}" style="animation:fadeUp 0.3s ease ${i*0.03}s both">
+        <td>
+          <div class="user-cell">
+            <div class="user-av" style="background:${color}22;color:${color}">${initials(u.name)}</div>
+            <div>
+              <div class="cell-name">${u.name}${isMe?' <span style="font-size:10px;color:var(--muted)">(you)</span>':''}</div>
+              <div class="cell-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="role-chip ${chipClass(u.role)}">${ROLE_LABELS[u.role]||capitalize(u.role)}</span></td>
+        <td>${u.referralCode?`<span class="ref-code">${u.referralCode}</span>`:`<span class="ref-none">—</span>`}</td>
+        <td style="color:var(--muted);font-size:12px">${formatDate(u.createdAt)}</td>
+        <td>${toggleHtml}</td>
+      </tr>`;
+  }).join('');
+};
+
+// ── Toggle active ──
+window.toggleStatus = async (uid, currentlyActive) => {
+  const user = allUsers.find(u => u.id === uid);
+  if (!confirm(`${!currentlyActive?'Activate':'Deactivate'} ${user?.name||'this user'}?`)) return;
+  const newStatus = !currentlyActive;
+  await updateDoc(doc(db,'users',uid), { isActive: newStatus, updatedAt: serverTimestamp() });
+  const idx = allUsers.findIndex(u => u.id === uid);
+  if (idx !== -1) allUsers[idx].isActive = newStatus;
+  updateStats();
+  renderTable();
+};
+
+// ── Modal ──
+window.openModal  = () => { resetForm(); document.getElementById('user-modal').classList.add('open'); };
+window.closeModal = () => { document.getElementById('user-modal').classList.remove('open'); setTimeout(resetForm, 250); };
+
+function resetForm() {
+  ['f-name','f-email','f-password','f-admin-password'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-role').value = '';
+  document.getElementById('perm-box').style.display = 'none';
+  ['pb1','pb2','pb3','pb4'].forEach(id => document.getElementById(id).className = 'pw-bar');
+  document.getElementById('pw-hint').textContent = 'Staff will be emailed to set their own password.';
+  document.getElementById('form-error').classList.remove('visible');
+  document.getElementById('form-success').classList.remove('visible');
+}
+
+// ── Permission preview ──
+window.updatePermPreview = () => {
+  const role  = document.getElementById('f-role').value;
+  const box   = document.getElementById('perm-box');
+  const grid  = document.getElementById('perm-grid');
+  if (!role) { box.style.display = 'none'; return; }
+  const perms = ROLE_PERMISSIONS[role] || [];
+  grid.innerHTML = perms.map(p => `<div class="perm-item"><span>✓</span>${p}</div>`).join('');
+  box.style.display = 'block';
+};
+
+// ── Password strength ──
+window.checkStrength = () => {
+  const pw = document.getElementById('f-password').value;
+  let s = 0;
+  if (pw.length >= 8) s++;
+  if (/[A-Z]/.test(pw)) s++;
+  if (/[0-9]/.test(pw)) s++;
+  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  const cls   = s <= 1 ? 'weak' : s <= 2 ? 'medium' : 'strong';
+  const hints = ['','Too short','Could be stronger','Good password','Strong ✓'];
+  ['pb1','pb2','pb3','pb4'].forEach((id,i) => { document.getElementById(id).className = 'pw-bar'+(i<s?` ${cls}`:''); });
+  document.getElementById('pw-hint').textContent = hints[s] || '';
+};
+
+window.togglePw = () => {
+  const input = document.getElementById('f-password');
+  const eye   = document.getElementById('pw-eye');
+  const show  = input.type === 'password';
+  input.type  = show ? 'text' : 'password';
+  eye.innerHTML = show
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+};
+
+// ── Create user ──
+window.createUser = async () => {
+  const name           = document.getElementById('f-name').value.trim();
+  const email          = document.getElementById('f-email').value.trim();
+  const role           = document.getElementById('f-role').value;
+  const password       = document.getElementById('f-password').value;
+  const adminPassword  = document.getElementById('f-admin-password').value;
+  const btn            = document.getElementById('save-btn');
+
+  document.getElementById('form-error').classList.remove('visible');
+  document.getElementById('form-success').classList.remove('visible');
+
+  if (!name)                 { showError('Full name is required.'); return; }
+  if (!email)                { showError('Email address is required.'); return; }
+  if (!role)                 { showError('Please select a role.'); return; }
+  if (!adminPassword)        { showError('Enter your admin password to confirm account creation.'); return; }
+  if (password.length < 8)   { showError('Staff password must be at least 8 characters.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Creating account...';
+
+  try {
+    const { createStaffUser } = await import('../js/utils.js');
+    const adminEmail = currentUser.email;
+    const result = await createStaffUser({ name, email, password, role }, adminEmail, adminPassword);
+
+    if (!result.success) {
+      showError(friendlyError(result.code) || result.error);
+      return;
+    }
+
+    // Add to local list
+    allUsers.unshift({ id: result.uid, name, email, role, isActive: true, referralCode: role === 'agent' ? '••-••••' : null, createdAt: { toDate: () => new Date() } });
+    updateStats();
+    renderTable();
+
+    showSuccess(`✅ Account created for ${name}.\nA password setup email has been sent to ${email}.`);
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-password').value = '';
+    document.getElementById('f-role').value = '';
+    document.getElementById('perm-box').style.display = 'none';
+    ['pb1','pb2','pb3','pb4'].forEach(id => document.getElementById(id).className = 'pw-bar');
+
+  } catch(e) {
+    showError('Unexpected error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+  }
+};
+
+function showError(msg)   { const e=document.getElementById('form-error');   e.textContent=msg; e.classList.add('visible'); }
+function showSuccess(msg) { const e=document.getElementById('form-success'); e.textContent=msg; e.classList.add('visible'); }
+
+function friendlyError(code) {
+  return {
+    'auth/email-already-in-use':  'An account with this email already exists.',
+    'auth/invalid-email':         'Please enter a valid email address.',
+    'auth/weak-password':         'Password is too weak.',
+    'auth/network-request-failed':'Network error. Check your connection.',
+  }[code];
+}
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+document.getElementById('user-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+</script>
+  <script src="../assets/mobile.js"></script>
+</body>
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Leads — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0b0b0f;
+  --surface:    #111118;
+  --surface2:   #18181f;
+  --surface3:   #1f1f28;
+  --border:     rgba(255,255,255,0.06);
+  --border2:    rgba(255,255,255,0.11);
+  --text:       #eeeaf5;
+  --text2:      #a09cb0;
+  --muted:      #5e5c6e;
+  --purple:     #7c5cbf;
+  --purple-lt:  #9d7de0;
+  --purple-dim: rgba(124,92,191,0.12);
+  --gold:       #c9a84c;
+  --gold-lt:    #e0c070;
+  --gold-dim:   rgba(201,168,76,0.1);
+  --green:      #3ecf8e;
+  --green-dim:  rgba(62,207,142,0.1);
+  --coral:      #f06b6b;
+  --coral-dim:  rgba(240,107,107,0.1);
+  --blue:       #5b9cf6;
+  --blue-dim:   rgba(91,156,246,0.1);
+  --amber:      #f59e0b;
+  --amber-dim:  rgba(245,158,11,0.1);
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Outfit', sans-serif;
+  --sidebar-w:  256px;
+  --radius:     13px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
+.brand-name { font-family: var(--font-disp); font-size: 17px; font-weight: 600; }
+.brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+.nav-section { padding: 0 12px; margin-bottom: 4px; }
+.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
+.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-spacer { flex: 1; }
+.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-meta { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
+.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+
+/* ══ MAIN ══ */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 32px 60px; max-width: calc(100vw - var(--sidebar-w)); }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; animation: fadeUp 0.4s ease both; }
+.page-title { font-family: var(--font-disp); font-size: 30px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 9px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: linear-gradient(135deg, var(--purple), #9060d8); color: #fff; border: 1px solid rgba(201,168,76,0.15); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,191,0.35); }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface3); border-color: var(--border2); }
+.btn-validate { background: linear-gradient(135deg, var(--green), #2ab878); color: #0a1f14; border: none; font-weight: 600; }
+.btn-validate:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(62,207,142,0.35); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* ── Tabs ── */
+.tabs-bar { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 4px; width: fit-content; margin-bottom: 24px; animation: fadeUp 0.4s ease 0.05s both; }
+.tab-btn { padding: 8px 20px; border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+.tab-btn.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.tab-count { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
+.tab-btn.active.agent   .tab-count { background: var(--purple-dim); color: var(--purple-lt); }
+.tab-btn.active.company .tab-count { background: var(--gold-dim);   color: var(--gold-lt); }
+
+/* ══ KANBAN ══ */
+.kanban { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start; animation: fadeUp 0.4s ease 0.1s both; }
+
+.kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+
+.col-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: relative; }
+.col-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius) var(--radius) 0 0; }
+.col-interested .col-header::before { background: var(--purple-lt); }
+.col-viewing    .col-header::before { background: var(--gold-lt); }
+.col-pending    .col-header::before { background: var(--amber); }
+.col-validated  .col-header::before { background: var(--green); }
+
+.col-title { font-family: var(--font-disp); font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.col-interested .col-dot { background: var(--purple-lt); box-shadow: 0 0 6px var(--purple); }
+.col-viewing    .col-dot { background: var(--gold-lt);   box-shadow: 0 0 6px var(--gold); }
+.col-pending    .col-dot { background: var(--amber);     box-shadow: 0 0 6px var(--amber); animation: pulse 2s ease infinite; }
+.col-validated  .col-dot { background: var(--green);     box-shadow: 0 0 6px var(--green); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.col-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; }
+.col-interested .col-badge { background: var(--purple-dim); color: var(--purple-lt); }
+.col-viewing    .col-badge { background: var(--gold-dim);   color: var(--gold-lt); }
+.col-pending    .col-badge { background: var(--amber-dim);  color: var(--amber); }
+.col-validated  .col-badge { background: var(--green-dim);  color: var(--green); }
+
+.col-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 160px; }
+
+/* ── Lead card ── */
+.lead-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 13px; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; animation: fadeUp 0.3s ease both; }
+.lead-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+.lead-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.lead-card.interested::before { background: var(--purple-lt); }
+.lead-card.viewing::before    { background: var(--gold-lt); }
+.lead-card.closed_pending::before  { background: var(--amber); }
+.lead-card.closed_validated::before { background: var(--green); }
+
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 9px; gap: 8px; }
+.card-av { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: var(--font-disp); flex-shrink: 0; }
+.card-client  { font-size: 12.5px; font-weight: 500; }
+.card-prop    { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.card-type-pill { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; }
+.pill-agent   { background: var(--purple-dim); color: var(--purple-lt); }
+.pill-company { background: var(--gold-dim);   color: var(--gold-lt); }
+
+.card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
+.card-agent { font-size: 10.5px; color: var(--muted); }
+.card-date  { font-size: 10px; color: var(--muted); }
+
+/* Validated badge on card */
+.validated-badge { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--green); margin-top: 6px; font-weight: 500; }
+
+/* Pending badge */
+.pending-badge { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--amber); margin-top: 6px; font-weight: 500; }
+
+/* Promote button */
+.card-promote { width: 100%; margin-top: 8px; padding: 6px; border-radius: 7px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); background: var(--surface3); color: var(--muted); cursor: pointer; transition: all 0.12s; text-align: center; }
+.card-promote:hover { color: var(--text); border-color: var(--border2); }
+.card-promote.to-close:hover { color: var(--amber); border-color: rgba(245,158,11,0.3); background: var(--amber-dim); }
+
+/* Empty col */
+.col-empty { text-align: center; padding: 28px 12px; color: var(--muted); font-size: 12px; }
+.col-empty-icon { font-size: 22px; margin-bottom: 6px; opacity: 0.3; }
+
+/* ══ MODAL ══ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(6px); }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 18px; padding: 32px; width: 560px; max-width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; transform: translateY(14px); transition: transform 0.2s; }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.modal-title { font-family: var(--font-disp); font-size: 22px; font-weight: 600; }
+.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.modal-close:hover { color: var(--text); background: var(--surface3); }
+
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: rgba(124,92,191,0.45); }
+.form-input::placeholder { color: var(--muted); opacity: 0.6; }
+.form-select { appearance: none; cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-error { color: var(--coral); font-size: 12px; margin-bottom: 14px; display: none; padding: 9px 12px; background: var(--coral-dim); border: 1px solid rgba(240,107,107,0.2); border-radius: 8px; }
+.form-error.visible { display: block; }
+.modal-footer { display: flex; gap: 10px; margin-top: 24px; }
+.modal-footer .btn { flex: 1; justify-content: center; }
+
+/* Gold rule */
+.gold-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 20px 0; }
+
+/* Detail sections */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.detail-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.detail-value { font-size: 13.5px; }
+
+/* Status toggle row */
+.status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-opt { flex: 1; min-width: 80px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-size: 11.5px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.15s; }
+.status-opt:hover { color: var(--text); }
+.status-opt.s-interested { }
+.status-opt.active-interested { background: var(--purple-dim); color: var(--purple-lt); border-color: rgba(124,92,191,0.3); }
+.status-opt.active-viewing    { background: var(--gold-dim);   color: var(--gold-lt);   border-color: rgba(201,168,76,0.3); }
+.status-opt.active-closed_pending   { background: var(--amber-dim);  color: var(--amber);     border-color: rgba(245,158,11,0.3); }
+.status-opt.active-closed_validated { background: var(--green-dim);  color: var(--green);     border-color: rgba(62,207,142,0.3); }
+
+/* Activity log */
+.activity-log { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; margin-bottom: 10px; }
+.activity-item { background: var(--surface2); border-radius: 8px; padding: 9px 12px; border-left: 2px solid var(--purple); }
+.activity-note { font-size: 12.5px; margin-bottom: 3px; }
+.activity-meta { font-size: 10.5px; color: var(--muted); }
+.activity-input-row { display: flex; gap: 8px; }
+.activity-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; }
+.activity-input:focus { border-color: rgba(124,92,191,0.4); }
+
+/* ── Documents section ── */
+.docs-section { margin-top: 4px; }
+.docs-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.doc-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 11px 14px; }
+.doc-icon { font-size: 18px; flex-shrink: 0; }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-meta { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.doc-view-btn { font-size: 11px; padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface3); color: var(--text2); cursor: pointer; transition: all 0.12s; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; }
+.doc-view-btn:hover { color: var(--purple-lt); border-color: rgba(124,92,191,0.3); }
+
+/* Doc type badges */
+.doc-type { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 3px; display: inline-block; }
+.dtype-purchase  { background: var(--purple-dim); color: var(--purple-lt); }
+.dtype-title     { background: var(--gold-dim);   color: var(--gold-lt); }
+.dtype-receipt   { background: var(--green-dim);  color: var(--green); }
+.dtype-other     { background: var(--surface3);   color: var(--text2); }
+
+/* Upload area */
+.upload-area { border: 1.5px dashed rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+.upload-area:hover { border-color: rgba(91,156,246,0.4); background: var(--blue-dim); }
+.upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.upload-icon { font-size: 24px; opacity: 0.4; margin-bottom: 6px; }
+.upload-text { font-size: 12.5px; color: var(--text2); }
+.upload-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* Validate box */
+.validate-box { background: linear-gradient(135deg, rgba(62,207,142,0.07), rgba(62,207,142,0.03)); border: 1px solid rgba(62,207,142,0.2); border-radius: 11px; padding: 16px 18px; margin-top: 16px; }
+.validate-title { font-size: 13px; font-weight: 600; color: var(--green); margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+.validate-sub   { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.5; }
+
+/* Checklist */
+.doc-checklist { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.check-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.check-icon { font-size: 13px; }
+
+/* No docs warning */
+.no-docs-warn { background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.2); border-radius: 9px; padding: 11px 14px; font-size: 12px; color: var(--amber); margin-top: 12px; }
+
+/* Spinner */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+  <link rel="stylesheet" href="../assets/mobile.css"/>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item active" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Leads</div>
+      <div class="page-sub">Track and manage your deal pipeline</div>
+    </div>
+    <button class="btn btn-primary" id="new-lead-btn" onclick="openCreateModal()" style="display:none">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Lead
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn agent active" id="tab-agent" onclick="switchTab('agent')">Agent Leads <span class="tab-count" id="count-agent">0</span></button>
+    <button class="tab-btn company"      id="tab-company" onclick="switchTab('company')">Company Leads <span class="tab-count" id="count-company">0</span></button>
+  </div>
+
+  <!-- Kanban -->
+  <div class="kanban" id="kanban-board">
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Loading leads...</div>
+  </div>
+</main>
+
+<!-- CREATE LEAD MODAL -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">New Lead</div>
+      <button class="modal-close" onclick="closeCreateModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Client</label><select class="form-select" id="f-client"></select></div>
+      <div class="form-group"><label class="form-label">Property</label><select class="form-select" id="f-property"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Lead Type</label><select class="form-select" id="f-type" onchange="onTypeChange()"><option value="agent">Agent Lead</option><option value="company">Company Lead</option></select></div>
+      <div class="form-group"><label class="form-label">Initial Status</label><select class="form-select" id="f-status"><option value="interested">Interested</option><option value="viewing">Viewing</option></select></div>
+    </div>
+    <div class="form-group" id="assign-group" style="display:none"><label class="form-label">Assign To</label><select class="form-select" id="f-assign"></select></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes" placeholder="Initial notes about this lead..."></textarea></div>
+    <div class="form-error" id="create-error"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCreateModal()">Cancel</button>
+      <button class="btn btn-primary" id="create-btn" onclick="createLead()">Create Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="detail-title">Lead Detail</div>
+      <button class="modal-close" onclick="closeDetailModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db, storage } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, where, orderBy, getDocs, addDoc,
+  doc, getDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion,
+  collectionGroup
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  ref, uploadBytesResumable, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+// ── State ──
+let currentUser = null, currentRole = null, currentName = '';
+let currentTab  = 'agent';
+let allLeads    = { agent: [], company: [] };
+let selectedLead = null;
+let clientsMap = {}, propertiesMap = {}, usersMap = {};
+let clientsList = [], propertiesList = [], usersList = [];
+
+// ── Helpers ──
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function statusLabel(s) {
+  const map = { interested:'Interested', viewing:'Viewing', closed_pending:'Closed · Pending', closed_validated:'Closed · Validated' };
+  return map[s] || capitalize(s);
+}
+function docTypeLabel(t) {
+  const map = { purchase_agreement:'Purchase Agreement', land_title:'Land Title', payment_receipt:'Payment Receipt', other:'Other' };
+  return map[t] || t;
+}
+function docTypeClass(t) {
+  const map = { purchase_agreement:'dtype-purchase', land_title:'dtype-title', payment_receipt:'dtype-receipt', other:'dtype-other' };
+  return map[t] || 'dtype-other';
+}
+function docIcon(name) {
+  if (!name) return '📄';
+  const ext = name.split('.').pop().toLowerCase();
+  if (ext === 'pdf') return '📋';
+  if (['jpg','jpeg','png','webp'].includes(ext)) return '🖼️';
+  if (['doc','docx'].includes(ext)) return '📝';
+  return '📄';
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role; currentName = data.name;
+
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(data.role);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+  if (['admin','ceo'].includes(data.role)) document.getElementById('admin-nav').style.display = 'block';
+
+  // Tab visibility
+  if (currentRole === 'agent') {
+    document.getElementById('tab-company').style.display = 'none';
+  } else if (currentRole === 'listings') {
+    document.getElementById('tab-agent').style.display = 'none';
+    currentTab = 'company';
+    document.getElementById('tab-company').classList.add('active');
+    document.getElementById('tab-agent').classList.remove('active');
+  }
+
+  // Show new lead button for agents, listings, admin
+  if (['agent','listings','admin'].includes(currentRole)) {
+    document.getElementById('new-lead-btn').style.display = '';
+  }
+
+  await loadLookupMaps();
+  await loadLeads();
+  populateCreateForm();
+});
+
+// ── Lookup maps (loaded once) ──
+async function loadLookupMaps() {
+  const clientQ = currentRole === 'agent'
+    ? query(collection(db,'clients'), where('createdBy','==',currentUser.uid))
+    : collection(db,'clients');
+
+  const [clientsSnap, propsSnap, usersSnap] = await Promise.all([
+    getDocs(clientQ),
+    getDocs(collection(db,'properties')),
+    getDocs(collection(db,'users')),
+  ]);
+
+  clientsSnap.forEach(d => { clientsMap[d.id] = d.data(); clientsList.push({ id: d.id, ...d.data() }); });
+  propsSnap.forEach(d   => { propertiesMap[d.id] = d.data(); propertiesList.push({ id: d.id, ...d.data() }); });
+  usersSnap.forEach(d   => { usersMap[d.id] = d.data(); usersList.push({ id: d.id, ...d.data() }); });
+}
+
+// ── Load leads ──
+async function loadLeads() {
+  document.getElementById('kanban-board').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Loading...</div>';
+  try {
+    let agentQ = null, companyQ = null;
+    if (currentRole === 'agent') {
+      agentQ = query(collection(db,'leads'), where('createdBy','==',currentUser.uid), where('leadType','==','agent'), orderBy('createdAt','desc'));
+    } else if (currentRole === 'listings') {
+      companyQ = query(collection(db,'leads'), where('leadType','==','company'), orderBy('createdAt','desc'));
+    } else {
+      agentQ   = query(collection(db,'leads'), where('leadType','==','agent'),   orderBy('createdAt','desc'));
+      companyQ = query(collection(db,'leads'), where('leadType','==','company'), orderBy('createdAt','desc'));
+    }
+
+    const [agentSnap, companySnap] = await Promise.all([
+      agentQ   ? getDocs(agentQ)   : Promise.resolve({ docs: [] }),
+      companyQ ? getDocs(companyQ) : Promise.resolve({ docs: [] }),
+    ]);
+
+    allLeads.agent   = agentSnap.docs.map(d   => resolveLead(d));
+    allLeads.company = companySnap.docs.map(d => resolveLead(d));
+
+    document.getElementById('count-agent').textContent   = allLeads.agent.length;
+    document.getElementById('count-company').textContent = allLeads.company.length;
+
+    renderKanban(currentTab);
+  } catch(e) {
+    console.error('loadLeads error:', e);
+    document.getElementById('kanban-board').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--coral)">Error loading leads: ${e.message}</div>`;
+  }
+}
+
+function resolveLead(docSnap) {
+  const data = docSnap.data();
+  return {
+    id: docSnap.id, ...data,
+    clientName: data.clientName  || clientsMap[data.clientId]?.name     || 'Unknown Client',
+    propTitle:  data.propTitle   || propertiesMap[data.propertyId]?.title || 'Unknown Property',
+    agentName:  data.agentName   || usersMap[data.createdBy]?.name       || 'Unknown',
+  };
+}
+
+// ── Render Kanban ──
+function renderKanban(tab) {
+  const leads = allLeads[tab] || [];
+  const cols  = { interested: [], viewing: [], closed_pending: [], closed_validated: [] };
+  leads.forEach(l => { if (cols[l.status] !== undefined) cols[l.status].push(l); else cols['interested'].push(l); });
+
+  document.getElementById('kanban-board').innerHTML = `
+    ${renderCol('interested',      '🔵 Interested',       cols.interested)}
+    ${renderCol('viewing',         '🟡 Viewing',          cols.viewing)}
+    ${renderCol('closed_pending',  '🟠 Closed · Pending', cols.closed_pending)}
+    ${renderCol('closed_validated','✅ Validated',         cols.closed_validated)}
+  `;
+
+  document.querySelectorAll('.lead-card').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.card-promote')) return;
+      openDetailModal(card.dataset.id, tab);
+    });
+  });
+
+  document.querySelectorAll('.card-promote').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      await promoteFromCard(btn.dataset.id, tab);
+    });
+  });
+}
+
+function renderCol(status, label, leads) {
+  const colClass = {
+    interested: 'col-interested', viewing: 'col-viewing',
+    closed_pending: 'col-pending', closed_validated: 'col-validated'
+  }[status] || '';
+
+  return `
+    <div class="kanban-col ${colClass}">
+      <div class="col-header">
+        <div class="col-title"><div class="col-dot"></div>${label}</div>
+        <div class="col-badge">${leads.length}</div>
+      </div>
+      <div class="col-body">
+        ${leads.length === 0
+          ? `<div class="col-empty"><div class="col-empty-icon">◦</div>No leads</div>`
+          : leads.map(l => renderCard(l, status)).join('')}
+      </div>
+    </div>`;
+}
+
+function renderCard(lead, status) {
+  const color = getColor(lead.clientName);
+  const canPromote = (
+    (status === 'interested' && ['agent','listings','admin'].includes(currentRole))
+    || (status === 'viewing'   && ['agent','listings','admin'].includes(currentRole))
+  );
+  const promoteLabel = status === 'interested' ? '→ Viewing' : status === 'viewing' ? '→ Close Deal' : '';
+
+  const statusNote = status === 'closed_pending'
+    ? `<div class="pending-badge">⏳ Awaiting documents & validation</div>`
+    : status === 'closed_validated'
+    ? `<div class="validated-badge">✅ Deal validated</div>`
+    : '';
+
+  return `
+    <div class="lead-card ${status}" data-id="${lead.id}">
+      <div class="card-top">
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+          <div class="card-av" style="background:${color}22;color:${color}">${initials(lead.clientName)}</div>
+          <div style="min-width:0">
+            <div class="card-client">${lead.clientName}</div>
+            <div class="card-prop">🏠 ${lead.propTitle}</div>
+          </div>
+        </div>
+        <span class="card-type-pill pill-${lead.leadType}">${capitalize(lead.leadType)}</span>
+      </div>
+      ${statusNote}
+      <div class="card-meta">
+        <div class="card-agent">${lead.agentName}</div>
+        <div class="card-date">${formatDate(lead.createdAt)}</div>
+      </div>
+      ${canPromote ? `<button class="card-promote to-close" data-id="${lead.id}">${promoteLabel}</button>` : ''}
+    </div>`;
+}
+
+// ── Promote from card button ──
+async function promoteFromCard(leadId, tab) {
+  const lead = allLeads[tab].find(l => l.id === leadId);
+  if (!lead) return;
+  const newStatus = lead.status === 'interested' ? 'viewing' : 'closed_pending';
+  await updateDoc(doc(db,'leads',leadId), { status: newStatus, updatedAt: serverTimestamp() });
+
+  // Notify admin when deal is closed
+  if (newStatus === 'closed_pending') {
+    await notifyAdmin(lead);
+  }
+
+  lead.status = newStatus;
+  renderKanban(tab);
+}
+
+// ── Notify admin on close ──
+async function notifyAdmin(lead) {
+  try {
+    // Find all admin users and create a notification for each
+    const admins = usersList.filter(u => u.role === 'admin' && u.isActive !== false);
+    await Promise.all(admins.map(admin =>
+      addDoc(collection(db,'notifications'), {
+        userId:    admin.id,
+        type:      'deal_closed',
+        message:   `${lead.agentName} closed a deal — ${lead.clientName} · ${lead.propTitle}`,
+        relatedId: lead.id,
+        isRead:    false,
+        createdAt: serverTimestamp(),
+      })
+    ));
+  } catch(e) { console.error('Notify error:', e); }
+}
+
+// ── Tab switch ──
+window.switchTab = (tab) => {
+  currentTab = tab;
+  document.getElementById('tab-agent').classList.toggle('active', tab === 'agent');
+  document.getElementById('tab-company').classList.toggle('active', tab === 'company');
+  renderKanban(tab);
+};
+
+// ── Create Lead ──
+window.openCreateModal  = () => document.getElementById('create-modal').classList.add('open');
+window.closeCreateModal = () => document.getElementById('create-modal').classList.remove('open');
+
+function populateCreateForm() {
+  document.getElementById('f-client').innerHTML   = clientsList.length   ? clientsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('')   : '<option>No clients yet</option>';
+  document.getElementById('f-property').innerHTML = propertiesList.length ? propertiesList.map(p => `<option value="${p.id}">${p.title}</option>`).join('') : '<option>No properties yet</option>';
+  document.getElementById('f-assign').innerHTML   = usersList.length      ? usersList.map(u => `<option value="${u.id}">${u.name} (${capitalize(u.role)})</option>`).join('') : '<option>No users</option>';
+  if (currentRole === 'agent') document.getElementById('f-type').innerHTML = '<option value="agent">Agent Lead</option>';
+}
+
+window.onTypeChange = () => {
+  document.getElementById('assign-group').style.display = document.getElementById('f-type').value === 'company' ? 'block' : 'none';
+};
+
+window.createLead = async () => {
+  const clientId   = document.getElementById('f-client').value;
+  const propertyId = document.getElementById('f-property').value;
+  const leadType   = document.getElementById('f-type').value;
+  const status     = document.getElementById('f-status').value;
+  const notes      = document.getElementById('f-notes').value.trim();
+  const assignedTo = document.getElementById('f-assign').value;
+  const errEl      = document.getElementById('create-error');
+  const btn        = document.getElementById('create-btn');
+
+  errEl.classList.remove('visible');
+  if (!clientId || !propertyId) { errEl.textContent = 'Select a client and property.'; errEl.classList.add('visible'); return; }
+  if (currentRole === 'agent' && leadType !== 'agent') { errEl.textContent = 'Agents can only create agent leads.'; errEl.classList.add('visible'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Creating...';
+  try {
+    const leadData = {
+      clientId, propertyId, leadType, status,
+      createdBy:   currentUser.uid,
+      assignedTo:  leadType === 'company' ? assignedTo : null,
+      clientName:  clientsMap[clientId]?.name       || '',
+      propTitle:   propertiesMap[propertyId]?.title || '',
+      agentName:   usersMap[currentUser.uid]?.name  || '',
+      notes, referralCode: null,
+      activityLog: notes ? [{ note: notes, by: currentUser.uid, byName: currentName, timestamp: new Date().toISOString() }] : [],
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+    };
+    const ref = await addDoc(collection(db,'leads'), leadData);
+    const newLead = { id: ref.id, ...leadData, createdAt: { toDate: () => new Date() } };
+    allLeads[leadType === 'agent' ? 'agent' : 'company'].unshift(newLead);
+    document.getElementById('count-agent').textContent   = allLeads.agent.length;
+    document.getElementById('count-company').textContent = allLeads.company.length;
+    renderKanban(currentTab);
+    closeCreateModal();
+    document.getElementById('f-notes').value = '';
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Lead';
+  }
+};
+
+// ── Detail Modal ──
+window.openDetailModal = async (leadId, tab) => {
+  selectedLead = allLeads[tab].find(l => l.id === leadId);
+  if (!selectedLead) return;
+
+  // Load documents from subcollection
+  const docsSnap = await getDocs(collection(db,'leads',leadId,'documents'));
+  selectedLead._docs = docsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  renderDetailModal(selectedLead);
+  document.getElementById('detail-modal').classList.add('open');
+};
+
+window.closeDetailModal = () => {
+  document.getElementById('detail-modal').classList.remove('open');
+  selectedLead = null;
+};
+
+function renderDetailModal(lead) {
+  document.getElementById('detail-title').textContent = lead.clientName;
+  const log  = (lead.activityLog || []).slice().reverse();
+  const docs = lead._docs || [];
+  const isAdmin    = currentRole === 'admin';
+  const isCEO      = currentRole === 'ceo';
+  const isCS       = currentRole === 'cs';
+  const isClosedPending   = lead.status === 'closed_pending';
+  const isClosedValidated = lead.status === 'closed_validated';
+  const isClosed = isClosedPending || isClosedValidated;
+
+  // Status options — who can change what
+  const canChangeStatus = isAdmin
+    || (currentRole === 'agent'    && lead.leadType === 'agent')
+    || (currentRole === 'listings' && lead.leadType === 'company');
+
+  // Status buttons — validated only by admin
+  const statusOpts = ['interested','viewing','closed_pending'].map(s => {
+    if (s === 'closed_pending' && !['agent','listings','admin'].includes(currentRole)) return '';
+    return `<button class="status-opt active-${lead.status === s ? s : ''}" onclick="changeStatus('${s}')">${statusLabel(s)}</button>`;
+  }).join('');
+
+  // Documents section — visible to admin, ceo, cs only
+  const canSeeDocs  = isAdmin || isCEO || isCS;
+  const canUpload   = isCS && isClosed;
+  const canValidate = isAdmin && isClosedPending && docs.length >= 3;
+
+  // Check which required docs are present
+  const hasPA  = docs.some(d => d.docType === 'purchase_agreement');
+  const hasLT  = docs.some(d => d.docType === 'land_title');
+  const hasPR  = docs.some(d => d.docType === 'payment_receipt');
+
+  const docsHtml = canSeeDocs ? `
+    <div class="gold-rule"></div>
+    <div class="docs-section">
+      <div class="form-label" style="margin-bottom:12px">📁 Deal Documents</div>
+
+      ${docs.length > 0 ? `
+        <div class="docs-list">
+          ${docs.map(d => `
+            <div class="doc-item">
+              <div class="doc-icon">${docIcon(d.fileName)}</div>
+              <div class="doc-info">
+                <div class="doc-name">${d.fileName || 'Document'}</div>
+                <div class="doc-meta">${d.uploaderName || '—'} · ${formatDate(d.createdAt)}</div>
+                <span class="doc-type ${docTypeClass(d.docType)}">${docTypeLabel(d.docType)}</span>
+              </div>
+              <a class="doc-view-btn" href="${d.fileUrl}" target="_blank" rel="noopener">View ↗</a>
+            </div>`).join('')}
+        </div>` : `<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No documents uploaded yet.</div>`}
+
+      ${canUpload ? `
+        <div class="form-group">
+          <label class="form-label">Document Type</label>
+          <select class="form-select" id="doc-type-sel">
+            <option value="purchase_agreement">Purchase Agreement</option>
+            <option value="land_title">Land Title</option>
+            <option value="payment_receipt">Payment Receipt</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload File</label>
+          <div class="upload-area">
+            <input type="file" id="doc-file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleDocSelect(event)"/>
+            <div class="upload-icon">📎</div>
+            <div class="upload-text" id="doc-upload-text">Click to select a file</div>
+            <div class="upload-hint">PDF, Image or Word · Max 10MB</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center" id="upload-doc-btn" onclick="uploadDocument()">Upload Document</button>
+      ` : ''}
+
+      ${isAdmin && isClosedPending ? `
+        <div class="validate-box">
+          <div class="validate-title">✅ Validate This Deal</div>
+          <div class="validate-sub">All three required documents must be uploaded by CS before you can validate.</div>
+          <div class="doc-checklist">
+            <div class="check-item"><span class="check-icon">${hasPA ? '✅' : '⬜'}</span>Purchase Agreement</div>
+            <div class="check-item"><span class="check-icon">${hasLT ? '✅' : '⬜'}</span>Land Title</div>
+            <div class="check-item"><span class="check-icon">${hasPR ? '✅' : '⬜'}</span>Payment Receipt</div>
+          </div>
+          ${canValidate
+            ? `<button class="btn btn-validate" style="width:100%;justify-content:center" onclick="validateDeal()">✅ Validate Deal</button>`
+            : `<div class="no-docs-warn">⚠️ Upload all 3 required documents before validating.</div>`}
+        </div>
+      ` : ''}
+
+      ${isClosedValidated ? `
+        <div style="background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);border-radius:9px;padding:13px 16px;font-size:13px;color:var(--green);display:flex;align-items:center;gap:8px">
+          ✅ This deal has been validated and is permanently on record.
+        </div>
+      ` : ''}
+    </div>` : '';
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-grid">
+      <div><div class="detail-label">Property</div><div class="detail-value">🏠 ${lead.propTitle}</div></div>
+      <div><div class="detail-label">Created By</div><div class="detail-value" style="font-size:13px">${lead.agentName}</div></div>
+      <div><div class="detail-label">Lead Type</div><div class="detail-value"><span class="card-type-pill pill-${lead.leadType}">${capitalize(lead.leadType)}</span></div></div>
+      <div><div class="detail-label">Date</div><div class="detail-value" style="font-size:13px;color:var(--text2)">${formatDate(lead.createdAt)}</div></div>
+    </div>
+
+    ${canChangeStatus && !isClosedValidated ? `
+      <div class="form-group">
+        <div class="detail-label" style="margin-bottom:8px">Status</div>
+        <div class="status-row">${statusOpts}</div>
+      </div>` : `
+      <div class="form-group">
+        <div class="detail-label" style="margin-bottom:6px">Status</div>
+        <div class="status-opt active-${lead.status}" style="display:inline-block;cursor:default">${statusLabel(lead.status)}</div>
+      </div>`}
+
+    <div class="gold-rule"></div>
+
+    <div class="form-group">
+      <div class="detail-label" style="margin-bottom:8px">Activity Log</div>
+      <div class="activity-log">
+        ${log.length === 0
+          ? '<div style="color:var(--muted);font-size:13px">No activity yet.</div>'
+          : log.map(a => `
+            <div class="activity-item">
+              <div class="activity-note">${a.note}</div>
+              <div class="activity-meta">${a.byName || ''} · ${new Date(a.timestamp).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+            </div>`).join('')}
+      </div>
+      ${!isClosedValidated ? `
+        <div class="activity-input-row" style="margin-top:10px">
+          <input class="activity-input" id="activity-input" type="text" placeholder="Add a note..." maxlength="300"/>
+          <button class="btn btn-ghost" style="padding:9px 14px" onclick="addActivity()">Add</button>
+        </div>` : ''}
+    </div>
+
+    ${docsHtml}
+
+    ${isAdmin && !isClosedValidated ? `
+      <div class="gold-rule"></div>
+      <button class="btn" style="background:var(--coral-dim);color:var(--coral);border:1px solid rgba(240,107,107,0.2);width:100%;justify-content:center" onclick="deleteLead('${lead.id}')">Delete Lead</button>
+    ` : ''}
+  `;
+
+  // Re-attach activity input enter key
+  const actInput = document.getElementById('activity-input');
+  if (actInput) actInput.addEventListener('keydown', e => { if (e.key === 'Enter') window.addActivity(); });
+}
+
+// ── Change status ──
+window.changeStatus = async (newStatus) => {
+  if (!selectedLead) return;
+  if (newStatus === selectedLead.status) return;
+  await updateDoc(doc(db,'leads',selectedLead.id), { status: newStatus, updatedAt: serverTimestamp() });
+
+  if (newStatus === 'closed_pending') await notifyAdmin(selectedLead);
+
+  selectedLead.status = newStatus;
+  ['agent','company'].forEach(tab => {
+    const idx = allLeads[tab].findIndex(l => l.id === selectedLead.id);
+    if (idx !== -1) allLeads[tab][idx].status = newStatus;
+  });
+  renderDetailModal(selectedLead);
+  renderKanban(currentTab);
+};
+
+// ── Validate deal ──
+window.validateDeal = async () => {
+  if (!selectedLead || !confirm('Validate this deal? This cannot be undone.')) return;
+  await updateDoc(doc(db,'leads',selectedLead.id), { status: 'closed_validated', validatedBy: currentUser.uid, validatedAt: serverTimestamp(), updatedAt: serverTimestamp() });
+  selectedLead.status = 'closed_validated';
+  ['agent','company'].forEach(tab => {
+    const idx = allLeads[tab].findIndex(l => l.id === selectedLead.id);
+    if (idx !== -1) allLeads[tab][idx].status = 'closed_validated';
+  });
+  renderDetailModal(selectedLead);
+  renderKanban(currentTab);
+};
+
+// ── Activity log ──
+window.addActivity = async () => {
+  const input = document.getElementById('activity-input');
+  const note  = input?.value.trim();
+  if (!note || !selectedLead) return;
+  const entry = { note, by: currentUser.uid, byName: currentName, timestamp: new Date().toISOString() };
+  await updateDoc(doc(db,'leads',selectedLead.id), { activityLog: arrayUnion(entry), updatedAt: serverTimestamp() });
+  selectedLead.activityLog = [...(selectedLead.activityLog || []), entry];
+  input.value = '';
+  renderDetailModal(selectedLead);
+};
+
+// ── Document upload ──
+let selectedDocFile = null;
+window.handleDocSelect = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { alert('File must be under 10MB.'); return; }
+  selectedDocFile = file;
+  document.getElementById('doc-upload-text').textContent = `Selected: ${file.name}`;
+};
+
+window.uploadDocument = async () => {
+  if (!selectedDocFile || !selectedLead) { alert('Please select a file first.'); return; }
+  const docType = document.getElementById('doc-type-sel').value;
+  const btn     = document.getElementById('upload-doc-btn');
+  btn.disabled  = true; btn.innerHTML = '<span class="spinner"></span>Uploading...';
+
+  try {
+    const fileName   = `${Date.now()}_${selectedDocFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const storageRef = ref(storage, `documents/${selectedLead.id}/${fileName}`);
+    const task       = uploadBytesResumable(storageRef, selectedDocFile);
+
+    await new Promise((resolve, reject) => {
+      task.on('state_changed', null, reject, resolve);
+    });
+
+    const fileUrl = await getDownloadURL(task.snapshot.ref);
+
+    // Save to Firestore subcollection
+    await addDoc(collection(db,'leads',selectedLead.id,'documents'), {
+      fileName,
+      fileUrl,
+      docType,
+      uploadedBy:   currentUser.uid,
+      uploaderName: currentName,
+      createdAt:    serverTimestamp(),
+    });
+
+    // Refresh docs and re-render
+    const docsSnap = await getDocs(collection(db,'leads',selectedLead.id,'documents'));
+    selectedLead._docs = docsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    selectedDocFile = null;
+    renderDetailModal(selectedLead);
+  } catch(e) {
+    alert('Upload error: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Upload Document'; }
+  }
+};
+
+// ── Delete lead ──
+window.deleteLead = async (leadId) => {
+  if (!confirm('Delete this lead? This cannot be undone.')) return;
+  await deleteDoc(doc(db,'leads',leadId));
+  ['agent','company'].forEach(tab => { allLeads[tab] = allLeads[tab].filter(l => l.id !== leadId); });
+  document.getElementById('count-agent').textContent   = allLeads.agent.length;
+  document.getElementById('count-company').textContent = allLeads.company.length;
+  closeDetailModal();
+  renderKanban(currentTab);
+};
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+
+document.getElementById('create-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCreateModal(); });
+document.getElementById('detail-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetailModal(); });
+</script>
+  <script src="../assets/mobile.js"></script>
+</body>
+</html>

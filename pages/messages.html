@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Messages — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0b0b0f;
+  --surface:    #111118;
+  --surface2:   #18181f;
+  --surface3:   #1f1f28;
+  --border:     rgba(255,255,255,0.06);
+  --border2:    rgba(255,255,255,0.11);
+  --text:       #eeeaf5;
+  --text2:      #a09cb0;
+  --muted:      #5e5c6e;
+  --purple:     #7c5cbf;
+  --purple-lt:  #9d7de0;
+  --purple-dim: rgba(124,92,191,0.12);
+  --gold:       #c9a84c;
+  --gold-lt:    #e0c070;
+  --gold-dim:   rgba(201,168,76,0.1);
+  --green:      #3ecf8e;
+  --green-dim:  rgba(62,207,142,0.1);
+  --coral:      #f06b6b;
+  --coral-dim:  rgba(240,107,107,0.1);
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Outfit', sans-serif;
+  --sidebar-w:  256px;
+  --radius:     13px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+/* ══ SIDEBAR ══ */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
+.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.brand-mark { display: flex; align-items: center; gap: 12px; }
+.brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
+.brand-name { font-family: var(--font-disp); font-size: 17px; font-weight: 600; }
+.brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+.nav-section { padding: 0 12px; margin-bottom: 4px; }
+.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
+.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-spacer { flex: 1; }
+.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-meta { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
+.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+
+/* ══ MAIN ══ */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ── Top header ── */
+.msg-header {
+  padding: 28px 40px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  animation: fadeDown 0.4s ease both;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--purple-dim), var(--gold-dim));
+  border: 1px solid rgba(201,168,76,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.header-title { font-family: var(--font-disp); font-size: 24px; font-weight: 600; }
+.header-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.online-pill { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--green); background: var(--green-dim); border: 1px solid rgba(62,207,142,0.15); padding: 6px 13px; border-radius: 99px; }
+.online-dot  { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ── Pinned banner ── */
+.pinned-banner {
+  margin: 16px 40px 0;
+  background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(124,92,191,0.06));
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 11px;
+  padding: 13px 18px;
+  display: none;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+  animation: fadeUp 0.3s ease both;
+}
+.pinned-banner.visible { display: flex; }
+.pin-icon  { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+.pin-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 3px; }
+.pin-text  { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.pin-author { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── Feed area ── */
+.feed-wrap {
+  flex: 1; overflow-y: auto;
+  padding: 24px 40px 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* Date separator */
+.date-sep {
+  display: flex; align-items: center; gap: 12px;
+  margin: 8px 0;
+}
+.date-sep-line { flex: 1; height: 1px; background: var(--border); }
+.date-sep-text { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+/* Message bubble */
+.msg-bubble {
+  display: flex; gap: 12px; align-items: flex-start;
+  animation: fadeUp 0.3s ease both;
+  position: relative;
+}
+.msg-bubble.own { flex-direction: row-reverse; }
+
+.bubble-av {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-disp); font-size: 14px; font-weight: 600;
+  flex-shrink: 0; margin-top: 2px;
+}
+
+.bubble-body { max-width: 68%; min-width: 120px; }
+.msg-bubble.own .bubble-body { align-items: flex-end; display: flex; flex-direction: column; }
+
+.bubble-meta {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 5px;
+  font-size: 11.5px;
+}
+.msg-bubble.own .bubble-meta { flex-direction: row-reverse; }
+.bubble-name { font-weight: 500; color: var(--text2); }
+.bubble-time { color: var(--muted); font-size: 10.5px; }
+.bubble-role { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 2px 6px; border-radius: 99px; }
+.role-admin    { background: var(--purple-dim); color: var(--purple-lt); }
+.role-agent    { background: var(--gold-dim);   color: var(--gold-lt); }
+.role-listings { background: var(--green-dim);  color: var(--green); }
+.role-ceo      { background: rgba(240,107,107,0.12); color: var(--coral); }
+
+.bubble-content {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 11px 15px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+  word-break: break-word;
+  position: relative;
+  transition: border-color 0.15s;
+}
+.msg-bubble.own .bubble-content {
+  background: linear-gradient(135deg, rgba(124,92,191,0.2), rgba(124,92,191,0.12));
+  border-color: rgba(124,92,191,0.25);
+}
+.bubble-content:hover { border-color: var(--border2); }
+
+/* Bubble actions on hover */
+.bubble-actions {
+  position: absolute;
+  top: -28px; right: 8px;
+  display: none;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 3px 4px;
+  gap: 2px;
+  z-index: 10;
+}
+.bubble-content:hover .bubble-actions { display: flex; }
+.msg-bubble.own .bubble-actions { left: 8px; right: auto; }
+.bubble-action-btn {
+  padding: 4px 8px; border-radius: 5px; border: none;
+  background: none; color: var(--text2); font-size: 11px;
+  cursor: pointer; transition: all 0.12s; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+}
+.bubble-action-btn:hover { background: var(--surface2); color: var(--text); }
+.bubble-action-btn.del:hover { color: var(--coral); }
+.bubble-action-btn.pin:hover { color: var(--gold-lt); }
+
+/* Pinned indicator on bubble */
+.pinned-indicator { font-size: 10px; color: var(--gold); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+/* ── Compose area ── */
+.compose-area {
+  padding: 16px 40px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.compose-box {
+  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 10px 12px 10px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.compose-box:focus-within {
+  border-color: rgba(124,92,191,0.4);
+  box-shadow: 0 0 0 3px rgba(124,92,191,0.08);
+}
+
+.compose-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: var(--font-body); font-size: 14px;
+  resize: none; max-height: 120px; min-height: 24px;
+  line-height: 1.5; padding: 2px 0;
+}
+.compose-input::placeholder { color: var(--muted); }
+
+.compose-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.char-count { font-size: 11px; color: var(--muted); transition: color 0.2s; }
+.char-count.warn  { color: var(--gold); }
+.char-count.limit { color: var(--coral); }
+
+.send-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--purple), #9060d8);
+  border: none; cursor: pointer; color: white;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(124,92,191,0.4); }
+.send-btn:active { transform: translateY(0); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.compose-hint { font-size: 11px; color: var(--muted); margin-top: 8px; text-align: center; }
+.compose-hint kbd { background: var(--surface3); border: 1px solid var(--border2); border-radius: 4px; padding: 1px 5px; font-size: 10px; font-family: var(--font-body); }
+
+/* ── Empty state ── */
+.feed-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px 20px; text-align: center;
+}
+.feed-empty-icon { font-size: 52px; opacity: 0.12; margin-bottom: 16px; }
+.feed-empty-title { font-family: var(--font-disp); font-size: 22px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+.feed-empty-sub   { font-size: 13px; color: var(--muted); max-width: 280px; line-height: 1.6; }
+
+/* ── Loading ── */
+.feed-loading { flex: 1; display: flex; align-items: center; justify-content: center; }
+.loading-dots span { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--purple-lt); margin: 0 3px; animation: bounce 1.2s ease infinite; }
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.30s; }
+@keyframes bounce { 0%,80%,100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-8px); opacity: 1; } }
+
+/* ── Animations ── */
+@keyframes fadeUp   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+</style>
+  <link rel="stylesheet" href="../assets/mobile.css"/>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-name">Casaviola</div>
+        <div class="brand-sub">Properties CRM</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="clients.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clients
+    </a>
+    <a class="nav-item" href="properties.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Properties
+    </a>
+    <a class="nav-item" href="leads.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Leads
+    </a>
+    <a class="nav-item active" href="messages.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Messages
+    </a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Users
+    </a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Header -->
+  <div class="msg-header">
+    <div class="header-left">
+      <div class="header-icon">📢</div>
+      <div>
+        <div class="header-title">Message Board</div>
+        <div class="header-sub">Team announcements & internal communications</div>
+      </div>
+    </div>
+    <div class="online-pill">
+      <div class="online-dot"></div>
+      Live
+    </div>
+  </div>
+
+  <!-- Pinned message banner -->
+  <div class="pinned-banner" id="pinned-banner">
+    <div class="pin-icon">📌</div>
+    <div>
+      <div class="pin-label">Pinned Announcement</div>
+      <div class="pin-text" id="pin-text">—</div>
+      <div class="pin-author" id="pin-author">—</div>
+    </div>
+  </div>
+
+  <!-- Feed -->
+  <div class="feed-wrap" id="feed-wrap">
+    <div class="feed-loading">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- Compose -->
+  <div class="compose-area">
+    <div class="compose-box">
+      <textarea
+        class="compose-input"
+        id="compose-input"
+        placeholder="Write an announcement to the team..."
+        maxlength="500"
+        rows="1"
+        oninput="handleInput(this)"
+        onkeydown="handleKeydown(event)"
+      ></textarea>
+      <div class="compose-right">
+        <span class="char-count" id="char-count">500</span>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send (Ctrl+Enter)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="compose-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to send · All staff can see this board</div>
+  </div>
+
+</main>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, orderBy, limit,
+  doc, getDoc, addDoc, updateDoc, deleteDoc,
+  onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── State ──
+let currentUser = null, currentRole = null, currentName = '';
+let messages    = [];   // live cache from snapshot
+let usersMap    = {};   // uid → { name, role }
+let isSending   = false;
+
+// ── Helpers ──
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function formatTime(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+function formatDateLabel(ts) {
+  if (!ts) return '';
+  const d   = ts.toDate ? ts.toDate() : new Date(ts);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return 'Today';
+  const yest = new Date(now); yest.setDate(now.getDate()-1);
+  if (d.toDateString() === yest.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+}
+function roleClass(role) {
+  const map = { admin:'role-admin', agent:'role-agent', listings:'role-listings', ceo:'role-ceo' };
+  return map[role] || 'role-agent';
+}
+
+// ── Auth guard ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role; currentName = data.name;
+
+  document.getElementById('sb-name').textContent   = data.name;
+  document.getElementById('sb-role').textContent   = capitalize(data.role);
+  document.getElementById('sb-avatar').textContent = initials(data.name);
+  if (['admin','ceo'].includes(data.role)) document.getElementById('admin-nav').style.display = 'block';
+
+  // Load users map then subscribe to messages
+  await loadUsersMap();
+  subscribeMessages();
+});
+
+// ── Load users map ──
+async function loadUsersMap() {
+  const snap = await getDoc ? null : null; // just for clarity
+  const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const usersSnap = await getDocs(collection(db,'users'));
+  usersSnap.forEach(d => { usersMap[d.id] = { name: d.data().name, role: d.data().role }; });
+}
+
+// ── Real-time subscription ──
+function subscribeMessages() {
+  const q = query(collection(db,'messages'), orderBy('createdAt','asc'), limit(100));
+  onSnapshot(q, snap => {
+    messages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderFeed();
+    updatePinnedBanner();
+    scrollToBottom();
+  });
+}
+
+// ── Render feed ──
+function renderFeed() {
+  const feed = document.getElementById('feed-wrap');
+
+  if (messages.length === 0) {
+    feed.innerHTML = `
+      <div class="feed-empty">
+        <div class="feed-empty-icon">💬</div>
+        <div class="feed-empty-title">No announcements yet</div>
+        <div class="feed-empty-sub">Be the first to post a message to the team.</div>
+      </div>`;
+    return;
+  }
+
+  const isAdminOrCeo = ['admin','ceo'].includes(currentRole);
+  let html = '';
+  let lastDateLabel = '';
+
+  messages.forEach((msg, i) => {
+    const isOwn   = msg.postedBy === currentUser.uid;
+    const name    = msg.postedByName || usersMap[msg.postedBy]?.name || 'Staff';
+    const role    = usersMap[msg.postedBy]?.role || 'agent';
+    const color   = getColor(name);
+    const time    = formatTime(msg.createdAt);
+    const dateLabel = formatDateLabel(msg.createdAt);
+
+    // Date separator
+    if (dateLabel !== lastDateLabel) {
+      html += `
+        <div class="date-sep" style="animation:fadeUp 0.3s ease ${i*0.02}s both">
+          <div class="date-sep-line"></div>
+          <div class="date-sep-text">${dateLabel}</div>
+          <div class="date-sep-line"></div>
+        </div>`;
+      lastDateLabel = dateLabel;
+    }
+
+    // Action buttons — own message can delete, admin can delete + pin
+    let actionBtns = '';
+    if (isOwn || isAdminOrCeo) {
+      actionBtns += `<button class="bubble-action-btn del" onclick="deleteMsg('${msg.id}')">🗑 Delete</button>`;
+    }
+    if (isAdminOrCeo) {
+      const pinLabel = msg.pinned ? '📌 Unpin' : '📌 Pin';
+      actionBtns += `<button class="bubble-action-btn pin" onclick="togglePin('${msg.id}',${!!msg.pinned})">${pinLabel}</button>`;
+    }
+
+    const pinnedNote = msg.pinned
+      ? `<div class="pinned-indicator">📌 Pinned announcement</div>`
+      : '';
+
+    html += `
+      <div class="msg-bubble ${isOwn ? 'own' : ''}" style="animation:fadeUp 0.3s ease ${i*0.025}s both">
+        ${!isOwn ? `<div class="bubble-av" style="background:${color}22;color:${color}">${initials(name)}</div>` : ''}
+        <div class="bubble-body">
+          <div class="bubble-meta">
+            ${!isOwn ? `<span class="bubble-name">${name}</span>` : ''}
+            <span class="bubble-role ${roleClass(role)}">${capitalize(role)}</span>
+            <span class="bubble-time">${time}</span>
+          </div>
+          <div class="bubble-content">
+            ${actionBtns ? `<div class="bubble-actions">${actionBtns}</div>` : ''}
+            ${escapeHtml(msg.content)}
+          </div>
+          ${pinnedNote}
+        </div>
+        ${isOwn ? `<div class="bubble-av" style="background:${color}22;color:${color}">${initials(name)}</div>` : ''}
+      </div>`;
+  });
+
+  feed.innerHTML = html;
+}
+
+// ── Pinned banner ──
+function updatePinnedBanner() {
+  const pinned = messages.find(m => m.pinned);
+  const banner = document.getElementById('pinned-banner');
+  if (pinned) {
+    const name = pinned.postedByName || usersMap[pinned.postedBy]?.name || 'Staff';
+    document.getElementById('pin-text').textContent   = pinned.content;
+    document.getElementById('pin-author').textContent = `— ${name}`;
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+
+// ── Scroll to bottom ──
+function scrollToBottom(smooth = true) {
+  const feed = document.getElementById('feed-wrap');
+  setTimeout(() => {
+    feed.scrollTo({ top: feed.scrollHeight, behavior: smooth ? 'smooth' : 'instant' });
+  }, 50);
+}
+
+// ── Send message ──
+window.sendMessage = async () => {
+  if (isSending) return;
+  const input   = document.getElementById('compose-input');
+  const content = input.value.trim();
+  if (!content) return;
+  if (content.length > 500) return;
+
+  isSending = true;
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+
+  try {
+    await addDoc(collection(db,'messages'), {
+      content,
+      postedBy:     currentUser.uid,
+      postedByName: currentName,
+      pinned:       false,
+      createdAt:    serverTimestamp(),
+    });
+    input.value = '';
+    input.style.height = 'auto';
+    updateCharCount(500);
+  } catch(e) {
+    alert('Error sending message: ' + e.message);
+  } finally {
+    isSending = false;
+    btn.disabled = false;
+    input.focus();
+  }
+};
+
+// ── Delete message ──
+window.deleteMsg = async (id) => {
+  if (!confirm('Delete this message?')) return;
+  await deleteDoc(doc(db,'messages',id));
+};
+
+// ── Toggle pin ──
+window.togglePin = async (id, currentlyPinned) => {
+  // Unpin all first
+  const pinned = messages.filter(m => m.pinned && m.id !== id);
+  await Promise.all(pinned.map(m => updateDoc(doc(db,'messages',m.id), { pinned: false })));
+  // Toggle this one
+  await updateDoc(doc(db,'messages',id), { pinned: !currentlyPinned });
+};
+
+// ── Textarea auto-grow ──
+window.handleInput = (el) => {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  const remaining = 500 - el.value.length;
+  updateCharCount(remaining);
+};
+
+function updateCharCount(remaining) {
+  const el = document.getElementById('char-count');
+  el.textContent = remaining;
+  el.className = 'char-count' + (remaining < 50 ? ' warn' : '') + (remaining < 10 ? ' limit' : '');
+}
+
+window.handleKeydown = (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    sendMessage();
+  }
+};
+
+// ── Escape HTML ──
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+}
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+</script>
+  <script src="../assets/mobile.js"></script>
+</body>
+</html>

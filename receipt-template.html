@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Official Receipt — Casa Viola Properties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+
+/* ══════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:        #1a1520;
+  --ink2:       #4a4258;
+  --ink3:       #8a8298;
+  --purple:     #2d1b4e;
+  --purple-mid: #4a2d8a;
+  --purple-lt:  #7c5cbf;
+  --gold:       #b8922a;
+  --gold-lt:    #d4ac3a;
+  --gold-pale:  #f5edda;
+  --cream:      #faf7f2;
+  --light:      #f2ede6;
+  --border:     #e4dbd0;
+  --border2:    #d0c4b8;
+  --green:      #1e6b3a;
+  --green-pale: #eaf4ee;
+  --white:      #ffffff;
+  --font-disp:  'Cormorant Garamond', serif;
+  --font-body:  'Jost', sans-serif;
+}
+
+html { font-size: 14px; }
+
+body {
+  background: #ece7e0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  padding: 40px 20px 60px;
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════
+   ACTION BUTTONS (hidden on print)
+══════════════════════════════════════ */
+.action-bar {
+  max-width: 860px;
+  margin: 0 auto 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 10px 22px;
+  border-radius: 9px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.btn-print {
+  background: var(--purple);
+  color: white;
+  box-shadow: 0 4px 14px rgba(45,27,78,0.25);
+}
+
+.btn-print:hover {
+  background: var(--purple-mid);
+  transform: translateY(-1px);
+}
+
+.btn-back {
+  background: white;
+  color: var(--ink2);
+  border: 1px solid var(--border);
+}
+
+.btn-back:hover {
+  background: var(--light);
+}
+
+/* ══════════════════════════════════════
+   RECEIPT WRAPPER
+══════════════════════════════════════ */
+.receipt {
+  max-width: 860px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 60px rgba(45,27,78,0.14), 0 2px 8px rgba(45,27,78,0.08);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+/* Subtle corner watermark */
+.receipt::after {
+  content: 'CV';
+  position: absolute;
+  bottom: 160px;
+  right: 40px;
+  font-family: var(--font-disp);
+  font-size: 180px;
+  font-weight: 700;
+  color: var(--purple);
+  opacity: 0.025;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 4px;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+.receipt-header {
+  background: linear-gradient(135deg, var(--purple) 0%, #3d2468 55%, #5a3a10 100%);
+  padding: 36px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grid texture on header */
+.receipt-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Gold bottom border */
+.receipt-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt), var(--gold));
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo placeholder — replace img src when logo is ready */
+.logo-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(184,146,42,0.4), 0 4px 16px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+}
+
+.logo-placeholder {
+  font-family: var(--font-disp);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--purple);
+  letter-spacing: 1px;
+}
+
+.brand-name {
+  font-family: var(--font-disp);
+  font-size: 26px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+}
+
+.brand-tagline {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.header-right {
+  text-align: right;
+  position: relative;
+  z-index: 1;
+}
+
+.receipt-label {
+  font-family: var(--font-disp);
+  font-size: 32px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.receipt-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.receipt-meta-item {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.receipt-meta-item strong {
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+
+/* Gold badge */
+.receipt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+  color: var(--purple);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 13px;
+  border-radius: 99px;
+  box-shadow: 0 2px 8px rgba(184,146,42,0.4);
+}
+
+/* ══════════════════════════════════════
+   HERO STRIP — Amount + Status
+══════════════════════════════════════ */
+.hero-strip {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 26px 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.hero-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+
+.hero-client {
+  font-family: var(--font-disp);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--purple);
+  line-height: 1.2;
+}
+
+.hero-desc {
+  font-size: 12.5px;
+  color: var(--ink3);
+  margin-top: 4px;
+  font-weight: 300;
+}
+
+.hero-right {
+  text-align: right;
+}
+
+.amount-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 4px;
+}
+
+.amount-value {
+  font-family: var(--font-disp);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.amount-currency {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gold);
+  vertical-align: top;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.paid-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  background: var(--green-pale);
+  color: var(--green);
+  border: 1px solid rgba(30,107,58,0.2);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+}
+
+/* ══════════════════════════════════════
+   BODY
+══════════════════════════════════════ */
+.receipt-body {
+  padding: 36px 44px;
+  position: relative;
+  z-index: 1;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--light);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: var(--font-disp);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--purple);
+  letter-spacing: 0.2px;
+}
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.info-cell {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 14px 16px;
+}
+
+.info-cell.full {
+  grid-column: 1 / -1;
+}
+
+.info-cell.half {
+  grid-column: span 1;
+}
+
+.cell-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 5px;
+}
+
+.cell-value {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.cell-value.large {
+  font-family: var(--font-disp);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--purple);
+}
+
+/* Payment table */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.pay-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+
+.pay-table thead tr {
+  background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+}
+
+.pay-table thead th {
+  padding: 13px 16px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  text-align: left;
+}
+
+.pay-table thead th:last-child {
+  text-align: right;
+}
+
+.pay-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+
+.pay-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.pay-table tbody tr:hover {
+  background: var(--cream);
+}
+
+.pay-table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  vertical-align: top;
+  color: var(--ink2);
+}
+
+.pay-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  color: var(--purple);
+  white-space: nowrap;
+}
+
+.pay-type {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(74,45,138,0.08);
+  color: var(--purple-mid);
+}
+
+.pay-method {
+  font-size: 11.5px;
+  color: var(--ink3);
+  margin-top: 3px;
+}
+
+/* Totals */
+.totals-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.totals-box {
+  width: 360px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.total-row:last-child {
+  border-bottom: none;
+}
+
+.total-row .t-label {
+  color: var(--ink3);
+  font-weight: 400;
+}
+
+.total-row .t-val {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.total-row.subtotal {
+  background: var(--cream);
+}
+
+.total-row.grand {
+  background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+  padding: 16px 18px;
+}
+
+.total-row.grand .t-label {
+  color: rgba(255,255,255,0.75);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.total-row.grand .t-val {
+  font-family: var(--font-disp);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold-lt);
+}
+
+.total-row.balance {
+  background: var(--gold-pale);
+  border-color: rgba(184,146,42,0.2);
+}
+
+.total-row.balance .t-label {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.total-row.balance .t-val {
+  color: var(--gold);
+  font-family: var(--font-disp);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Notes & bank */
+.notes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.note-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  min-height: 110px;
+}
+
+.note-card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.note-card-title::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 12px;
+  border-radius: 99px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.note-text {
+  font-size: 12.5px;
+  color: var(--ink2);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background: rgba(74,45,138,0.04);
+  border: 1px solid rgba(74,45,138,0.1);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 11.5px;
+  color: var(--ink3);
+  line-height: 1.65;
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* Signatures */
+.sig-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 30px;
+  margin-top: 40px;
+  padding-top: 0;
+}
+
+.sig-box {
+  text-align: center;
+}
+
+.sig-line {
+  height: 60px;
+  border-bottom: 1.5px solid var(--border2);
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.sig-line::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border2) 0,
+    var(--border2) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.sig-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.sig-sub {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-top: 3px;
+  font-weight: 300;
+}
+
+/* Footer */
+.receipt-footer {
+  background: var(--purple);
+  padding: 20px 44px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.receipt-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt), var(--gold));
+}
+
+.footer-col.center {
+  text-align: center;
+}
+
+.footer-col.right {
+  text-align: right;
+}
+
+.footer-company {
+  font-family: var(--font-disp);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 3px;
+}
+
+.footer-detail {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.footer-seal {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(184,146,42,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.seal-text {
+  font-family: var(--font-disp);
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(184,146,42,0.7);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.seal-sub {
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(184,146,42,0.5);
+}
+
+.footer-tin {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+  font-family: monospace;
+}
+
+/* Print */
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+
+  .action-bar {
+    display: none;
+  }
+
+  .receipt {
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .receipt-header,
+  .receipt-footer,
+  .pay-table thead tr,
+  .total-row.grand {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .receipt::after {
+    display: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 680px) {
+  body {
+    padding: 16px 12px 40px;
+  }
+
+  .receipt-header {
+    padding: 24px 22px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header-right {
+    text-align: left;
+  }
+
+  .hero-strip {
+    padding: 20px 22px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .hero-right {
+    text-align: left;
+  }
+
+  .receipt-body {
+    padding: 24px 22px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sig-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .totals-box {
+    width: 100%;
+  }
+
+  .receipt-footer {
+    grid-template-columns: 1fr;
+    padding: 18px 22px;
+    gap: 14px;
+  }
+
+  .footer-col.center {
+    order: -1;
+  }
+
+  .footer-col.right {
+    text-align: left;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ACTION BUTTONS -->
+<div class="action-bar">
+  <button class="action-btn btn-back" onclick="window.history.back()">
+    ← Back
+  </button>
+  <button class="action-btn btn-print" onclick="window.print()">
+    🖨 Print / Save PDF
+  </button>
+</div>
+
+<!-- RECEIPT / INVOICE -->
+<div class="receipt">
+
+  <!-- HEADER -->
+  <header class="receipt-header">
+    <div class="brand-area">
+      <div class="logo-wrap">
+        <div class="logo-placeholder">CV</div>
+      </div>
+
+      <div class="brand-text">
+        <div class="brand-name">Casa Viola Properties</div>
+        <div class="brand-tagline">Your trusted real estate partner</div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="receipt-label">Official Receipt</div>
+
+      <div class="receipt-meta">
+        <div class="receipt-meta-item">
+          Receipt No: <strong>CV-REC-2026-001</strong>
+        </div>
+
+        <div class="receipt-meta-item">
+          Issue Date: <strong>13 May 2026</strong>
+        </div>
+
+        <div class="receipt-meta-item">
+          Deal Ref: <strong>CV-LEAD-00124</strong>
+        </div>
+      </div>
+
+      <div class="receipt-badge">✦ Payment Received</div>
+    </div>
+  </header>
+
+  <!-- HERO STRIP -->
+  <div class="hero-strip">
+    <div class="hero-left">
+      <div class="hero-label">Received From</div>
+      <div class="hero-client">Mr. / Mrs. Client Full Name</div>
+      <div class="hero-desc">Payment towards property purchase — Casa Viola Properties</div>
+    </div>
+
+    <div class="hero-right">
+      <div class="amount-label">Amount Paid</div>
+
+      <div class="amount-value">
+        <span class="amount-currency">GH₵</span> 250,000.00
+      </div>
+
+      <div>
+        <span class="paid-badge">✓ Confirmed Payment</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <main class="receipt-body">
+
+    <!-- Client & Property Details -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">👤</div>
+        <div class="section-title">Client & Property Details</div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="cell-label">Client Full Name</div>
+          <div class="cell-value large">Client Full Name</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Phone Number</div>
+          <div class="cell-value">+233 XX XXX XXXX</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Email Address</div>
+          <div class="cell-value">client@email.com</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Property Name / Type</div>
+          <div class="cell-value large">4-Bedroom Ensuite House</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Property Location</div>
+          <div class="cell-value">East Legon, Accra</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Property Reference</div>
+          <div class="cell-value">CV-PROP-0042</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Sales Agent</div>
+          <div class="cell-value">Agent Full Name</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Payment Date</div>
+          <div class="cell-value">13 May 2026</div>
+        </div>
+
+        <div class="info-cell">
+          <div class="cell-label">Payment Method</div>
+          <div class="cell-value">Bank Transfer</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment / Invoice Breakdown -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">💳</div>
+        <div class="section-title">Payment Breakdown</div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="pay-table">
+          <thead>
+            <tr>
+              <th style="width:40%">Description</th>
+              <th>Payment Type</th>
+              <th>Method</th>
+              <th>Transaction ID</th>
+              <th>Amount (GH₵)</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>
+                Payment towards purchase of 4-bedroom ensuite property at East Legon, Accra.
+                <div class="pay-method">Property ref: CV-PROP-0042</div>
+              </td>
+
+              <td><span class="pay-type">Part Payment</span></td>
+              <td>Bank Transfer</td>
+              <td style="font-family:monospace;font-size:11.5px;color:var(--ink3)">TXN-000123456</td>
+              <td>250,000.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totals -->
+      <div class="totals-wrap">
+        <div class="totals-box">
+          <div class="total-row subtotal">
+            <span class="t-label">Agreed Property Price</span>
+            <span class="t-val">GH₵ 1,200,000.00</span>
+          </div>
+
+          <div class="total-row">
+            <span class="t-label">Previous Payments</span>
+            <span class="t-val">GH₵ 100,000.00</span>
+          </div>
+
+          <div class="total-row">
+            <span class="t-label">This Payment</span>
+            <span class="t-val">GH₵ 250,000.00</span>
+          </div>
+
+          <div class="total-row grand">
+            <span class="t-label">Total Paid to Date</span>
+            <span class="t-val">GH₵ 350,000.00</span>
+          </div>
+
+          <div class="total-row balance">
+            <span class="t-label">⚠ Outstanding Balance</span>
+            <span class="t-val">GH₵ 850,000.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes & Payment Details -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-icon">📋</div>
+        <div class="section-title">Notes & Payment Details</div>
+      </div>
+
+      <div class="notes-grid">
+        <div class="note-card">
+          <div class="note-card-title">Bank / Payment Details</div>
+
+          <div class="note-text">
+            Bank Name: [ Bank Name ]<br/>
+            Account Name: Casa Viola Properties<br/>
+            Account No: XXXX XXXX XXXX<br/>
+            Branch: [ Branch Name ]<br/>
+            Transaction Ref: TXN-000123456
+          </div>
+        </div>
+
+        <div class="note-card">
+          <div class="note-card-title">Important Note</div>
+
+          <div class="note-text">
+            This receipt confirms that the above amount has been received by Casa Viola Properties.
+            All payments are subject to final confirmation by management.
+            Kindly retain this document for your records.
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        This receipt is valid when confirmed by Casa Viola Properties. For official use, it may be signed
+        and/or stamped by an authorized representative. Casa Viola Properties reserves the right to verify
+        all transactions before transferring title or possession of any property.
+      </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-row">
+      <div class="sig-box">
+        <div class="sig-line"></div>
+        <div class="sig-label">Prepared By</div>
+        <div class="sig-sub">Finance Officer</div>
+      </div>
+
+      <div class="sig-box">
+        <div class="sig-line"></div>
+        <div class="sig-label">Authorized By</div>
+        <div class="sig-sub">Management / Director</div>
+      </div>
+
+      <div class="sig-box">
+        <div class="sig-line"></div>
+        <div class="sig-label">Client Acknowledgement</div>
+        <div class="sig-sub">Client Signature & Date</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="receipt-footer">
+    <div class="footer-col">
+      <div class="footer-company">Casa Viola Properties</div>
+
+      <div class="footer-detail">
+        [ Physical Address, City, Ghana ]<br/>
+        Tel: +233 XX XXX XXXX · +233 XX XXX XXXX
+      </div>
+
+      <div class="footer-tin">TIN: [ Ghana TIN Number ]</div>
+    </div>
+
+    <div class="footer-col center">
+      <div class="footer-seal">
+        <div class="seal-text">CV</div>
+        <div class="seal-sub">Official</div>
+      </div>
+    </div>
+
+    <div class="footer-col right">
+      <div class="footer-detail">
+        Email: info@casaviola.com<br/>
+        Website: www.casaviola.com<br/>
+        Reg No: [ Company Reg. No. ]
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script type="module">
+import { auth, db } from './js/firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const params = new URLSearchParams(window.location.search);
+
+const dealId = params.get('dealId');
+const receiptId = params.get('receiptId');
+const invoiceId = params.get('invoiceId');
+const type = params.get('type');
+
+const mode = invoiceId || type === 'invoice' ? 'invoice' : 'receipt';
+
+function money(value) {
+  return 'GH₵ ' + Number(value || 0).toLocaleString('en-GH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function rawMoney(value) {
+  return Number(value || 0).toLocaleString('en-GH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+
+  if (Number.isNaN(d.getTime())) return '—';
+
+  return d.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+function setText(selector, value, index = 0) {
+  const els = document.querySelectorAll(selector);
+  if (els[index]) els[index].textContent = value || '—';
+}
+
+function shortRef(id) {
+  if (!id) return '—';
+  return 'CV-LEAD-' + id.substring(0, 6).toUpperCase();
+}
+
+function getCellValues() {
+  return document.querySelectorAll('.info-grid .cell-value');
+}
+
+function setReceiptLook() {
+  document.title = 'Official Receipt — Casa Viola Properties';
+
+  setText('.receipt-label', 'Official Receipt');
+  setText('.receipt-badge', '✦ Payment Received');
+  setText('.amount-label', 'Amount Paid');
+  setText('.hero-label', 'Received From');
+  setText('.section-title', 'Client & Property Details', 0);
+  setText('.section-title', 'Payment Breakdown', 1);
+  setText('.section-title', 'Notes & Payment Details', 2);
+}
+
+function setInvoiceLook() {
+  document.title = 'Official Invoice — Casa Viola Properties';
+
+  setText('.receipt-label', 'Official Invoice');
+  setText('.receipt-badge', '✦ Invoice Issued');
+  setText('.amount-label', 'Amount Due');
+  setText('.hero-label', 'Issued To');
+  setText('.section-title', 'Client & Property Details', 0);
+  setText('.section-title', 'Invoice Breakdown', 1);
+  setText('.section-title', 'Invoice Notes & Payment Terms', 2);
+
+  const metaLabels = document.querySelectorAll('.receipt-meta-item');
+  if (metaLabels[0]) metaLabels[0].childNodes[0].textContent = 'Invoice No: ';
+}
+
+async function loadDocument() {
+  if (!dealId) {
+    alert('Missing dealId in the URL.');
+    return;
+  }
+
+  if (mode === 'receipt' && !receiptId) {
+    alert('Missing receiptId in the URL.');
+    return;
+  }
+
+  if (mode === 'invoice' && !invoiceId) {
+    alert('Missing invoiceId in the URL.');
+    return;
+  }
+
+  try {
+    const dealSnap = await getDoc(doc(db, 'leads', dealId));
+
+    if (!dealSnap.exists()) {
+      alert('Deal not found.');
+      return;
+    }
+
+    const deal = {
+      id: dealSnap.id,
+      ...dealSnap.data()
+    };
+
+    if (mode === 'invoice') {
+      await loadInvoice(deal);
+    } else {
+      await loadReceipt(deal);
+    }
+
+  } catch (error) {
+    console.error('Document load error:', error);
+    alert('Could not load document details. Check console for the exact error.');
+  }
+}
+
+async function loadInvoice(deal) {
+  setInvoiceLook();
+
+  const invoiceSnap = await getDoc(doc(db, 'leads', dealId, 'invoices', invoiceId));
+
+  if (!invoiceSnap.exists()) {
+    alert('Invoice not found.');
+    return;
+  }
+
+  const invoice = {
+    id: invoiceSnap.id,
+    ...invoiceSnap.data()
+  };
+
+  const agreedAmount = Number(invoice.agreedAmount || deal.agreedAmount || deal.agreedPrice || 0);
+  const totalPaid = Number(deal.totalPaid || invoice.totalPaid || 0);
+  const balanceDue = Number(invoice.balanceDue || deal.balanceDue || deal.balance || Math.max(agreedAmount - totalPaid, 0));
+  const previousPayments = totalPaid;
+
+  const invoiceNo = invoice.invoiceNo || invoice.invoiceNumber || `CV-INV-${new Date().getFullYear()}-${invoiceId.substring(0, 5).toUpperCase()}`;
+  const issueDate = formatDate(invoice.createdAt || invoice.issuedAt || new Date());
+  const dueDate = formatDate(invoice.dueDate || invoice.paymentDueDate);
+
+  const clientName = deal.clientName || invoice.clientName || 'Client Full Name';
+  const clientPhone = deal.clientPhone || invoice.clientPhone || '—';
+  const clientEmail = deal.clientEmail || deal.email || invoice.clientEmail || '—';
+
+  const propTitle = deal.propTitle || invoice.propTitle || deal.propertyTitle || 'Property';
+  const propLocation = deal.propLocation || invoice.propLocation || deal.location || '—';
+  const propRef = deal.propertyId ? deal.propertyId.substring(0, 8).toUpperCase() : '—';
+
+  const agentName = deal.agentName || invoice.agentName || '—';
+  const paymentPlan = invoice.paymentPlan || deal.paymentPlan || '—';
+  const invoiceStatus = invoice.status || 'issued';
+
+  // Header
+  setText('.receipt-meta-item strong', invoiceNo, 0);
+  setText('.receipt-meta-item strong', issueDate, 1);
+  setText('.receipt-meta-item strong', shortRef(dealId), 2);
+
+  // Hero
+  setText('.hero-client', clientName);
+  setText('.hero-desc', `Invoice for ${propTitle} — Casa Viola Properties`);
+  setText('.amount-value', money(balanceDue));
+  setText('.paid-badge', invoiceStatus === 'paid' ? '✓ Paid' : '⏳ Payment Due');
+
+  // Info cells
+  const cells = getCellValues();
+
+  if (cells[0]) cells[0].textContent = clientName;
+  if (cells[1]) cells[1].textContent = clientPhone;
+  if (cells[2]) cells[2].textContent = clientEmail;
+  if (cells[3]) cells[3].textContent = propTitle;
+  if (cells[4]) cells[4].textContent = propLocation;
+  if (cells[5]) cells[5].textContent = propRef;
+  if (cells[6]) cells[6].textContent = agentName;
+  if (cells[7]) cells[7].textContent = dueDate || '—';
+  if (cells[8]) cells[8].textContent = paymentPlan;
+
+  // Relabel cells for invoice mode
+  const labels = document.querySelectorAll('.info-grid .cell-label');
+
+  if (labels[7]) labels[7].textContent = 'Payment Due Date';
+  if (labels[8]) labels[8].textContent = 'Payment Plan';
+
+  // Table
+  const tbody = document.querySelector('.pay-table tbody');
+
+  if (tbody) {
+    const items = invoice.items || [
+      {
+        description: `Agreed price for ${propTitle}${propLocation && propLocation !== '—' ? ` at ${propLocation}` : ''}.`,
+        type: 'Invoice',
+        method: paymentPlan,
+        ref: invoiceNo,
+        amount: agreedAmount
+      }
+    ];
+
+    tbody.innerHTML = items.map(item => `
+      <tr>
+        <td>
+          ${item.description || `Invoice for ${propTitle}`}
+          <div class="pay-method">Property ref: ${propRef}</div>
+        </td>
+        <td><span class="pay-type">${item.type || 'Invoice'}</span></td>
+        <td>${item.method || paymentPlan}</td>
+        <td style="font-family:monospace;font-size:11.5px;color:var(--ink3)">${item.ref || invoiceNo}</td>
+        <td>${rawMoney(item.amount || agreedAmount)}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Totals
+  const totalRows = document.querySelectorAll('.total-row .t-val');
+  const totalLabels = document.querySelectorAll('.total-row .t-label');
+
+  if (totalLabels[0]) totalLabels[0].textContent = 'Agreed Property Price';
+  if (totalLabels[1]) totalLabels[1].textContent = 'Previous Payments';
+  if (totalLabels[2]) totalLabels[2].textContent = 'Amount Due on Invoice';
+  if (totalLabels[3]) totalLabels[3].textContent = 'Total Paid to Date';
+  if (totalLabels[4]) totalLabels[4].textContent = '⚠ Balance Due';
+
+  if (totalRows[0]) totalRows[0].textContent = agreedAmount > 0 ? money(agreedAmount) : '—';
+  if (totalRows[1]) totalRows[1].textContent = money(previousPayments);
+  if (totalRows[2]) totalRows[2].textContent = money(balanceDue);
+  if (totalRows[3]) totalRows[3].textContent = money(totalPaid);
+  if (totalRows[4]) totalRows[4].textContent = money(balanceDue);
+
+  // Notes
+  const noteCards = document.querySelectorAll('.note-text');
+
+  if (noteCards[0]) {
+    noteCards[0].innerHTML = `
+      Invoice No: ${invoiceNo}<br/>
+      Issue Date: ${issueDate}<br/>
+      Due Date: ${dueDate || '—'}<br/>
+      Payment Plan: ${paymentPlan}
+    `;
+  }
+
+  if (noteCards[1]) {
+    noteCards[1].innerHTML = `
+      This invoice states the agreed amount due for the selected property/deal.
+      Payments made against this invoice will be recorded by Casa Viola Properties and reflected in the deal ledger.
+      Kindly retain this document for your records.
+    `;
+  }
+
+  const disclaimer = document.querySelector('.disclaimer');
+
+  if (disclaimer) {
+    disclaimer.textContent =
+      'This invoice is issued based on the agreed deal amount approved by management. It does not confirm payment. Payment is only confirmed when an official receipt is generated by Casa Viola Properties.';
+  }
+
+  document.title = `Invoice ${invoiceNo} — Casa Viola Properties`;
+}
+
+async function loadReceipt(deal) {
+  setReceiptLook();
+
+  const receiptSnap = await getDoc(doc(db, 'leads', dealId, 'receipts', receiptId));
+
+  if (!receiptSnap.exists()) {
+    alert('Receipt not found.');
+    return;
+  }
+
+  const receipt = {
+    id: receiptSnap.id,
+    ...receiptSnap.data()
+  };
+
+  let payment = null;
+
+  if (receipt.paymentId) {
+    const paymentSnap = await getDoc(doc(db, 'leads', dealId, 'payments', receipt.paymentId));
+
+    if (paymentSnap.exists()) {
+      payment = {
+        id: paymentSnap.id,
+        ...paymentSnap.data()
+      };
+    }
+  }
+
+  let ledgerEntries = receipt.ledgerSnapshot || [];
+
+  if (!ledgerEntries.length) {
+    try {
+      const ledgerSnap = await getDocs(
+        query(collection(db, 'leads', dealId, 'ledger'), orderBy('createdAt', 'asc'))
+      );
+
+      ledgerEntries = ledgerSnap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+    } catch (_) {}
+  }
+
+  const agreedAmount = Number(deal.agreedAmount || deal.agreedPrice || 0);
+
+  const thisPayment = payment
+    ? Number(payment.amountPaid || payment.amount || 0)
+    : Number(receipt.totalPaid || ledgerEntries
+        .filter(e => e.type === 'income')
+        .reduce((sum, e) => sum + Number(e.amount || 0), 0));
+
+  const totalPaid = Number(deal.totalPaid || receipt.totalPaid || thisPayment);
+  const previousPayments = Math.max(totalPaid - thisPayment, 0);
+  const balance = agreedAmount > 0
+    ? Math.max(agreedAmount - totalPaid, 0)
+    : Number(deal.balance || deal.balanceDue || 0);
+
+  const receiptNo = receipt.receiptNo || receipt.receiptNumber || payment?.receiptNumber || '—';
+  const issueDate = formatDate(receipt.createdAt || payment?.createdAt || new Date());
+
+  const clientName = deal.clientName || receipt.clientName || 'Client Full Name';
+  const clientPhone = deal.clientPhone || receipt.clientPhone || '—';
+  const clientEmail = deal.clientEmail || deal.email || '—';
+
+  const propTitle = deal.propTitle || receipt.propTitle || deal.propertyTitle || 'Property';
+  const propLocation = deal.propLocation || receipt.propLocation || deal.location || '—';
+  const propRef = deal.propertyId ? deal.propertyId.substring(0, 8).toUpperCase() : '—';
+
+  const agentName = deal.agentName || receipt.agentName || '—';
+
+  const paymentMethod = payment?.paymentMode || receipt.paymentMode || '—';
+  const transactionRef = payment?.transactionRef || receipt.transactionRef || '—';
+  const paymentDate = payment?.paymentDate || formatDate(payment?.createdAt || receipt.createdAt);
+
+  const paymentType = balance <= 0 ? 'Full Payment' : 'Part Payment';
+  const approvalStatus = payment?.approvalStatus || receipt.status || 'draft';
+
+  // Header
+  setText('.receipt-meta-item strong', receiptNo, 0);
+  setText('.receipt-meta-item strong', issueDate, 1);
+  setText('.receipt-meta-item strong', shortRef(dealId), 2);
+
+  // Hero
+  setText('.hero-client', clientName);
+  setText('.hero-desc', `Payment towards ${propTitle} — Casa Viola Properties`);
+  setText('.amount-value', money(thisPayment));
+  setText('.paid-badge', approvalStatus === 'approved' || receipt.status === 'final'
+    ? '✓ Confirmed Payment'
+    : '⏳ Pending Confirmation'
+  );
+
+  // Info cells
+  const cells = getCellValues();
+
+  if (cells[0]) cells[0].textContent = clientName;
+  if (cells[1]) cells[1].textContent = clientPhone;
+  if (cells[2]) cells[2].textContent = clientEmail;
+  if (cells[3]) cells[3].textContent = propTitle;
+  if (cells[4]) cells[4].textContent = propLocation;
+  if (cells[5]) cells[5].textContent = propRef;
+  if (cells[6]) cells[6].textContent = agentName;
+  if (cells[7]) cells[7].textContent = paymentDate || issueDate;
+  if (cells[8]) cells[8].textContent = paymentMethod;
+
+  // Table
+  const tbody = document.querySelector('.pay-table tbody');
+
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td>
+          Payment towards ${propTitle}${propLocation && propLocation !== '—' ? ` at ${propLocation}` : ''}.
+          <div class="pay-method">Property ref: ${propRef}</div>
+        </td>
+        <td><span class="pay-type">${paymentType}</span></td>
+        <td>${paymentMethod}</td>
+        <td style="font-family:monospace;font-size:11.5px;color:var(--ink3)">${transactionRef}</td>
+        <td>${rawMoney(thisPayment)}</td>
+      </tr>
+    `;
+  }
+
+  // Totals
+  const totalRows = document.querySelectorAll('.total-row .t-val');
+
+  if (totalRows[0]) totalRows[0].textContent = agreedAmount > 0 ? money(agreedAmount) : '—';
+  if (totalRows[1]) totalRows[1].textContent = money(previousPayments);
+  if (totalRows[2]) totalRows[2].textContent = money(thisPayment);
+  if (totalRows[3]) totalRows[3].textContent = money(totalPaid);
+  if (totalRows[4]) totalRows[4].textContent = money(balance);
+
+  // Notes
+  const noteCards = document.querySelectorAll('.note-text');
+
+  if (noteCards[0]) {
+    noteCards[0].innerHTML = `
+      Payment Method: ${paymentMethod}<br/>
+      Transaction Ref: ${transactionRef}<br/>
+      Payment Date: ${paymentDate || issueDate}<br/>
+      Receipt No: ${receiptNo}
+    `;
+  }
+
+  if (noteCards[1]) {
+    noteCards[1].innerHTML = `
+      This receipt confirms that the above amount has been recorded by Casa Viola Properties.
+      All payments remain subject to final confirmation by management.
+      Kindly retain this document for your records.
+    `;
+  }
+
+  const disclaimer = document.querySelector('.disclaimer');
+
+  if (disclaimer) {
+    disclaimer.textContent =
+      'This receipt is valid when confirmed by Casa Viola Properties. For official use, it may be signed and/or stamped by an authorized representative. Casa Viola Properties reserves the right to verify all transactions before transferring title or possession of any property.';
+  }
+
+  document.title = `Receipt ${receiptNo} — Casa Viola Properties`;
+}
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.href = './index.html';
+    return;
+  }
+
+  loadDocument();
+});
+</script>
+
+</body>
+</html>

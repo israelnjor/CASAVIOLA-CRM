@@ -1,0 +1,206 @@
+/* ============================================================
+   CASAVIOLA CRM — assets/mobile.css
+   Mobile sidebar: hidden by default, slides in on toggle/swipe
+   Include this on every page AFTER your main styles
+   ============================================================ */
+
+/* ── Hamburger button (mobile only) ── */
+.mob-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 500;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #17171f;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  transition: background 0.15s;
+}
+.mob-toggle:hover { background: #1f1f28; }
+.mob-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #eeeaf5;
+  border-radius: 99px;
+  transition: all 0.25s ease;
+  transform-origin: center;
+}
+/* Animate to X when open */
+.mob-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mob-toggle.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.mob-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Overlay behind sidebar ── */
+.mob-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 150;
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.mob-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ── Mobile breakpoint ── */
+@media (max-width: 768px) {
+
+  /* Show hamburger */
+  .mob-toggle { display: flex; }
+
+  /* Sidebar: off-screen by default */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 300;
+    width: 272px !important;
+  }
+
+  /* Sidebar open state */
+  .sidebar.mob-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+  }
+
+  /* Main content: full width, add top padding for hamburger */
+  .main {
+    margin-left: 0 !important;
+    max-width: 100vw !important;
+    padding: 72px 20px 60px !important;
+  }
+
+  /* Topbar adjustments */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* Stats grid: 2 columns on mobile */
+  .stats-grid,
+  .stats-strip,
+  .role-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Lower grid: stack vertically */
+  .lower-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Kanban: scroll horizontally */
+  .kanban {
+    grid-template-columns: repeat(4, 280px) !important;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Property grid: 1 column */
+  .prop-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .prop-grid.list-view .card-img {
+    width: 120px !important;
+    min-height: 100px !important;
+  }
+
+  /* Table: allow horizontal scroll */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .clients-table,
+  .users-table,
+  .leads-table {
+    min-width: 600px;
+  }
+
+  /* Filter bar: wrap */
+  .filter-bar,
+  .toolbar {
+    flex-wrap: wrap;
+  }
+  .search-wrap { max-width: 100% !important; flex: 1 1 100%; }
+
+  /* Tabs bar: full width */
+  .tabs-bar { width: 100% !important; }
+  .tab-btn  { flex: 1; justify-content: center; }
+
+  /* Modal: full screen on mobile */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 18px 18px 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: translateY(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+  }
+  .modal-overlay.open .modal {
+    transform: translateY(0) !important;
+  }
+
+  /* Notification strip */
+  .notif-strip { gap: 6px; }
+  .notif-item  { flex-wrap: wrap; gap: 8px; }
+
+  /* Session toast */
+  #cv-session-toast {
+    width: calc(100vw - 32px) !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: 20px !important;
+  }
+
+  /* Form rows: single column */
+  .form-row,
+  .form-row-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Page title */
+  .page-title,
+  .greeting {
+    font-size: 24px !important;
+  }
+
+  /* Brand in sidebar */
+  .brand-name { font-size: 15px !important; }
+
+  /* Role stats: 3 cols */
+  .role-stats {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 380px) {
+  .stats-grid,
+  .stats-strip {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .role-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .main {
+    padding: 68px 14px 60px !important;
+  }
+}
