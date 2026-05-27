@@ -6,252 +6,256 @@
 <title>Leads — Casaviola CRM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg:         #0b0b0f;
-  --surface:    #111118;
-  --surface2:   #18181f;
-  --surface3:   #1f1f28;
-  --border:     rgba(255,255,255,0.06);
-  --border2:    rgba(255,255,255,0.11);
-  --text:       #eeeaf5;
-  --text2:      #a09cb0;
-  --muted:      #5e5c6e;
-  --purple:     #7c5cbf;
-  --purple-lt:  #9d7de0;
-  --purple-dim: rgba(124,92,191,0.12);
-  --gold:       #c9a84c;
-  --gold-lt:    #e0c070;
-  --gold-dim:   rgba(201,168,76,0.1);
-  --green:      #3ecf8e;
-  --green-dim:  rgba(62,207,142,0.1);
-  --coral:      #f06b6b;
-  --coral-dim:  rgba(240,107,107,0.1);
-  --blue:       #5b9cf6;
-  --blue-dim:   rgba(91,156,246,0.1);
-  --amber:      #f59e0b;
-  --amber-dim:  rgba(245,158,11,0.1);
-  --font-disp:  'Cormorant Garamond', serif;
-  --font-body:  'Outfit', sans-serif;
-  --sidebar-w:  256px;
-  --radius:     13px;
+  --bg:#0b0b0f; --surface:#111118; --surface2:#18181f; --surface3:#1f1f28;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --text:#eeeaf5; --text2:#a09cb0; --muted:#5e5c6e;
+  --purple:#7c5cbf; --purple-lt:#9d7de0; --purple-dim:rgba(124,92,191,0.12);
+  --gold:#c9a84c; --gold-lt:#e0c070; --gold-dim:rgba(201,168,76,0.1);
+  --green:#3ecf8e; --green-dim:rgba(62,207,142,0.1);
+  --coral:#f06b6b; --coral-dim:rgba(240,107,107,0.1);
+  --blue:#5b9cf6; --blue-dim:rgba(91,156,246,0.1);
+  --amber:#f59e0b; --amber-dim:rgba(245,158,11,0.1);
+  --teal:#14b8a6; --teal-dim:rgba(20,184,166,0.1);
+  --pink:#e879f9; --pink-dim:rgba(232,121,249,0.1);
+  --font-disp:'Cormorant Garamond',serif; --font-body:'Outfit',sans-serif;
+  --sidebar-w:256px; --radius:13px;
+}
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); display:flex; min-height:100vh; overflow-x:hidden; }
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;padding:0 0 24px}
+.sidebar-top{padding:28px 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple) 0%,#5a3e9e 50%,#8a6820 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:16px;font-weight:600;color:var(--gold-lt);box-shadow:0 0 0 1px rgba(201,168,76,0.2),0 4px 16px rgba(124,92,191,0.3);flex-shrink:0}
+.brand-name{font-family:var(--font-disp);font-size:17px;font-weight:600}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-section{padding:0 12px;margin-bottom:4px}
+.nav-section-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--text2);text-decoration:none;cursor:pointer;transition:all 0.15s;position:relative;margin-bottom:1px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--purple-dim);color:var(--text);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--purple-lt),var(--gold))}
+.nav-icon{width:17px;height:17px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-spacer{flex:1}
+.sidebar-user{margin:0 12px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.user-meta{flex:1;min-width:0}
+.user-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10.5px;color:var(--muted);margin-top:1px}
+.signout-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all 0.15s}
+.signout-btn:hover{color:var(--coral);background:var(--coral-dim)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:36px 40px 60px;max-width:calc(100vw - var(--sidebar-w))}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;animation:fadeUp 0.4s ease both}
+.page-title{font-family:var(--font-disp);font-size:30px;font-weight:600;letter-spacing:-0.3px}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px;font-weight:300}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#9060d8);color:#fff;border:1px solid rgba(201,168,76,0.15)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,191,0.35)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-green{background:linear-gradient(135deg,var(--green),#2ab878);color:#0a1f14;font-weight:600;border:none}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(62,207,142,0.3)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#b88020);color:#1a1000;font-weight:600;border:none}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,0.35)}
+.btn-coral{background:var(--coral-dim);color:var(--coral);border:1px solid rgba(240,107,107,0.2)}
+.btn-coral:hover{background:rgba(240,107,107,0.18)}
+.btn:disabled{opacity:0.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* STATUS DEFINITIONS */
+:root {
+  --s-new:#9d7de0; --s-new-dim:rgba(157,125,224,0.1);
+  --s-contacted:#5b9cf6; --s-contacted-dim:rgba(91,156,246,0.1);
+  --s-vs:#f59e0b; --s-vs-dim:rgba(245,158,11,0.1);
+  --s-vc:#3ecf8e; --s-vc-dim:rgba(62,207,142,0.1);
+  --s-neg:#e879f9; --s-neg-dim:rgba(232,121,249,0.1);
+  --s-cp:#f59e0b; --s-cp-dim:rgba(245,158,11,0.1);
+  --s-cv:#3ecf8e; --s-cv-dim:rgba(62,207,142,0.1);
+  --s-ns:#f06b6b; --s-ns-dim:rgba(240,107,107,0.1);
+  --s-ri:#14b8a6; --s-ri-dim:rgba(20,184,166,0.1);
+  --s-lost:#5e5c6e; --s-lost-dim:rgba(94,92,110,0.1);
 }
 
-body { background: var(--bg); color: var(--text); font-family: var(--font-body); display: flex; min-height: 100vh; overflow-x: hidden; }
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;animation:fadeUp 0.4s ease 0.05s both}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 16px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s;cursor:pointer}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-card.active-filter{border-color:var(--purple-lt)!important;background:var(--purple-dim)}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius) var(--radius) 0 0}
+.sc-all::after      {background:linear-gradient(90deg,var(--purple),var(--purple-lt))}
+.sc-active::after   {background:linear-gradient(90deg,var(--blue),#8db8f9)}
+.sc-viewing::after  {background:linear-gradient(90deg,var(--amber),#fcd34d)}
+.sc-neg::after      {background:linear-gradient(90deg,var(--pink),#f0a0ff)}
+.sc-closed::after   {background:linear-gradient(90deg,var(--green),#6af7b8)}
+.stat-val{font-family:var(--font-disp);font-size:32px;font-weight:600;line-height:1;margin-bottom:4px}
+.sc-all    .stat-val{color:var(--purple-lt)}
+.sc-active .stat-val{color:var(--blue)}
+.sc-viewing .stat-val{color:var(--amber)}
+.sc-neg    .stat-val{color:var(--pink)}
+.sc-closed .stat-val{color:var(--green)}
+.stat-label{font-size:11.5px;color:var(--muted)}
 
-/* ══ SIDEBAR ══ */
-.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 0 0 24px; }
-.sidebar-top { padding: 28px 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.brand-mark { display: flex; align-items: center; gap: 12px; }
-.brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple) 0%, #5a3e9e 50%, #8a6820 100%); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 16px; font-weight: 600; color: var(--gold-lt); box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 16px rgba(124,92,191,0.3); flex-shrink: 0; }
-.brand-name { font-family: var(--font-disp); font-size: 17px; font-weight: 600; }
-.brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
-.nav-section { padding: 0 12px; margin-bottom: 4px; }
-.nav-section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 12px 6px; }
-.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: var(--text2); text-decoration: none; cursor: pointer; transition: all 0.15s; position: relative; margin-bottom: 1px; }
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--purple-dim); color: var(--text); font-weight: 500; }
-.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(180deg, var(--purple-lt), var(--gold)); }
-.nav-icon { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
-.nav-item.active .nav-icon { opacity: 1; }
-.nav-spacer { flex: 1; }
-.sidebar-user { margin: 0 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; gap: 10px; }
-.user-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--purple), var(--gold)); display: flex; align-items: center; justify-content: center; font-family: var(--font-disp); font-size: 13px; font-weight: 600; color: white; flex-shrink: 0; }
-.user-meta { flex: 1; min-width: 0; }
-.user-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-role { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
-.signout-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; transition: all 0.15s; }
-.signout-btn:hover { color: var(--coral); background: var(--coral-dim); }
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;animation:fadeUp 0.4s ease 0.08s both;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:300px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(124,92,191,0.4)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:11px}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 30px 9px 14px;color:var(--text2);font-family:var(--font-body);font-size:13px;outline:none;cursor:pointer;appearance:none}
+.filter-select:focus{border-color:rgba(124,92,191,0.4)}
+.results-count{margin-left:auto;font-size:12px;color:var(--muted)}
 
-/* ══ MAIN ══ */
-.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 32px 60px; max-width: calc(100vw - var(--sidebar-w)); }
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp 0.4s ease 0.1s both}
+.leads-table{width:100%;border-collapse:collapse}
+.leads-table thead th{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:13px 18px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
+.leads-table thead th:first-child{padding-left:22px}
+.leads-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.12s;cursor:pointer}
+.leads-table tbody tr:last-child{border-bottom:none}
+.leads-table tbody tr:hover{background:var(--surface2)}
+.leads-table td{padding:13px 18px;font-size:13px;vertical-align:middle}
+.leads-table td:first-child{padding-left:22px}
 
-/* ── Topbar ── */
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; animation: fadeUp 0.4s ease both; }
-.page-title { font-family: var(--font-disp); font-size: 30px; font-weight: 600; letter-spacing: -0.3px; }
-.page-sub   { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+.client-cell{display:flex;align-items:center;gap:11px}
+.client-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;flex-shrink:0}
+.client-name{font-size:13.5px;font-weight:500}
+.client-prop{font-size:11.5px;color:var(--muted);margin-top:1px}
 
-.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 9px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
-.btn-primary { background: linear-gradient(135deg, var(--purple), #9060d8); color: #fff; border: 1px solid rgba(201,168,76,0.15); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,92,191,0.35); }
-.btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--surface3); border-color: var(--border2); }
-.btn-validate { background: linear-gradient(135deg, var(--green), #2ab878); color: #0a1f14; border: none; font-weight: 600; }
-.btn-validate:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(62,207,142,0.35); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+/* Status chip */
+.status-chip{font-size:10.5px;font-weight:500;padding:3px 10px;border-radius:99px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.status-chip::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.chip-new               {background:var(--s-new-dim);      color:var(--s-new);       border:1px solid rgba(157,125,224,0.2)}
+.chip-new::before       {background:var(--s-new)}
+.chip-contacted         {background:var(--s-contacted-dim);color:var(--s-contacted); border:1px solid rgba(91,156,246,0.2)}
+.chip-contacted::before {background:var(--s-contacted)}
+.chip-viewing_scheduled {background:var(--s-vs-dim);       color:var(--s-vs);        border:1px solid rgba(245,158,11,0.2); animation:pulse-chip 2s infinite}
+.chip-viewing_scheduled::before{background:var(--s-vs)}
+.chip-viewing_completed {background:var(--s-vc-dim);       color:var(--s-vc);        border:1px solid rgba(62,207,142,0.2)}
+.chip-viewing_completed::before{background:var(--s-vc)}
+.chip-negotiation       {background:var(--s-neg-dim);      color:var(--s-neg);       border:1px solid rgba(232,121,249,0.2)}
+.chip-negotiation::before{background:var(--s-neg)}
+.chip-closed_pending    {background:var(--s-cp-dim);       color:var(--s-cp);        border:1px solid rgba(245,158,11,0.2); animation:pulse-chip 2s infinite}
+.chip-closed_pending::before{background:var(--s-cp)}
+.chip-closed_validated  {background:var(--s-cv-dim);       color:var(--s-cv);        border:1px solid rgba(62,207,142,0.2)}
+.chip-closed_validated::before{background:var(--s-cv)}
+.chip-no_show           {background:var(--s-ns-dim);       color:var(--s-ns);        border:1px solid rgba(240,107,107,0.2)}
+.chip-no_show::before   {background:var(--s-ns)}
+.chip-rescheduled       {background:var(--s-ri-dim);       color:var(--s-ri);        border:1px solid rgba(20,184,166,0.2)}
+.chip-rescheduled::before{background:var(--s-ri)}
+.chip-not_interested    {background:var(--s-lost-dim);     color:var(--s-lost);      border:1px solid rgba(94,92,110,0.2)}
+.chip-not_interested::before{background:var(--s-lost)}
+.chip-lost              {background:var(--s-lost-dim);     color:var(--s-lost);      border:1px solid rgba(94,92,110,0.2)}
+.chip-lost::before      {background:var(--s-lost)}
+@keyframes pulse-chip{0%,100%{opacity:1}50%{opacity:0.6}}
 
-/* ── Tabs ── */
-.tabs-bar { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 4px; width: fit-content; margin-bottom: 24px; animation: fadeUp 0.4s ease 0.05s both; }
-.tab-btn { padding: 8px 20px; border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-.tab-btn.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-.tab-count { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; }
-.tab-btn.active.agent   .tab-count { background: var(--purple-dim); color: var(--purple-lt); }
-.tab-btn.active.company .tab-count { background: var(--gold-dim);   color: var(--gold-lt); }
+.type-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px}
+.pill-agent  {background:var(--purple-dim);color:var(--purple-lt)}
+.pill-company{background:var(--gold-dim);  color:var(--gold-lt)}
 
-/* ══ KANBAN ══ */
-.kanban { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start; animation: fadeUp 0.4s ease 0.1s both; }
+.inv-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.inv-yes{background:var(--green)}
+.inv-no {background:var(--surface3);border:1px solid var(--border2)}
 
-.kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.empty-table{padding:72px 20px;text-align:center}
+.empty-icon {font-size:40px;opacity:0.18;margin-bottom:14px}
+.empty-title{font-family:var(--font-disp);font-size:20px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub  {font-size:13px;color:var(--muted)}
 
-.col-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: relative; }
-.col-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius) var(--radius) 0 0; }
-.col-interested .col-header::before { background: var(--purple-lt); }
-.col-viewing    .col-header::before { background: var(--gold-lt); }
-.col-pending    .col-header::before { background: var(--amber); }
-.col-validated  .col-header::before { background: var(--green); }
+/* ══ MODALS ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:0;width:600px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;transform:translateY(14px);transition:transform 0.2s;display:flex;flex-direction:column}
+.modal.wide{width:720px}
+.modal-overlay.open .modal{transform:translateY(0)}
 
-.col-title { font-family: var(--font-disp); font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.col-interested .col-dot { background: var(--purple-lt); box-shadow: 0 0 6px var(--purple); }
-.col-viewing    .col-dot { background: var(--gold-lt);   box-shadow: 0 0 6px var(--gold); }
-.col-pending    .col-dot { background: var(--amber);     box-shadow: 0 0 6px var(--amber); animation: pulse 2s ease infinite; }
-.col-validated  .col-dot { background: var(--green);     box-shadow: 0 0 6px var(--green); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:var(--font-disp);font-size:22px;font-weight:600}
+.modal-subtitle{font-size:12px;color:var(--muted);margin-top:3px}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all 0.15s;flex-shrink:0}
+.modal-close:hover{color:var(--text);background:var(--surface3)}
 
-.col-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; }
-.col-interested .col-badge { background: var(--purple-dim); color: var(--purple-lt); }
-.col-viewing    .col-badge { background: var(--gold-dim);   color: var(--gold-lt); }
-.col-pending    .col-badge { background: var(--amber-dim);  color: var(--amber); }
-.col-validated  .col-badge { background: var(--green-dim);  color: var(--green); }
+.modal-body{padding:24px 28px;flex:1}
+.modal-footer{padding:16px 28px 22px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0}
+.modal-footer .btn{flex:1;justify-content:center}
 
-.col-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 160px; }
+/* Form */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(124,92,191,0.45);box-shadow:0 0 0 3px rgba(124,92,191,0.08)}
+.form-input::placeholder{color:var(--muted);opacity:0.6}
+.form-select{appearance:none;cursor:pointer}
+.form-textarea{resize:vertical;min-height:72px;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.form-error{color:var(--coral);font-size:12px;margin-bottom:12px;padding:9px 13px;background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);border-radius:8px;display:none}
+.form-error.visible{display:block}
 
-/* ── Lead card ── */
-.lead-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 13px; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; animation: fadeUp 0.3s ease both; }
-.lead-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
-.lead-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-.lead-card.interested::before { background: var(--purple-lt); }
-.lead-card.viewing::before    { background: var(--gold-lt); }
-.lead-card.closed_pending::before  { background: var(--amber); }
-.lead-card.closed_validated::before { background: var(--green); }
-
-.card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 9px; gap: 8px; }
-.card-av { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: var(--font-disp); flex-shrink: 0; }
-.card-client  { font-size: 12.5px; font-weight: 500; }
-.card-prop    { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.card-type-pill { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; }
-.pill-agent   { background: var(--purple-dim); color: var(--purple-lt); }
-.pill-company { background: var(--gold-dim);   color: var(--gold-lt); }
-
-.card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border); }
-.card-agent { font-size: 10.5px; color: var(--muted); }
-.card-date  { font-size: 10px; color: var(--muted); }
-
-/* Validated badge on card */
-.validated-badge { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--green); margin-top: 6px; font-weight: 500; }
-
-/* Pending badge */
-.pending-badge { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--amber); margin-top: 6px; font-weight: 500; }
-
-/* Promote button */
-.card-promote { width: 100%; margin-top: 8px; padding: 6px; border-radius: 7px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); background: var(--surface3); color: var(--muted); cursor: pointer; transition: all 0.12s; text-align: center; }
-.card-promote:hover { color: var(--text); border-color: var(--border2); }
-.card-promote.to-close:hover { color: var(--amber); border-color: rgba(245,158,11,0.3); background: var(--amber-dim); }
-
-/* Empty col */
-.col-empty { text-align: center; padding: 28px 12px; color: var(--muted); font-size: 12px; }
-.col-empty-icon { font-size: 22px; margin-bottom: 6px; opacity: 0.3; }
-
-/* ══ MODAL ══ */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(6px); }
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 18px; padding: 32px; width: 560px; max-width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; transform: translateY(14px); transition: transform 0.2s; }
-.modal-overlay.open .modal { transform: translateY(0); }
-.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.modal-title { font-family: var(--font-disp); font-size: 22px; font-weight: 600; }
-.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: all 0.15s; }
-.modal-close:hover { color: var(--text); background: var(--surface3); }
-
-.form-group { margin-bottom: 18px; }
-.form-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
-.form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.15s; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: rgba(124,92,191,0.45); }
-.form-input::placeholder { color: var(--muted); opacity: 0.6; }
-.form-select { appearance: none; cursor: pointer; }
-.form-textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-error { color: var(--coral); font-size: 12px; margin-bottom: 14px; display: none; padding: 9px 12px; background: var(--coral-dim); border: 1px solid rgba(240,107,107,0.2); border-radius: 8px; }
-.form-error.visible { display: block; }
-.modal-footer { display: flex; gap: 10px; margin-top: 24px; }
-.modal-footer .btn { flex: 1; justify-content: center; }
-
-/* Gold rule */
-.gold-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 20px 0; }
+/* Checkbox */
+.check-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:9px}
+.check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--purple);cursor:pointer}
+.check-row label{font-size:13px;cursor:pointer}
 
 /* Detail sections */
-.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.detail-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-.detail-value { font-size: 13.5px; }
+.detail-section{margin-bottom:22px}
+.detail-section-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-cell{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 14px}
+.detail-label{font-size:9.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.detail-value{font-size:13.5px;font-weight:500}
+.detail-value.muted{color:var(--text2);font-weight:400}
 
-/* Status toggle row */
-.status-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.status-opt { flex: 1; min-width: 80px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); font-size: 11.5px; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.15s; }
-.status-opt:hover { color: var(--text); }
-.status-opt.s-interested { }
-.status-opt.active-interested { background: var(--purple-dim); color: var(--purple-lt); border-color: rgba(124,92,191,0.3); }
-.status-opt.active-viewing    { background: var(--gold-dim);   color: var(--gold-lt);   border-color: rgba(201,168,76,0.3); }
-.status-opt.active-closed_pending   { background: var(--amber-dim);  color: var(--amber);     border-color: rgba(245,158,11,0.3); }
-.status-opt.active-closed_validated { background: var(--green-dim);  color: var(--green);     border-color: rgba(62,207,142,0.3); }
+/* Viewing appointment box */
+.viewing-box{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(245,158,11,0.04));border:1px solid rgba(245,158,11,0.2);border-radius:11px;padding:18px;margin-bottom:18px}
+.viewing-box-title{font-family:var(--font-disp);font-size:16px;font-weight:600;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.viewing-confirmed{background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--green)}
+.viewing-unconfirmed{background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--amber)}
+
+/* Outcome buttons */
+.outcome-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px}
+.outcome-btn{padding:10px 12px;border-radius:9px;font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all 0.15s;text-align:center}
+.outcome-btn:hover{color:var(--text);border-color:var(--border2)}
+.ob-completed:hover{background:var(--green-dim);color:var(--green);border-color:rgba(62,207,142,0.3)}
+.ob-noshow:hover   {background:var(--coral-dim);color:var(--coral);border-color:rgba(240,107,107,0.3)}
+.ob-resched:hover  {background:var(--teal-dim); color:var(--teal); border-color:rgba(20,184,166,0.3)}
+.ob-lost:hover     {background:var(--s-lost-dim);color:var(--s-lost);border-color:rgba(94,92,110,0.3)}
 
 /* Activity log */
-.activity-log { display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; margin-bottom: 10px; }
-.activity-item { background: var(--surface2); border-radius: 8px; padding: 9px 12px; border-left: 2px solid var(--purple); }
-.activity-note { font-size: 12.5px; margin-bottom: 3px; }
-.activity-meta { font-size: 10.5px; color: var(--muted); }
-.activity-input-row { display: flex; gap: 8px; }
-.activity-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: var(--font-body); font-size: 13px; outline: none; }
-.activity-input:focus { border-color: rgba(124,92,191,0.4); }
+.activity-log{display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto;margin-bottom:10px}
+.activity-item{background:var(--surface2);border-radius:8px;padding:9px 12px;border-left:2px solid var(--purple)}
+.activity-note{font-size:12.5px;margin-bottom:3px}
+.activity-meta{font-size:10.5px;color:var(--muted)}
+.activity-input-row{display:flex;gap:8px}
+.activity-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none}
+.activity-input:focus{border-color:rgba(124,92,191,0.4)}
 
-/* ── Documents section ── */
-.docs-section { margin-top: 4px; }
-.docs-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-.doc-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 11px 14px; }
-.doc-icon { font-size: 18px; flex-shrink: 0; }
-.doc-info { flex: 1; min-width: 0; }
-.doc-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.doc-meta { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
-.doc-view-btn { font-size: 11px; padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface3); color: var(--text2); cursor: pointer; transition: all 0.12s; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; }
-.doc-view-btn:hover { color: var(--purple-lt); border-color: rgba(124,92,191,0.3); }
+/* Gold rule */
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin:20px 0}
 
-/* Doc type badges */
-.doc-type { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 3px; display: inline-block; }
-.dtype-purchase  { background: var(--purple-dim); color: var(--purple-lt); }
-.dtype-title     { background: var(--gold-dim);   color: var(--gold-lt); }
-.dtype-receipt   { background: var(--green-dim);  color: var(--green); }
-.dtype-other     { background: var(--surface3);   color: var(--text2); }
+/* Alert box */
+.alert-box{padding:12px 14px;border-radius:9px;font-size:12.5px;line-height:1.6;margin-bottom:16px}
+.alert-amber{background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);color:var(--amber)}
+.alert-green{background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);color:var(--green)}
+.alert-coral{background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);color:var(--coral)}
 
-/* Upload area */
-.upload-area { border: 1.5px dashed rgba(255,255,255,0.1); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
-.upload-area:hover { border-color: rgba(91,156,246,0.4); background: var(--blue-dim); }
-.upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 1; }
-.upload-icon { font-size: 24px; opacity: 0.4; margin-bottom: 6px; }
-.upload-text { font-size: 12.5px; color: var(--text2); }
-.upload-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
-
-/* Validate box */
-.validate-box { background: linear-gradient(135deg, rgba(62,207,142,0.07), rgba(62,207,142,0.03)); border: 1px solid rgba(62,207,142,0.2); border-radius: 11px; padding: 16px 18px; margin-top: 16px; }
-.validate-title { font-size: 13px; font-weight: 600; color: var(--green); margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
-.validate-sub   { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.5; }
-
-/* Checklist */
-.doc-checklist { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.check-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-.check-icon { font-size: 13px; }
-
-/* No docs warning */
-.no-docs-warn { background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.2); border-radius: 9px; padding: 11px 14px; font-size: 12px; color: var(--amber); margin-top: 12px; }
-
-/* Spinner */
-.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
 </style>
-  <link rel="stylesheet" href="../assets/mobile.css"/>
 </head>
 <body>
 
@@ -269,7 +273,15 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
     <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
     <a class="nav-item active" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a class="nav-item" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Inquiries</a>
+    <a class="nav-item" href="influencers.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Influencers</a>
     <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section" id="vine-nav" style="display:none">
+    <div class="nav-section-label">The Vine</div>
+    <a class="nav-item" href="bookings.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Bookings</a>
+    <a class="nav-item" href="vine-finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Vine Finance</a>
   </div>
   <div class="nav-section" id="admin-nav" style="display:none">
     <div class="nav-section-label">Admin</div>
@@ -282,7 +294,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
       <div class="user-name" id="sb-name">Loading...</div>
       <div class="user-role" id="sb-role">—</div>
     </div>
-    <button class="signout-btn" onclick="handleSignOut()" title="Sign out">
+    <button class="signout-btn" onclick="handleSignOut()">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
@@ -293,7 +305,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
   <div class="topbar">
     <div>
       <div class="page-title">Leads</div>
-      <div class="page-sub">Track and manage your deal pipeline</div>
+      <div class="page-sub">Manage your full deal pipeline — from first contact to validation</div>
     </div>
     <button class="btn btn-primary" id="new-lead-btn" onclick="openCreateModal()" style="display:none">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -301,36 +313,99 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     </button>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs-bar">
-    <button class="tab-btn agent active" id="tab-agent" onclick="switchTab('agent')">Agent Leads <span class="tab-count" id="count-agent">0</span></button>
-    <button class="tab-btn company"      id="tab-company" onclick="switchTab('company')">Company Leads <span class="tab-count" id="count-company">0</span></button>
+  <!-- Stat cards -->
+  <div class="stats-grid">
+    <div class="stat-card sc-all"     onclick="filterByGroup('all')"      id="sc-all">    <div class="stat-val" id="sv-all">—</div>    <div class="stat-label">All Leads</div></div>
+    <div class="stat-card sc-active"  onclick="filterByGroup('active')"   id="sc-active"> <div class="stat-val" id="sv-active">—</div>  <div class="stat-label">New & Contacted</div></div>
+    <div class="stat-card sc-viewing" onclick="filterByGroup('viewing')"  id="sc-viewing"><div class="stat-val" id="sv-viewing">—</div> <div class="stat-label">Viewing Stage</div></div>
+    <div class="stat-card sc-neg"     onclick="filterByGroup('neg')"      id="sc-neg">    <div class="stat-val" id="sv-neg">—</div>    <div class="stat-label">Negotiation</div></div>
+    <div class="stat-card sc-closed"  onclick="filterByGroup('closed')"   id="sc-closed"> <div class="stat-val" id="sv-closed">—</div>  <div class="stat-label">Closed Deals</div></div>
   </div>
 
-  <!-- Kanban -->
-  <div class="kanban" id="kanban-board">
-    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Loading leads...</div>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="text" id="search-input" placeholder="Search client, property or agent..." oninput="renderTable()"/>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="status-filter" onchange="renderTable()">
+        <option value="">All Statuses</option>
+        <option value="new">New</option>
+        <option value="contacted">Contacted</option>
+        <option value="viewing_scheduled">Viewing Scheduled</option>
+        <option value="viewing_completed">Viewing Completed</option>
+        <option value="no_show">No Show</option>
+        <option value="rescheduled">Rescheduled</option>
+        <option value="negotiation">Negotiation</option>
+        <option value="closed_pending">Closed · Pending</option>
+        <option value="closed_validated">Closed · Validated</option>
+        <option value="not_interested">Not Interested</option>
+        <option value="lost">Lost</option>
+      </select>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="type-filter" onchange="renderTable()">
+        <option value="">All Types</option>
+        <option value="agent">Agent Leads</option>
+        <option value="company">Company Leads</option>
+      </select>
+    </div>
+    <div class="results-count" id="results-count">— leads</div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="leads-table">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Status</th>
+          <th>Type</th>
+          <th>Agent</th>
+          <th>Invoice</th>
+          <th>Next Action</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="leads-tbody">
+        <tr><td colspan="7"><div class="empty-table"><div class="empty-icon">⏳</div><div class="empty-title">Loading leads...</div></div></td></tr>
+      </tbody>
+    </table>
   </div>
 </main>
 
 <!-- CREATE LEAD MODAL -->
 <div class="modal-overlay" id="create-modal">
   <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title">New Lead</div>
-      <button class="modal-close" onclick="closeCreateModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div><div class="modal-title">New Lead</div><div class="modal-subtitle">Link a client to a property</div></div>
+        <button class="modal-close" onclick="closeCreateModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Client</label><select class="form-select" id="f-client"></select></div>
-      <div class="form-group"><label class="form-label">Property</label><select class="form-select" id="f-property"></select></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Client *</label><select class="form-select" id="f-client"><option>Loading...</option></select></div>
+        <div class="form-group"><label class="form-label">Property *</label><select class="form-select" id="f-property"><option>Loading...</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Lead Type *</label>
+          <select class="form-select" id="f-type">
+            <option value="agent">Agent Lead</option>
+            <option value="company">Company Lead</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Initial Status</label>
+          <select class="form-select" id="f-status">
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes" placeholder="Initial notes..."></textarea></div>
+      <div class="form-error" id="create-error"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Lead Type</label><select class="form-select" id="f-type" onchange="onTypeChange()"><option value="agent">Agent Lead</option><option value="company">Company Lead</option></select></div>
-      <div class="form-group"><label class="form-label">Initial Status</label><select class="form-select" id="f-status"><option value="interested">Interested</option><option value="viewing">Viewing</option></select></div>
-    </div>
-    <div class="form-group" id="assign-group" style="display:none"><label class="form-label">Assign To</label><select class="form-select" id="f-assign"></select></div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="f-notes" placeholder="Initial notes about this lead..."></textarea></div>
-    <div class="form-error" id="create-error"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeCreateModal()">Cancel</button>
       <button class="btn btn-primary" id="create-btn" onclick="createLead()">Create Lead</button>
@@ -340,12 +415,53 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 
 <!-- DETAIL MODAL -->
 <div class="modal-overlay" id="detail-modal">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title" id="detail-title">Lead Detail</div>
-      <button class="modal-close" onclick="closeDetailModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-title" id="det-title">Lead Detail</div>
+          <div class="modal-subtitle" id="det-subtitle">—</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="status-chip" id="det-status-chip">—</span>
+          <button class="modal-close" onclick="closeDetailModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+      </div>
     </div>
-    <div id="detail-body"></div>
+    <div class="modal-body" id="det-body"><!-- populated by JS --></div>
+    <div class="modal-footer" id="det-footer"><!-- populated by JS --></div>
+  </div>
+</div>
+
+<!-- SCHEDULE VIEWING MODAL -->
+<div class="modal-overlay" id="viewing-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div><div class="modal-title">Schedule Viewing</div><div class="modal-subtitle" id="vm-subtitle">—</div></div>
+        <button class="modal-close" onclick="closeViewingModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Viewing Date *</label><input class="form-input" type="date" id="vm-date"/></div>
+        <div class="form-group"><label class="form-label">Viewing Time *</label><input class="form-input" type="time" id="vm-time"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Viewing Location *</label><input class="form-input" type="text" id="vm-location" placeholder="e.g. East Legon site, show unit 3B..."/></div>
+      <div class="form-group"><label class="form-label">Assigned Agent *</label><select class="form-select" id="vm-agent"><option>Loading...</option></select></div>
+      <div class="form-group">
+        <div class="check-row">
+          <input type="checkbox" id="vm-confirmed"/>
+          <label for="vm-confirmed">Client has confirmed the viewing appointment</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="vm-notes" placeholder="Any special instructions or preparation needed..."></textarea></div>
+      <div class="form-error" id="vm-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeViewingModal()">Cancel</button>
+      <button class="btn btn-gold" id="vm-save-btn" onclick="saveViewing()">📅 Schedule Viewing</button>
+    </div>
   </div>
 </div>
 
@@ -354,48 +470,65 @@ import '../js/session.js';
 import { auth, db, storage } from '../js/firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  collection, query, where, orderBy, getDocs, addDoc,
-  doc, getDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion,
-  collectionGroup
+  collection, query, where, orderBy, getDocs, addDoc, deleteDoc,
+  doc, getDoc, updateDoc, serverTimestamp, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
-  ref, uploadBytesResumable, getDownloadURL
+  ref, uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // ── State ──
 let currentUser = null, currentRole = null, currentName = '';
-let currentTab  = 'agent';
-let allLeads    = { agent: [], company: [] };
-let selectedLead = null;
+let allLeads = [], filteredLeads = [];
 let clientsMap = {}, propertiesMap = {}, usersMap = {};
-let clientsList = [], propertiesList = [], usersList = [];
+let clientsList = [], propertiesList = [], agentsList = [];
+let selectedLead = null;
+let activeGroup  = 'all';
+
+// ── Status config ──
+const STATUS_LABELS = {
+  new:               'New',
+  contacted:         'Contacted',
+  viewing_scheduled: 'Viewing Scheduled',
+  viewing_completed: 'Viewing Completed',
+  no_show:           'No Show',
+  rescheduled:       'Rescheduled',
+  negotiation:       'Negotiation',
+  closed_pending:    'Closed · Pending',
+  closed_validated:  'Closed · Validated',
+  not_interested:    'Not Interested',
+  lost:              'Lost',
+};
+
+const STATUS_NEXT_ACTION = {
+  new:               'Contact client',
+  contacted:         'Schedule viewing',
+  viewing_scheduled: 'Conduct viewing',
+  viewing_completed: 'Move to negotiation',
+  no_show:           'Reschedule or mark lost',
+  rescheduled:       'Viewing pending',
+  negotiation:       'Issue invoice',
+  closed_pending:    'Upload documents',
+  closed_validated:  '✅ Complete',
+  not_interested:    '—',
+  lost:              '—',
+};
 
 // ── Helpers ──
 const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
-function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
-function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function getColor(s){ if(!s) return avatarColors[0]; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n){ if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
 function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
-function statusLabel(s) {
-  const map = { interested:'Interested', viewing:'Viewing', closed_pending:'Closed · Pending', closed_validated:'Closed · Validated' };
-  return map[s] || capitalize(s);
-}
-function docTypeLabel(t) {
-  const map = { purchase_agreement:'Purchase Agreement', land_title:'Land Title', payment_receipt:'Payment Receipt', other:'Other' };
-  return map[t] || t;
-}
-function docTypeClass(t) {
-  const map = { purchase_agreement:'dtype-purchase', land_title:'dtype-title', payment_receipt:'dtype-receipt', other:'dtype-other' };
-  return map[t] || 'dtype-other';
-}
-function docIcon(name) {
-  if (!name) return '📄';
-  const ext = name.split('.').pop().toLowerCase();
-  if (ext === 'pdf') return '📋';
-  if (['jpg','jpeg','png','webp'].includes(ext)) return '🖼️';
-  if (['doc','docx'].includes(ext)) return '📝';
-  return '📄';
-}
+function statusLabel(s){ return STATUS_LABELS[s] || capitalize(s||''); }
+function statusChip(s){ return `<span class="status-chip chip-${s}">${statusLabel(s)}</span>`; }
+function animCount(id,val,dur=700){ const el=document.getElementById(id);if(!el)return;let start=null;const step=ts=>{if(!start)start=ts;const p=Math.min((ts-start)/dur,1);el.textContent=Math.floor(p*val);if(p<1)requestAnimationFrame(step);else el.textContent=val;};requestAnimationFrame(step); }
+
+const ACTIVE_STATUSES  = ['new','contacted'];
+const VIEWING_STATUSES = ['viewing_scheduled','viewing_completed','no_show','rescheduled'];
+const NEG_STATUSES     = ['negotiation'];
+const CLOSED_STATUSES  = ['closed_pending','closed_validated'];
+const LOST_STATUSES    = ['not_interested','lost'];
 
 // ── Auth ──
 onAuthStateChanged(auth, async user => {
@@ -410,278 +543,220 @@ onAuthStateChanged(auth, async user => {
   document.getElementById('sb-role').textContent   = capitalize(data.role);
   document.getElementById('sb-avatar').textContent = initials(data.name);
   if (['admin','ceo'].includes(data.role)) document.getElementById('admin-nav').style.display = 'block';
+  if (['admin','ceo','cs','finance','listings'].includes(data.role)) document.getElementById('vine-nav').style.display = 'block';
+  if (['agent','listings','admin'].includes(data.role)) document.getElementById('new-lead-btn').style.display = '';
 
-  // Tab visibility
-  if (currentRole === 'agent') {
-    document.getElementById('tab-company').style.display = 'none';
-  } else if (currentRole === 'listings') {
-    document.getElementById('tab-agent').style.display = 'none';
-    currentTab = 'company';
-    document.getElementById('tab-company').classList.add('active');
-    document.getElementById('tab-agent').classList.remove('active');
-  }
-
-  // Show new lead button for agents, listings, admin
-  if (['agent','listings','admin'].includes(currentRole)) {
-    document.getElementById('new-lead-btn').style.display = '';
-  }
-
-  await loadLookupMaps();
+  await loadLookups();
   await loadLeads();
-  populateCreateForm();
 });
 
-// ── Lookup maps (loaded once) ──
-async function loadLookupMaps() {
-  const clientQ = currentRole === 'agent'
-    ? query(collection(db,'clients'), where('createdBy','==',currentUser.uid))
-    : collection(db,'clients');
-
-  const [clientsSnap, propsSnap, usersSnap] = await Promise.all([
-    getDocs(clientQ),
+// ── Load lookup maps ──
+async function loadLookups() {
+  const [cSnap, pSnap, uSnap] = await Promise.all([
+    getDocs(collection(db,'clients')),
     getDocs(collection(db,'properties')),
     getDocs(collection(db,'users')),
   ]);
-
-  clientsSnap.forEach(d => { clientsMap[d.id] = d.data(); clientsList.push({ id: d.id, ...d.data() }); });
-  propsSnap.forEach(d   => { propertiesMap[d.id] = d.data(); propertiesList.push({ id: d.id, ...d.data() }); });
-  usersSnap.forEach(d   => { usersMap[d.id] = d.data(); usersList.push({ id: d.id, ...d.data() }); });
+  cSnap.forEach(d => { clientsMap[d.id]    = d.data(); clientsList.push({id:d.id,...d.data()}); });
+  pSnap.forEach(d => { propertiesMap[d.id] = d.data(); propertiesList.push({id:d.id,...d.data()}); });
+  uSnap.forEach(d => {
+    usersMap[d.id] = d.data();
+    if (d.data().role === 'agent') agentsList.push({id:d.id,...d.data()});
+  });
 }
 
 // ── Load leads ──
 async function loadLeads() {
-  document.getElementById('kanban-board').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Loading...</div>';
   try {
-    let agentQ = null, companyQ = null;
+    let q;
     if (currentRole === 'agent') {
-      agentQ = query(collection(db,'leads'), where('createdBy','==',currentUser.uid), where('leadType','==','agent'), orderBy('createdAt','desc'));
+      q = query(collection(db,'leads'), where('createdBy','==',currentUser.uid), orderBy('createdAt','desc'));
     } else if (currentRole === 'listings') {
-      companyQ = query(collection(db,'leads'), where('leadType','==','company'), orderBy('createdAt','desc'));
+      q = query(collection(db,'leads'), where('leadType','==','company'), orderBy('createdAt','desc'));
     } else {
-      agentQ   = query(collection(db,'leads'), where('leadType','==','agent'),   orderBy('createdAt','desc'));
-      companyQ = query(collection(db,'leads'), where('leadType','==','company'), orderBy('createdAt','desc'));
+      q = query(collection(db,'leads'), orderBy('createdAt','desc'));
     }
+    const snap = await getDocs(q);
+    allLeads = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id, ...data,
+        clientName: data.clientName  || clientsMap[data.clientId]?.name      || 'Unknown Client',
+        propTitle:  data.propTitle   || propertiesMap[data.propertyId]?.title || 'Unknown Property',
+        agentName:  data.agentName   || usersMap[data.createdBy]?.name        || 'Unknown',
+        // Invoice status starts from lead flag; enriched below from subcollection
+        invoiceIssued: data.invoiceIssued || false,
+        invoiceId:     data.invoiceId     || null,
+      };
+    });
 
-    const [agentSnap, companySnap] = await Promise.all([
-      agentQ   ? getDocs(agentQ)   : Promise.resolve({ docs: [] }),
-      companyQ ? getDocs(companyQ) : Promise.resolve({ docs: [] }),
-    ]);
+    // Enrich invoice status from subcollections for closed/negotiation leads
+    // We only check leads that matter (negotiation + closed) to avoid too many reads
+    const leadsToCheck = allLeads.filter(l =>
+      ['negotiation','closed_pending','closed_validated'].includes(l.status)
+    );
+    await Promise.all(leadsToCheck.map(async lead => {
+      try {
+        const invSnap = await getDocs(collection(db,'leads',lead.id,'invoices'));
+        if (!invSnap.empty) {
+          lead.invoiceIssued = true;
+          lead.invoiceId     = invSnap.docs[0].id;
+        }
+      } catch(_) {}
+    }));
 
-    allLeads.agent   = agentSnap.docs.map(d   => resolveLead(d));
-    allLeads.company = companySnap.docs.map(d => resolveLead(d));
+    updateStats();
+    renderTable();
+  } catch(e) { console.error('loadLeads error:', e); }
+}
 
-    document.getElementById('count-agent').textContent   = allLeads.agent.length;
-    document.getElementById('count-company').textContent = allLeads.company.length;
+// ── Stat cards ──
+function updateStats() {
+  const c = { all: allLeads.length, active:0, viewing:0, neg:0, closed:0 };
+  allLeads.forEach(l => {
+    if (ACTIVE_STATUSES.includes(l.status))  c.active++;
+    if (VIEWING_STATUSES.includes(l.status)) c.viewing++;
+    if (NEG_STATUSES.includes(l.status))     c.neg++;
+    if (CLOSED_STATUSES.includes(l.status))  c.closed++;
+  });
+  animCount('sv-all',     c.all);
+  animCount('sv-active',  c.active);
+  animCount('sv-viewing', c.viewing);
+  animCount('sv-neg',     c.neg);
+  animCount('sv-closed',  c.closed);
+}
 
-    renderKanban(currentTab);
-  } catch(e) {
-    console.error('loadLeads error:', e);
-    document.getElementById('kanban-board').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--coral)">Error loading leads: ${e.message}</div>`;
+// ── Filter by stat card ──
+window.filterByGroup = (group) => {
+  activeGroup = group;
+  ['all','active','viewing','neg','closed'].forEach(g => {
+    document.getElementById(`sc-${g}`).classList.toggle('active-filter', g === group);
+  });
+  document.getElementById('status-filter').value = '';
+  renderTable();
+};
+
+// ── Render table ──
+window.renderTable = () => {
+  const search  = document.getElementById('search-input').value.toLowerCase().trim();
+  const statusF = document.getElementById('status-filter').value;
+  const typeF   = document.getElementById('type-filter').value;
+
+  let leads = allLeads.filter(l => {
+    const matchSearch = !search
+      || (l.clientName||'').toLowerCase().includes(search)
+      || (l.propTitle ||'').toLowerCase().includes(search)
+      || (l.agentName ||'').toLowerCase().includes(search);
+    const matchType   = !typeF   || l.leadType === typeF;
+    const matchStatus = !statusF || l.status   === statusF;
+    const matchGroup  = activeGroup === 'all'
+      || (activeGroup === 'active'  && ACTIVE_STATUSES.includes(l.status))
+      || (activeGroup === 'viewing' && VIEWING_STATUSES.includes(l.status))
+      || (activeGroup === 'neg'     && NEG_STATUSES.includes(l.status))
+      || (activeGroup === 'closed'  && CLOSED_STATUSES.includes(l.status));
+    return matchSearch && matchType && matchStatus && matchGroup;
+  });
+
+  filteredLeads = leads;
+  document.getElementById('results-count').textContent = `${leads.length} lead${leads.length!==1?'s':''}`;
+  const tbody = document.getElementById('leads-tbody');
+
+  if (leads.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-table"><div class="empty-icon">📋</div><div class="empty-title">No leads found</div><div class="empty-sub">Try a different filter or create a new lead</div></div></td></tr>`;
+    return;
   }
-}
 
-function resolveLead(docSnap) {
-  const data = docSnap.data();
-  return {
-    id: docSnap.id, ...data,
-    clientName: data.clientName  || clientsMap[data.clientId]?.name     || 'Unknown Client',
-    propTitle:  data.propTitle   || propertiesMap[data.propertyId]?.title || 'Unknown Property',
-    agentName:  data.agentName   || usersMap[data.createdBy]?.name       || 'Unknown',
-  };
-}
-
-// ── Render Kanban ──
-function renderKanban(tab) {
-  const leads = allLeads[tab] || [];
-  const cols  = { interested: [], viewing: [], closed_pending: [], closed_validated: [] };
-  leads.forEach(l => { if (cols[l.status] !== undefined) cols[l.status].push(l); else cols['interested'].push(l); });
-
-  document.getElementById('kanban-board').innerHTML = `
-    ${renderCol('interested',      '🔵 Interested',       cols.interested)}
-    ${renderCol('viewing',         '🟡 Viewing',          cols.viewing)}
-    ${renderCol('closed_pending',  '🟠 Closed · Pending', cols.closed_pending)}
-    ${renderCol('closed_validated','✅ Validated',         cols.closed_validated)}
-  `;
-
-  document.querySelectorAll('.lead-card').forEach(card => {
-    card.addEventListener('click', e => {
-      if (e.target.closest('.card-promote')) return;
-      openDetailModal(card.dataset.id, tab);
-    });
-  });
-
-  document.querySelectorAll('.card-promote').forEach(btn => {
-    btn.addEventListener('click', async e => {
-      e.stopPropagation();
-      await promoteFromCard(btn.dataset.id, tab);
-    });
-  });
-}
-
-function renderCol(status, label, leads) {
-  const colClass = {
-    interested: 'col-interested', viewing: 'col-viewing',
-    closed_pending: 'col-pending', closed_validated: 'col-validated'
-  }[status] || '';
-
-  return `
-    <div class="kanban-col ${colClass}">
-      <div class="col-header">
-        <div class="col-title"><div class="col-dot"></div>${label}</div>
-        <div class="col-badge">${leads.length}</div>
-      </div>
-      <div class="col-body">
-        ${leads.length === 0
-          ? `<div class="col-empty"><div class="col-empty-icon">◦</div>No leads</div>`
-          : leads.map(l => renderCard(l, status)).join('')}
-      </div>
-    </div>`;
-}
-
-function renderCard(lead, status) {
-  const color = getColor(lead.clientName);
-  const canPromote = (
-    (status === 'interested' && ['agent','listings','admin'].includes(currentRole))
-    || (status === 'viewing'   && ['agent','listings','admin'].includes(currentRole))
-  );
-  const promoteLabel = status === 'interested' ? '→ Viewing' : status === 'viewing' ? '→ Close Deal' : '';
-
-  const statusNote = status === 'closed_pending'
-    ? `<div class="pending-badge">⏳ Awaiting documents & validation</div>`
-    : status === 'closed_validated'
-    ? `<div class="validated-badge">✅ Deal validated</div>`
-    : '';
-
-  return `
-    <div class="lead-card ${status}" data-id="${lead.id}">
-      <div class="card-top">
-        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
-          <div class="card-av" style="background:${color}22;color:${color}">${initials(lead.clientName)}</div>
-          <div style="min-width:0">
-            <div class="card-client">${lead.clientName}</div>
-            <div class="card-prop">🏠 ${lead.propTitle}</div>
+  tbody.innerHTML = leads.map((l,i) => {
+    const color = getColor(l.clientName);
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both" onclick="openDetail('${l.id}')">
+        <td>
+          <div class="client-cell">
+            <div class="client-av" style="background:${color}22;color:${color}">${initials(l.clientName)}</div>
+            <div>
+              <div class="client-name">${l.clientName}</div>
+              <div class="client-prop">🏠 ${l.propTitle}</div>
+            </div>
           </div>
-        </div>
-        <span class="card-type-pill pill-${lead.leadType}">${capitalize(lead.leadType)}</span>
-      </div>
-      ${statusNote}
-      <div class="card-meta">
-        <div class="card-agent">${lead.agentName}</div>
-        <div class="card-date">${formatDate(lead.createdAt)}</div>
-      </div>
-      ${canPromote ? `<button class="card-promote to-close" data-id="${lead.id}">${promoteLabel}</button>` : ''}
-    </div>`;
-}
-
-// ── Promote from card button ──
-async function promoteFromCard(leadId, tab) {
-  const lead = allLeads[tab].find(l => l.id === leadId);
-  if (!lead) return;
-  const newStatus = lead.status === 'interested' ? 'viewing' : 'closed_pending';
-  await updateDoc(doc(db,'leads',leadId), { status: newStatus, updatedAt: serverTimestamp() });
-
-  // Notify admin when deal is closed
-  if (newStatus === 'closed_pending') {
-    await notifyAdmin(lead);
-  }
-
-  lead.status = newStatus;
-  renderKanban(tab);
-}
-
-// ── Notify admin on close ──
-async function notifyAdmin(lead) {
-  try {
-    // Find all admin users and create a notification for each
-    const admins = usersList.filter(u => u.role === 'admin' && u.isActive !== false);
-    await Promise.all(admins.map(admin =>
-      addDoc(collection(db,'notifications'), {
-        userId:    admin.id,
-        type:      'deal_closed',
-        message:   `${lead.agentName} closed a deal — ${lead.clientName} · ${lead.propTitle}`,
-        relatedId: lead.id,
-        isRead:    false,
-        createdAt: serverTimestamp(),
-      })
-    ));
-  } catch(e) { console.error('Notify error:', e); }
-}
-
-// ── Tab switch ──
-window.switchTab = (tab) => {
-  currentTab = tab;
-  document.getElementById('tab-agent').classList.toggle('active', tab === 'agent');
-  document.getElementById('tab-company').classList.toggle('active', tab === 'company');
-  renderKanban(tab);
+        </td>
+        <td>${statusChip(l.status)}</td>
+        <td><span class="type-pill pill-${l.leadType}">${capitalize(l.leadType)}</span></td>
+        <td style="font-size:12px;color:var(--text2)">${l.agentName}</td>
+        <td style="text-align:center">
+          <span class="inv-dot ${l.invoiceIssued?'inv-yes':'inv-no'}" title="${l.invoiceIssued?'Invoice issued':'No invoice yet'}"></span>
+        </td>
+        <td style="font-size:11.5px;color:var(--muted)">${STATUS_NEXT_ACTION[l.status]||'—'}</td>
+        <td style="font-size:12px;color:var(--muted);white-space:nowrap">${formatDate(l.createdAt)}</td>
+      </tr>`;
+  }).join('');
 };
 
-// ── Create Lead ──
-window.openCreateModal  = () => document.getElementById('create-modal').classList.add('open');
-window.closeCreateModal = () => document.getElementById('create-modal').classList.remove('open');
-
-function populateCreateForm() {
-  document.getElementById('f-client').innerHTML   = clientsList.length   ? clientsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('')   : '<option>No clients yet</option>';
-  document.getElementById('f-property').innerHTML = propertiesList.length ? propertiesList.map(p => `<option value="${p.id}">${p.title}</option>`).join('') : '<option>No properties yet</option>';
-  document.getElementById('f-assign').innerHTML   = usersList.length      ? usersList.map(u => `<option value="${u.id}">${u.name} (${capitalize(u.role)})</option>`).join('') : '<option>No users</option>';
-  if (currentRole === 'agent') document.getElementById('f-type').innerHTML = '<option value="agent">Agent Lead</option>';
-}
-
-window.onTypeChange = () => {
-  document.getElementById('assign-group').style.display = document.getElementById('f-type').value === 'company' ? 'block' : 'none';
-};
-
-window.createLead = async () => {
-  const clientId   = document.getElementById('f-client').value;
-  const propertyId = document.getElementById('f-property').value;
-  const leadType   = document.getElementById('f-type').value;
-  const status     = document.getElementById('f-status').value;
-  const notes      = document.getElementById('f-notes').value.trim();
-  const assignedTo = document.getElementById('f-assign').value;
-  const errEl      = document.getElementById('create-error');
-  const btn        = document.getElementById('create-btn');
-
-  errEl.classList.remove('visible');
-  if (!clientId || !propertyId) { errEl.textContent = 'Select a client and property.'; errEl.classList.add('visible'); return; }
-  if (currentRole === 'agent' && leadType !== 'agent') { errEl.textContent = 'Agents can only create agent leads.'; errEl.classList.add('visible'); return; }
-
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Creating...';
-  try {
-    const leadData = {
-      clientId, propertyId, leadType, status,
-      createdBy:   currentUser.uid,
-      assignedTo:  leadType === 'company' ? assignedTo : null,
-      clientName:  clientsMap[clientId]?.name       || '',
-      propTitle:   propertiesMap[propertyId]?.title || '',
-      agentName:   usersMap[currentUser.uid]?.name  || '',
-      notes, referralCode: null,
-      activityLog: notes ? [{ note: notes, by: currentUser.uid, byName: currentName, timestamp: new Date().toISOString() }] : [],
-      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
-    };
-    const ref = await addDoc(collection(db,'leads'), leadData);
-    const newLead = { id: ref.id, ...leadData, createdAt: { toDate: () => new Date() } };
-    allLeads[leadType === 'agent' ? 'agent' : 'company'].unshift(newLead);
-    document.getElementById('count-agent').textContent   = allLeads.agent.length;
-    document.getElementById('count-company').textContent = allLeads.company.length;
-    renderKanban(currentTab);
-    closeCreateModal();
-    document.getElementById('f-notes').value = '';
-  } catch(e) {
-    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Create Lead';
-  }
-};
-
-// ── Detail Modal ──
-window.openDetailModal = async (leadId, tab) => {
-  selectedLead = allLeads[tab].find(l => l.id === leadId);
+// ─────────────────────────────────────────────
+// DETAIL MODAL
+// ─────────────────────────────────────────────
+window.openDetail = async (leadId) => {
+  selectedLead = allLeads.find(l => l.id === leadId);
   if (!selectedLead) return;
 
-  // Load documents from subcollection
-  const docsSnap = await getDocs(collection(db,'leads',leadId,'documents'));
-  selectedLead._docs = docsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  document.getElementById('det-title').textContent    = selectedLead.clientName;
+  document.getElementById('det-subtitle').textContent = `🏠 ${selectedLead.propTitle} · ${selectedLead.agentName}`;
+  document.getElementById('det-status-chip').className   = `status-chip chip-${selectedLead.status}`;
+  document.getElementById('det-status-chip').textContent = statusLabel(selectedLead.status);
 
-  renderDetailModal(selectedLead);
+  // Always fetch real subcollection counts from Firestore before rendering
+  // This guarantees the detail modal reflects reality, not just cached flags
+  try {
+    const [invSnap, rcpSnap, docSnap] = await Promise.all([
+      getDocs(collection(db,'leads',leadId,'invoices')),
+      getDocs(collection(db,'leads',leadId,'receipts')),
+      getDocs(collection(db,'leads',leadId,'documents')),
+    ]);
+
+    // Build docType → downloadURL map for clickable links
+    const docUrls  = {};
+    const docTypes = [];
+    docSnap.docs.forEach(d => {
+      const dt  = d.data().docType || '';
+      const url = d.data().downloadURL || d.data().url || '';
+      if (dt) {
+        docTypes.push(dt);
+        if (url) docUrls[dt] = url;
+      }
+    });
+
+    selectedLead._checks = {
+      hasInvoice:           !invSnap.empty,
+      invoiceId:            invSnap.empty ? null : invSnap.docs[0].id,
+      hasReceipt:           !rcpSnap.empty,
+      receiptCount:         rcpSnap.size,
+      hasDocuments:         !docSnap.empty,
+      docCount:             docSnap.size,
+      // Specific required documents
+      hasPurchaseAgreement: docTypes.includes('purchase_agreement'),
+      hasLandTitle:         docTypes.includes('land_title'),
+      hasFinalReceipt:      docTypes.includes('final_receipt'),
+      allDocsPresent:       docTypes.includes('purchase_agreement') && docTypes.includes('land_title') && docTypes.includes('final_receipt'),
+      docUrls,
+    };
+
+    // Sync invoice status back to in-memory lead
+    if (!invSnap.empty) {
+      selectedLead.invoiceIssued = true;
+      selectedLead.invoiceId     = invSnap.docs[0].id;
+      const idx = allLeads.findIndex(l => l.id === leadId);
+      if (idx !== -1) { allLeads[idx].invoiceIssued = true; allLeads[idx].invoiceId = invSnap.docs[0].id; }
+    }
+  } catch(e) {
+    console.error('Subcollection check error:', e);
+    selectedLead._checks = {
+      hasInvoice: selectedLead.invoiceIssued||false,
+      hasReceipt: false, hasDocuments: false,
+      hasPurchaseAgreement: false, hasLandTitle: false, hasFinalReceipt: false,
+      allDocsPresent: false, docUrls: {},
+    };
+  }
+
+  renderDetailBody();
   document.getElementById('detail-modal').classList.add('open');
 };
 
@@ -690,180 +765,422 @@ window.closeDetailModal = () => {
   selectedLead = null;
 };
 
-function renderDetailModal(lead) {
-  document.getElementById('detail-title').textContent = lead.clientName;
-  const log  = (lead.activityLog || []).slice().reverse();
-  const docs = lead._docs || [];
-  const isAdmin    = currentRole === 'admin';
-  const isCEO      = currentRole === 'ceo';
-  const isCS       = currentRole === 'cs';
-  const isClosedPending   = lead.status === 'closed_pending';
-  const isClosedValidated = lead.status === 'closed_validated';
-  const isClosed = isClosedPending || isClosedValidated;
+function renderDetailBody() {
+  const l = selectedLead;
+  const isAdmin     = ['admin','ceo'].includes(currentRole);
+  const isOwner     = currentRole === 'agent' && l.createdBy === currentUser.uid;
+  const isListings  = currentRole === 'listings' && l.leadType === 'company';
+  const canEdit     = isAdmin || isOwner || isListings;
+  const isLocked    = l.status === 'closed_validated';
+  const isLost      = ['not_interested','lost'].includes(l.status);
 
-  // Status options — who can change what
-  const canChangeStatus = isAdmin
-    || (currentRole === 'agent'    && lead.leadType === 'agent')
-    || (currentRole === 'listings' && lead.leadType === 'company');
-
-  // Status buttons — validated only by admin
-  const statusOpts = ['interested','viewing','closed_pending'].map(s => {
-    if (s === 'closed_pending' && !['agent','listings','admin'].includes(currentRole)) return '';
-    return `<button class="status-opt active-${lead.status === s ? s : ''}" onclick="changeStatus('${s}')">${statusLabel(s)}</button>`;
-  }).join('');
-
-  // Documents section — visible to admin, ceo, cs only
-  const canSeeDocs  = isAdmin || isCEO || isCS;
-  const canUpload   = isCS && isClosed;
-  const canValidate = isAdmin && isClosedPending && docs.length >= 3;
-
-  // Check which required docs are present
-  const hasPA  = docs.some(d => d.docType === 'purchase_agreement');
-  const hasLT  = docs.some(d => d.docType === 'land_title');
-  const hasPR  = docs.some(d => d.docType === 'payment_receipt');
-
-  const docsHtml = canSeeDocs ? `
-    <div class="gold-rule"></div>
-    <div class="docs-section">
-      <div class="form-label" style="margin-bottom:12px">📁 Deal Documents</div>
-
-      ${docs.length > 0 ? `
-        <div class="docs-list">
-          ${docs.map(d => `
-            <div class="doc-item">
-              <div class="doc-icon">${docIcon(d.fileName)}</div>
-              <div class="doc-info">
-                <div class="doc-name">${d.fileName || 'Document'}</div>
-                <div class="doc-meta">${d.uploaderName || '—'} · ${formatDate(d.createdAt)}</div>
-                <span class="doc-type ${docTypeClass(d.docType)}">${docTypeLabel(d.docType)}</span>
-              </div>
-              <a class="doc-view-btn" href="${d.fileUrl}" target="_blank" rel="noopener">View ↗</a>
-            </div>`).join('')}
-        </div>` : `<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No documents uploaded yet.</div>`}
-
-      ${canUpload ? `
-        <div class="form-group">
-          <label class="form-label">Document Type</label>
-          <select class="form-select" id="doc-type-sel">
-            <option value="purchase_agreement">Purchase Agreement</option>
-            <option value="land_title">Land Title</option>
-            <option value="payment_receipt">Payment Receipt</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Upload File</label>
-          <div class="upload-area">
-            <input type="file" id="doc-file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleDocSelect(event)"/>
-            <div class="upload-icon">📎</div>
-            <div class="upload-text" id="doc-upload-text">Click to select a file</div>
-            <div class="upload-hint">PDF, Image or Word · Max 10MB</div>
-          </div>
-        </div>
-        <button class="btn btn-ghost" style="width:100%;justify-content:center" id="upload-doc-btn" onclick="uploadDocument()">Upload Document</button>
-      ` : ''}
-
-      ${isAdmin && isClosedPending ? `
-        <div class="validate-box">
-          <div class="validate-title">✅ Validate This Deal</div>
-          <div class="validate-sub">All three required documents must be uploaded by CS before you can validate.</div>
-          <div class="doc-checklist">
-            <div class="check-item"><span class="check-icon">${hasPA ? '✅' : '⬜'}</span>Purchase Agreement</div>
-            <div class="check-item"><span class="check-icon">${hasLT ? '✅' : '⬜'}</span>Land Title</div>
-            <div class="check-item"><span class="check-icon">${hasPR ? '✅' : '⬜'}</span>Payment Receipt</div>
-          </div>
-          ${canValidate
-            ? `<button class="btn btn-validate" style="width:100%;justify-content:center" onclick="validateDeal()">✅ Validate Deal</button>`
-            : `<div class="no-docs-warn">⚠️ Upload all 3 required documents before validating.</div>`}
-        </div>
-      ` : ''}
-
-      ${isClosedValidated ? `
-        <div style="background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);border-radius:9px;padding:13px 16px;font-size:13px;color:var(--green);display:flex;align-items:center;gap:8px">
-          ✅ This deal has been validated and is permanently on record.
-        </div>
-      ` : ''}
-    </div>` : '';
-
-  document.getElementById('detail-body').innerHTML = `
-    <div class="detail-grid">
-      <div><div class="detail-label">Property</div><div class="detail-value">🏠 ${lead.propTitle}</div></div>
-      <div><div class="detail-label">Created By</div><div class="detail-value" style="font-size:13px">${lead.agentName}</div></div>
-      <div><div class="detail-label">Lead Type</div><div class="detail-value"><span class="card-type-pill pill-${lead.leadType}">${capitalize(lead.leadType)}</span></div></div>
-      <div><div class="detail-label">Date</div><div class="detail-value" style="font-size:13px;color:var(--text2)">${formatDate(lead.createdAt)}</div></div>
-    </div>
-
-    ${canChangeStatus && !isClosedValidated ? `
-      <div class="form-group">
-        <div class="detail-label" style="margin-bottom:8px">Status</div>
-        <div class="status-row">${statusOpts}</div>
-      </div>` : `
-      <div class="form-group">
-        <div class="detail-label" style="margin-bottom:6px">Status</div>
-        <div class="status-opt active-${lead.status}" style="display:inline-block;cursor:default">${statusLabel(lead.status)}</div>
-      </div>`}
-
-    <div class="gold-rule"></div>
-
-    <div class="form-group">
-      <div class="detail-label" style="margin-bottom:8px">Activity Log</div>
-      <div class="activity-log">
-        ${log.length === 0
-          ? '<div style="color:var(--muted);font-size:13px">No activity yet.</div>'
-          : log.map(a => `
-            <div class="activity-item">
-              <div class="activity-note">${a.note}</div>
-              <div class="activity-meta">${a.byName || ''} · ${new Date(a.timestamp).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
-            </div>`).join('')}
+  // ── Main info ──
+  let html = `
+    <div class="detail-section">
+      <div class="detail-section-title">Lead Information</div>
+      <div class="detail-grid">
+        <div class="detail-cell"><div class="detail-label">Client</div><div class="detail-value">${l.clientName}</div></div>
+        <div class="detail-cell"><div class="detail-label">Property</div><div class="detail-value">${l.propTitle}</div></div>
+        <div class="detail-cell"><div class="detail-label">Lead Type</div><div class="detail-value"><span class="type-pill pill-${l.leadType}">${capitalize(l.leadType)}</span></div></div>
+        <div class="detail-cell"><div class="detail-label">Agent</div><div class="detail-value muted">${l.agentName}</div></div>
+        <div class="detail-cell"><div class="detail-label">Created</div><div class="detail-value muted">${formatDate(l.createdAt)}</div></div>
+        <div class="detail-cell"><div class="detail-label">Invoice</div><div class="detail-value">${l.invoiceIssued?'<span style="color:var(--green)">✓ Issued</span>':'<span style="color:var(--muted)">Not issued</span>'}</div></div>
       </div>
-      ${!isClosedValidated ? `
+    </div>`;
+
+  // ── Viewing appointment ──
+  if (['viewing_scheduled','viewing_completed','no_show','rescheduled'].includes(l.status) && l.viewingDate) {
+    html += `
+      <div class="viewing-box">
+        <div class="viewing-box-title">
+          📅 Viewing Appointment
+          ${l.viewingConfirmed
+            ? '<span class="viewing-confirmed">✓ Client Confirmed</span>'
+            : '<span class="viewing-unconfirmed">⏳ Awaiting Confirmation</span>'}
+        </div>
+        <div class="detail-grid">
+          <div class="detail-cell"><div class="detail-label">Date</div><div class="detail-value">${l.viewingDate}</div></div>
+          <div class="detail-cell"><div class="detail-label">Time</div><div class="detail-value">${l.viewingTime||'—'}</div></div>
+          <div class="detail-cell"><div class="detail-label">Location</div><div class="detail-value muted">${l.viewingLocation||'—'}</div></div>
+          <div class="detail-cell"><div class="detail-label">Viewing Agent</div><div class="detail-value muted">${l.viewingAgentName||l.agentName}</div></div>
+        </div>
+        ${l.viewingNotes ? `<div style="margin-top:10px;font-size:12.5px;color:var(--text2);padding:9px 12px;background:var(--surface3);border-radius:8px">${l.viewingNotes}</div>` : ''}
+      </div>`;
+  }
+
+  // ── Status actions ──
+  if (canEdit && !isLocked && !isLost) {
+    html += `<div class="detail-section"><div class="detail-section-title">Actions</div>`;
+
+    if (l.status === 'new') {
+      html += `<div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="quickStatus('contacted')">📞 Mark as Contacted</button>
+      </div>`;
+    }
+
+    if (l.status === 'contacted') {
+      html += `<button class="btn btn-gold" style="width:100%;justify-content:center" onclick="openViewingModal()">📅 Schedule Viewing</button>`;
+    }
+
+    if (l.status === 'viewing_scheduled') {
+      html += `
+        <div class="alert-box alert-amber" style="margin-bottom:14px">
+          ⏰ Viewing on <strong>${l.viewingDate}</strong> at <strong>${l.viewingTime||'—'}</strong> · ${l.viewingLocation||'—'}
+        </div>
+        ${!l.viewingConfirmed && canEdit ? `<button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:10px" onclick="confirmViewing()">✓ Mark Client as Confirmed</button>` : ''}
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Viewing Outcome</div>
+        <div class="outcome-grid">
+          <button class="outcome-btn ob-completed" onclick="setOutcome('viewing_completed')">✅ Viewing Completed</button>
+          <button class="outcome-btn ob-noshow"    onclick="setOutcome('no_show')">👻 Client No Show</button>
+          <button class="outcome-btn ob-resched"   onclick="openViewingModal()">🔄 Reschedule</button>
+          <button class="outcome-btn ob-lost"      onclick="setOutcome('not_interested')">❌ Not Interested</button>
+        </div>`;
+    }
+
+    if (l.status === 'viewing_completed') {
+      html += `<div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="quickStatus('negotiation')">🤝 Move to Negotiation</button>
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="setOutcome('not_interested')">❌ Not Interested</button>
+      </div>`;
+    }
+
+    if (l.status === 'no_show') {
+      html += `<div style="display:flex;gap:8px">
+        <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="openViewingModal()">📅 Reschedule Viewing</button>
+        <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="setOutcome('lost')">Mark as Lost</button>
+      </div>`;
+    }
+
+    if (l.status === 'rescheduled') {
+      html += `<button class="btn btn-gold" style="width:100%;justify-content:center" onclick="openViewingModal()">📅 Update Viewing Appointment</button>`;
+    }
+
+    if (l.status === 'negotiation') {
+      const hasInv = l._checks?.hasInvoice || l.invoiceIssued || false;
+      if (!hasInv) {
+        html += `<div class="alert-box alert-amber">⚠️ Finance must issue an invoice before this deal can be closed.</div>`;
+      } else {
+        html += `
+          <div class="alert-box alert-green">✅ Invoice issued. Agent can now close this deal.</div>
+          <button class="btn btn-green" style="width:100%;justify-content:center" onclick="closeDeal()">🔒 Close Deal</button>`;
+      }
+    }
+
+    html += `</div>`; // close Actions section
+  } // end canEdit block
+
+  // ── Closed pending checklist — always visible to admin/CEO/CS/Finance ──
+  if (l.status === 'closed_pending') {
+      const chk  = l._checks || {};
+
+      // Five specific required items — all must be present
+      const hasInv  = chk.hasInvoice           || l.invoiceIssued || false;
+      const hasRcp  = chk.hasReceipt           || false;
+      const hasPa   = chk.hasPurchaseAgreement || false;
+      const hasLt   = chk.hasLandTitle         || false;
+      const hasFr   = chk.hasFinalReceipt      || false;
+      const allPassed = hasInv && hasRcp && hasPa && hasLt && hasFr;
+      const isCS    = currentRole === 'cs';
+      const isFin   = currentRole === 'finance';
+
+      const checkIcon = (ok) => ok
+        ? `<span style="color:var(--green);font-weight:700;font-size:15px">✓</span>`
+        : `<span style="color:var(--coral);font-weight:700;font-size:15px">✗</span>`;
+
+      // A checklist row
+      // - If uploaded doc: show clickable Open ↗ (downloadURL for CS docs, receipt-template for invoice/receipt)
+      // - If not uploaded: show Upload button for the right role
+      const docRow = (label, role, ok, docType, url, canUpload) => {
+        let openLink = '';
+        if (ok) {
+          if (docType === 'invoice' && chk.invoiceId) {
+            // Link to the printable invoice
+            const invUrl = `../receipt-template.html?dealId=${l.id}&type=invoice&invoiceId=${chk.invoiceId}`;
+            openLink = `<a href="${invUrl}" target="_blank" style="font-size:11px;color:var(--purple-lt);text-decoration:none;padding:4px 9px;background:var(--purple-dim);border-radius:6px;border:1px solid rgba(124,92,191,0.2)">Open ↗</a>`;
+          } else if (url) {
+            // Direct storage URL for uploaded documents
+            openLink = `<a href="${url}" target="_blank" style="font-size:11px;color:var(--purple-lt);text-decoration:none;padding:4px 9px;background:var(--purple-dim);border-radius:6px;border:1px solid rgba(124,92,191,0.2)">Open ↗</a>`;
+          }
+        }
+        const uploadBtn = (!ok && canUpload)
+          ? `<button class="btn btn-ghost" style="padding:5px 10px;font-size:11px" onclick="uploadDoc('${docType}')">Upload</button>`
+          : '';
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;
+            background:${ok?'rgba(62,207,142,0.05)':'var(--surface3)'};border-radius:8px;
+            border:1px solid ${ok?'rgba(62,207,142,0.15)':'var(--border)'}">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;color:${ok?'var(--text)':'var(--text2)'};">${label}</div>
+              <div style="font-size:10.5px;color:var(--muted);margin-top:2px">${role}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+              ${openLink}${uploadBtn}
+              ${checkIcon(ok)}
+            </div>
+          </div>`;
+      };
+
+      // Get doc URLs from _checks
+      const docUrls = chk.docUrls || {};
+
+      html += `
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:16px 18px;margin-bottom:14px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">
+            Validation Checklist — All 5 Required
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            ${docRow('📄 Invoice Issued',          'Finance',  hasInv, 'invoice',            docUrls.invoice,            false)}
+            ${docRow('🧾 Payment Receipt',          'Finance',  hasRcp, 'payment_receipt',    docUrls.payment_receipt,    isFin)}
+            ${docRow('📑 Purchase Agreement',       'CS',       hasPa,  'purchase_agreement', docUrls.purchase_agreement, isCS)}
+            ${docRow('🏷 Land Title Document',      'CS',       hasLt,  'land_title',         docUrls.land_title,         isCS)}
+            ${docRow('✍️ Final Signed Receipt',     'Finance',  hasFr,  'final_receipt',      docUrls.final_receipt,      isFin)}
+          </div>
+          ${!allPassed ? `
+            <div style="margin-top:12px;padding:10px 13px;background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);border-radius:8px;font-size:12px;color:var(--coral);line-height:1.6">
+              ❌ Missing: <strong>${[
+                !hasInv ? 'Invoice' : null,
+                !hasRcp ? 'Payment Receipt' : null,
+                !hasPa  ? 'Purchase Agreement' : null,
+                !hasLt  ? 'Land Title' : null,
+                !hasFr  ? 'Final Signed Receipt' : null,
+              ].filter(Boolean).join(' · ')}</strong>
+            </div>` : `
+            <div style="margin-top:12px;padding:10px 13px;background:var(--green-dim);border:1px solid rgba(62,207,142,0.2);border-radius:8px;font-size:12px;color:var(--green)">
+              ✅ All 5 requirements met. Ready for admin validation.
+            </div>`}
+        </div>`;
+
+      // Hidden file input for uploads
+      html += `<input type="file" id="doc-file-input" style="display:none" onchange="handleDocFile(event)"/>`;
+
+      if (isAdmin) {
+        if (allPassed) {
+          html += `<button class="btn btn-green" style="width:100%;justify-content:center;margin-top:4px" onclick="validateDeal()">✅ Validate Deal</button>`;
+        } else {
+          html += `<button class="btn btn-green" style="width:100%;justify-content:center;margin-top:4px;opacity:0.4;cursor:not-allowed" disabled>✅ Validate Deal — Requirements Not Met</button>`;
+        }
+      }
+  } // end closed_pending block
+
+  if (isLocked) {
+    html += `<div class="alert-box alert-green" style="margin-bottom:16px">✅ This deal has been validated and is permanently on record.</div>`;
+  }
+
+  // ── Activity log ──
+  html += `
+    <div class="gold-rule"></div>
+    <div class="detail-section">
+      <div class="detail-section-title">Activity Log</div>
+      <div class="activity-log" id="activity-log">
+        ${(l.activityLog||[]).slice().reverse().map(a => `
+          <div class="activity-item">
+            <div class="activity-note">${a.note}</div>
+            <div class="activity-meta">${a.byName||''} · ${new Date(a.timestamp).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+          </div>`).join('') || '<div style="color:var(--muted);font-size:13px">No activity yet.</div>'}
+      </div>
+      ${!isLocked ? `
         <div class="activity-input-row" style="margin-top:10px">
           <input class="activity-input" id="activity-input" type="text" placeholder="Add a note..." maxlength="300"/>
-          <button class="btn btn-ghost" style="padding:9px 14px" onclick="addActivity()">Add</button>
+          <button class="btn btn-ghost" onclick="addActivity()">Add</button>
         </div>` : ''}
-    </div>
+    </div>`;
 
-    ${docsHtml}
+  // Admin delete
+  if (isAdmin && !isLocked) {
+    html += `<div style="margin-top:16px"><button class="btn btn-coral" style="width:100%;justify-content:center" onclick="deleteLead()">Delete Lead</button></div>`;
+  }
 
-    ${isAdmin && !isClosedValidated ? `
-      <div class="gold-rule"></div>
-      <button class="btn" style="background:var(--coral-dim);color:var(--coral);border:1px solid rgba(240,107,107,0.2);width:100%;justify-content:center" onclick="deleteLead('${lead.id}')">Delete Lead</button>
-    ` : ''}
-  `;
+  document.getElementById('det-body').innerHTML = html;
+  document.getElementById('det-footer').innerHTML = `<button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeDetailModal()">Close</button>`;
 
-  // Re-attach activity input enter key
-  const actInput = document.getElementById('activity-input');
-  if (actInput) actInput.addEventListener('keydown', e => { if (e.key === 'Enter') window.addActivity(); });
+  // Attach enter key to activity input
+  document.getElementById('activity-input')?.addEventListener('keydown', e => { if(e.key==='Enter') addActivity(); });
 }
 
-// ── Change status ──
-window.changeStatus = async (newStatus) => {
+// ── Quick status change ──
+window.quickStatus = async (newStatus) => {
   if (!selectedLead) return;
-  if (newStatus === selectedLead.status) return;
   await updateDoc(doc(db,'leads',selectedLead.id), { status: newStatus, updatedAt: serverTimestamp() });
-
-  if (newStatus === 'closed_pending') await notifyAdmin(selectedLead);
-
+  await logActivity(`Status changed to: ${statusLabel(newStatus)}`);
   selectedLead.status = newStatus;
-  ['agent','company'].forEach(tab => {
-    const idx = allLeads[tab].findIndex(l => l.id === selectedLead.id);
-    if (idx !== -1) allLeads[tab][idx].status = newStatus;
-  });
-  renderDetailModal(selectedLead);
-  renderKanban(currentTab);
+  syncLead(selectedLead.id, { status: newStatus });
+  refreshDetail();
 };
 
-// ── Validate deal ──
+// ── Viewing outcome ──
+window.setOutcome = async (outcome) => {
+  if (!selectedLead) return;
+  if (!confirm(`Set outcome to "${statusLabel(outcome)}"?`)) return;
+  await updateDoc(doc(db,'leads',selectedLead.id), { status: outcome, updatedAt: serverTimestamp() });
+  await logActivity(`Viewing outcome: ${statusLabel(outcome)}`);
+  selectedLead.status = outcome;
+  syncLead(selectedLead.id, { status: outcome });
+  refreshDetail();
+};
+
+// ── Confirm viewing ──
+window.confirmViewing = async () => {
+  if (!selectedLead) return;
+  await updateDoc(doc(db,'leads',selectedLead.id), { viewingConfirmed: true, updatedAt: serverTimestamp() });
+  await logActivity('Client confirmed the viewing appointment');
+  selectedLead.viewingConfirmed = true;
+  syncLead(selectedLead.id, { viewingConfirmed: true });
+  refreshDetail();
+};
+
+// ── Close deal — verify invoice from Firestore before closing ──
+window.closeDeal = async () => {
+  if (!selectedLead) return;
+
+  // Re-check invoice from Firestore, don't trust cached flag
+  const chk = selectedLead._checks;
+  const hasInvoice = chk?.hasInvoice || selectedLead.invoiceIssued || false;
+  if (!hasInvoice) {
+    // Double-check directly
+    try {
+      const invSnap = await getDocs(collection(db,'leads',selectedLead.id,'invoices'));
+      if (invSnap.empty) {
+        alert('⚠️ Finance must issue an invoice before this deal can be closed.');
+        return;
+      }
+    } catch(e) {
+      alert('Could not verify invoice status: ' + e.message); return;
+    }
+  }
+  if (!confirm('Close this deal? It will move to Closed Pending and await documents and validation.')) return;
+  await updateDoc(doc(db,'leads',selectedLead.id), { status: 'closed_pending', updatedAt: serverTimestamp() });
+  await logActivity('Deal closed — moved to Closed Pending');
+  // Notify admin
+  await notifyAdmins(`${currentName} closed a deal — ${selectedLead.clientName} · ${selectedLead.propTitle}`);
+  selectedLead.status = 'closed_pending';
+  syncLead(selectedLead.id, { status: 'closed_pending' });
+  refreshDetail();
+};
+
+// ── Document upload (CS uploads purchase_agreement, land_title; Finance uploads final_receipt) ──
+let pendingDocType = null;
+
+window.uploadDoc = (docType) => {
+  pendingDocType = docType;
+  const input = document.getElementById('doc-file-input');
+  if (input) { input.value = ''; input.click(); }
+};
+
+window.handleDocFile = async (event) => {
+  const file = event.target.files[0];
+  if (!file || !pendingDocType || !selectedLead) return;
+
+  const docType = pendingDocType;
+  pendingDocType = null;
+
+  const docTypeLabels = {
+    purchase_agreement: 'Purchase Agreement',
+    land_title:         'Land Title Document',
+    final_receipt:      'Final Signed Receipt',
+    payment_receipt:    'Payment Receipt',
+  };
+
+  try {
+    // Upload file to Firebase Storage
+    const path     = `documents/${selectedLead.id}/${docType}_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // Save record in Firestore documents subcollection
+    await addDoc(collection(db,'leads',selectedLead.id,'documents'), {
+      docType,
+      fileName:    file.name,
+      downloadURL,
+      uploadedBy:  currentUser.uid,
+      uploadedByName: currentName,
+      uploadedAt:  serverTimestamp(),
+    });
+
+    await logActivity(`Uploaded: ${docTypeLabels[docType]||docType} — ${file.name}`);
+
+    // Re-fetch checks and re-render
+    await openDetail(selectedLead.id);
+  } catch(e) {
+    alert('Upload failed: ' + e.message);
+  }
+};
+
+// ── Validate deal — HARD BLOCK: re-checks Firestore before writing ──
 window.validateDeal = async () => {
-  if (!selectedLead || !confirm('Validate this deal? This cannot be undone.')) return;
-  await updateDoc(doc(db,'leads',selectedLead.id), { status: 'closed_validated', validatedBy: currentUser.uid, validatedAt: serverTimestamp(), updatedAt: serverTimestamp() });
-  selectedLead.status = 'closed_validated';
-  ['agent','company'].forEach(tab => {
-    const idx = allLeads[tab].findIndex(l => l.id === selectedLead.id);
-    if (idx !== -1) allLeads[tab][idx].status = 'closed_validated';
+  if (!selectedLead) return;
+  if (currentRole !== 'admin') { alert('Only admins can validate deals.'); return; }
+
+  // ── HARD BLOCK: Re-query ALL subcollections from Firestore right now ──
+  // Never trust cached flags. Every single check re-reads from the database.
+  let invOk = false, rcpOk = false, paOk = false, ltOk = false, frOk = false;
+
+  try {
+    const [invSnap, rcpSnap, docSnap] = await Promise.all([
+      getDocs(collection(db,'leads',selectedLead.id,'invoices')),
+      getDocs(collection(db,'leads',selectedLead.id,'receipts')),
+      getDocs(collection(db,'leads',selectedLead.id,'documents')),
+    ]);
+
+    invOk = !invSnap.empty;
+    rcpOk = !rcpSnap.empty;
+
+    // Each document must have the specific docType saved when uploaded
+    const docTypes = docSnap.docs.map(d => d.data().docType || '');
+    // invOk = invOk && docTypes.includes('invoice');
+    // rcpOk = rcpOk && docTypes.includes('payment_receipt');
+    paOk = docTypes.includes('purchase_agreement');
+    ltOk = docTypes.includes('land_title');
+    frOk = docTypes.includes('final_receipt');
+
+  } catch(e) {
+    alert('Could not verify deal requirements. Please try again.' + e.message);
+    return;
+  }
+
+  const missing = [
+    !invOk ? 'Invoice (Finance)'               : null,
+    !rcpOk ? 'Payment Receipt (Finance)'        : null,
+    !paOk  ? 'Purchase Agreement (CS)'          : null,
+    !ltOk  ? 'Land Title Document (CS)'         : null,
+    !frOk  ? 'Final Signed Receipt (Finance)'   : null,
+  ].filter(Boolean);
+
+  if (missing.length > 0) {
+    alert(
+      '❌ This deal cannot be validated yet.' +
+      'The following are still missing:' +
+      missing.map(m => '  • ' + m).join('') +
+      'All 5 items must be present before validation.'
+    );
+
+    return;
+  }
+
+  if (!confirm(
+    'All 5 requirements have been verified:' +
+    ' ✓ Invoice Issued' + '\n' +
+    ' ✓ Payment Receipt' + '\n' +
+    ' ✓ Purchase Agreement' + '\n' +
+    ' ✓ Land Title' + '\n' +
+    ' ✓ Final Signed Receipt ' +
+    'Validate this deal? This action is permanent and cannot be undone.'
+  )) return;
+
+  await updateDoc(doc(db,'leads',selectedLead.id), {
+    status:       'closed_validated',
+    validatedBy:  currentUser.uid,
+    validatedAt:  serverTimestamp(),
+    updatedAt:    serverTimestamp(),
   });
-  renderDetailModal(selectedLead);
-  renderKanban(currentTab);
+
+  await logActivity(
+    'Deal validated ✅ — All 5 documents confirmed: Invoice, Payment Receipt, Purchase Agreement, Land Title, Final Signed Receipt'
+  );
+
+  selectedLead.status = 'closed_validated';
+  syncLead(selectedLead.id, { status: 'closed_validated' });
+  refreshDetail();
 };
 
 // ── Activity log ──
@@ -871,78 +1188,178 @@ window.addActivity = async () => {
   const input = document.getElementById('activity-input');
   const note  = input?.value.trim();
   if (!note || !selectedLead) return;
+  await logActivity(note);
+  input.value = '';
+  refreshDetail();
+};
+
+async function logActivity(note) {
   const entry = { note, by: currentUser.uid, byName: currentName, timestamp: new Date().toISOString() };
   await updateDoc(doc(db,'leads',selectedLead.id), { activityLog: arrayUnion(entry), updatedAt: serverTimestamp() });
-  selectedLead.activityLog = [...(selectedLead.activityLog || []), entry];
-  input.value = '';
-  renderDetailModal(selectedLead);
+  selectedLead.activityLog = [...(selectedLead.activityLog||[]), entry];
+}
+
+// ── Notify admins ──
+async function notifyAdmins(message) {
+  const admins = Object.entries(usersMap).filter(([,u]) => u.role === 'admin' && u.isActive !== false);
+  await Promise.all(admins.map(([id]) =>
+    addDoc(collection(db,'notifications'), { userId:id, message, isRead:false, type:'deal_closed', relatedId:selectedLead.id, createdAt:serverTimestamp() })
+  ));
+}
+
+// ── Delete lead ──
+window.deleteLead = async () => {
+  if (!confirm('Delete this lead permanently?')) return;
+  await deleteDoc(doc(db,'leads',selectedLead.id));
+  allLeads = allLeads.filter(l => l.id !== selectedLead.id);
+  updateStats(); renderTable(); closeDetailModal();
 };
 
-// ── Document upload ──
-let selectedDocFile = null;
-window.handleDocSelect = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.size > 10 * 1024 * 1024) { alert('File must be under 10MB.'); return; }
-  selectedDocFile = file;
-  document.getElementById('doc-upload-text').textContent = `Selected: ${file.name}`;
+// ── Sync lead in allLeads ──
+function syncLead(id, patch) {
+  const idx = allLeads.findIndex(l => l.id === id);
+  if (idx !== -1) Object.assign(allLeads[idx], patch);
+  updateStats(); renderTable();
+}
+
+function refreshDetail() {
+  document.getElementById('det-status-chip').className   = `status-chip chip-${selectedLead.status}`;
+  document.getElementById('det-status-chip').textContent = statusLabel(selectedLead.status);
+  renderDetailBody();
+}
+
+// ─────────────────────────────────────────────
+// SCHEDULE VIEWING MODAL
+// ─────────────────────────────────────────────
+window.openViewingModal = () => {
+  if (!selectedLead) return;
+  document.getElementById('vm-subtitle').textContent = `${selectedLead.clientName} · ${selectedLead.propTitle}`;
+
+  // Pre-fill agent list
+  const agentSel = document.getElementById('vm-agent');
+  agentSel.innerHTML = agentsList.map(a =>
+    `<option value="${a.id}" data-name="${a.name}" ${a.id === selectedLead.createdBy ? 'selected' : ''}>${a.name}</option>`
+  ).join('');
+  if (agentsList.length === 0) agentSel.innerHTML = '<option>No agents found</option>';
+
+  // Pre-fill if rescheduling
+  if (selectedLead.viewingDate) {
+    document.getElementById('vm-date').value     = selectedLead.viewingDate;
+    document.getElementById('vm-time').value     = selectedLead.viewingTime||'';
+    document.getElementById('vm-location').value = selectedLead.viewingLocation||'';
+    document.getElementById('vm-confirmed').checked = selectedLead.viewingConfirmed||false;
+    document.getElementById('vm-notes').value    = selectedLead.viewingNotes||'';
+  } else {
+    ['vm-date','vm-time','vm-location','vm-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('vm-confirmed').checked = false;
+  }
+
+  document.getElementById('vm-error').classList.remove('visible');
+  document.getElementById('viewing-modal').classList.add('open');
 };
 
-window.uploadDocument = async () => {
-  if (!selectedDocFile || !selectedLead) { alert('Please select a file first.'); return; }
-  const docType = document.getElementById('doc-type-sel').value;
-  const btn     = document.getElementById('upload-doc-btn');
-  btn.disabled  = true; btn.innerHTML = '<span class="spinner"></span>Uploading...';
+window.closeViewingModal = () => document.getElementById('viewing-modal').classList.remove('open');
+
+window.saveViewing = async () => {
+  const date      = document.getElementById('vm-date').value;
+  const time      = document.getElementById('vm-time').value;
+  const location  = document.getElementById('vm-location').value.trim();
+  const agentSel  = document.getElementById('vm-agent');
+  const agentId   = agentSel.value;
+  const agentName = agentSel.options[agentSel.selectedIndex]?.dataset.name || '';
+  const confirmed = document.getElementById('vm-confirmed').checked;
+  const notes     = document.getElementById('vm-notes').value.trim();
+  const errEl     = document.getElementById('vm-error');
+  const btn       = document.getElementById('vm-save-btn');
+
+  errEl.classList.remove('visible');
+  if (!date)     { errEl.textContent = 'Viewing date is required.';     errEl.classList.add('visible'); return; }
+  if (!time)     { errEl.textContent = 'Viewing time is required.';     errEl.classList.add('visible'); return; }
+  if (!location) { errEl.textContent = 'Viewing location is required.'; errEl.classList.add('visible'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Scheduling...';
+
+  const isReschedule = selectedLead.status === 'no_show' || selectedLead.status === 'rescheduled' || selectedLead.status === 'viewing_scheduled';
+  const newStatus    = isReschedule ? 'rescheduled' : 'viewing_scheduled';
+  const actionNote   = isReschedule
+    ? `Viewing rescheduled to ${date} at ${time} — ${location}`
+    : `Viewing scheduled for ${date} at ${time} — ${location}`;
 
   try {
-    const fileName   = `${Date.now()}_${selectedDocFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
-    const storageRef = ref(storage, `documents/${selectedLead.id}/${fileName}`);
-    const task       = uploadBytesResumable(storageRef, selectedDocFile);
-
-    await new Promise((resolve, reject) => {
-      task.on('state_changed', null, reject, resolve);
-    });
-
-    const fileUrl = await getDownloadURL(task.snapshot.ref);
-
-    // Save to Firestore subcollection
-    await addDoc(collection(db,'leads',selectedLead.id,'documents'), {
-      fileName,
-      fileUrl,
-      docType,
-      uploadedBy:   currentUser.uid,
-      uploaderName: currentName,
-      createdAt:    serverTimestamp(),
-    });
-
-    // Refresh docs and re-render
-    const docsSnap = await getDocs(collection(db,'leads',selectedLead.id,'documents'));
-    selectedLead._docs = docsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    selectedDocFile = null;
-    renderDetailModal(selectedLead);
+    const patch = {
+      status: newStatus,
+      viewingDate: date, viewingTime: time, viewingLocation: location,
+      viewingAgentId: agentId, viewingAgentName: agentName,
+      viewingConfirmed: confirmed, viewingNotes: notes,
+      viewingScheduledAt: serverTimestamp(), viewingScheduledBy: currentUser.uid,
+      updatedAt: serverTimestamp(),
+    };
+    await updateDoc(doc(db,'leads',selectedLead.id), patch);
+    await logActivity(actionNote);
+    Object.assign(selectedLead, patch);
+    selectedLead.status = newStatus;
+    syncLead(selectedLead.id, { ...patch, status: newStatus });
+    closeViewingModal();
+    refreshDetail();
   } catch(e) {
-    alert('Upload error: ' + e.message);
+    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Upload Document'; }
+    btn.disabled = false; btn.textContent = '📅 Schedule Viewing';
   }
 };
 
-// ── Delete lead ──
-window.deleteLead = async (leadId) => {
-  if (!confirm('Delete this lead? This cannot be undone.')) return;
-  await deleteDoc(doc(db,'leads',leadId));
-  ['agent','company'].forEach(tab => { allLeads[tab] = allLeads[tab].filter(l => l.id !== leadId); });
-  document.getElementById('count-agent').textContent   = allLeads.agent.length;
-  document.getElementById('count-company').textContent = allLeads.company.length;
-  closeDetailModal();
-  renderKanban(currentTab);
+// ─────────────────────────────────────────────
+// CREATE LEAD
+// ─────────────────────────────────────────────
+window.openCreateModal = () => {
+  document.getElementById('f-client').innerHTML   = clientsList.map(c => `<option value="${c.id}">${c.name}</option>`).join('') || '<option>No clients</option>';
+  document.getElementById('f-property').innerHTML = propertiesList.map(p => `<option value="${p.id}">${p.title}</option>`).join('') || '<option>No properties</option>';
+  if (currentRole === 'agent') document.getElementById('f-type').innerHTML = '<option value="agent">Agent Lead</option>';
+  document.getElementById('create-error').classList.remove('visible');
+  document.getElementById('create-modal').classList.add('open');
+};
+
+window.closeCreateModal = () => document.getElementById('create-modal').classList.remove('open');
+
+window.createLead = async () => {
+  const clientId   = document.getElementById('f-client').value;
+  const propertyId = document.getElementById('f-property').value;
+  const leadType   = document.getElementById('f-type').value;
+  const status     = document.getElementById('f-status').value;
+  const notes      = document.getElementById('f-notes').value.trim();
+  const errEl      = document.getElementById('create-error');
+  const btn        = document.getElementById('create-btn');
+
+  errEl.classList.remove('visible');
+  if (!clientId || !propertyId) { errEl.textContent = 'Select a client and property.'; errEl.classList.add('visible'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Creating...';
+  try {
+    const leadData = {
+      clientId, propertyId, leadType, status,
+      clientName:  clientsMap[clientId]?.name        || '',
+      propTitle:   propertiesMap[propertyId]?.title  || '',
+      agentName:   usersMap[currentUser.uid]?.name   || '',
+      createdBy:   currentUser.uid,
+      activityLog: notes ? [{ note: notes, by: currentUser.uid, byName: currentName, timestamp: new Date().toISOString() }] : [],
+      invoiceIssued: false,
+      createdAt:   serverTimestamp(), updatedAt: serverTimestamp(),
+    };
+    const ref = await addDoc(collection(db,'leads'), leadData);
+    allLeads.unshift({ id: ref.id, ...leadData, createdAt: { toDate: () => new Date() } });
+    updateStats(); renderTable(); closeCreateModal();
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Lead';
+  }
 };
 
 window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
-
-document.getElementById('create-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCreateModal(); });
-document.getElementById('detail-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetailModal(); });
+document.getElementById('create-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeCreateModal(); });
+document.getElementById('detail-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeDetailModal(); });
+document.getElementById('viewing-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeViewingModal(); });
 </script>
-  <script src="../assets/mobile.js"></script>
+<script src="../assets/mobile.js"></script>
 </body>
 </html>

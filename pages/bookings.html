@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Vine — Bookings · Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0b0b0f; --surface:#111118; --surface2:#18181f; --surface3:#1f1f28;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --text:#eeeaf5; --text2:#a09cb0; --muted:#5e5c6e;
+  --purple:#7c5cbf; --purple-lt:#9d7de0; --purple-dim:rgba(124,92,191,0.12);
+  --gold:#c9a84c; --gold-lt:#e0c070; --gold-dim:rgba(201,168,76,0.1);
+  --green:#3ecf8e; --green-dim:rgba(62,207,142,0.1);
+  --coral:#f06b6b; --coral-dim:rgba(240,107,107,0.1);
+  --blue:#5b9cf6; --blue-dim:rgba(91,156,246,0.1);
+  --amber:#f59e0b; --amber-dim:rgba(245,158,11,0.1);
+  --teal:#14b8a6; --teal-dim:rgba(20,184,166,0.1);
+  --font-disp:'Cormorant Garamond',serif; --font-body:'Outfit',sans-serif;
+  --sidebar-w:256px; --radius:13px;
+}
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); display:flex; min-height:100vh; overflow-x:hidden; }
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;padding:0 0 24px;overflow-y:auto}
+.sidebar-top{padding:28px 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;flex-shrink:0}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple) 0%,#5a3e9e 50%,#8a6820 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:16px;font-weight:600;color:var(--gold-lt);box-shadow:0 0 0 1px rgba(201,168,76,0.2),0 4px 16px rgba(124,92,191,0.3);flex-shrink:0}
+.brand-name{font-family:var(--font-disp);font-size:17px;font-weight:600}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-section{padding:0 12px;margin-bottom:4px}
+.nav-section-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--text2);text-decoration:none;cursor:pointer;transition:all 0.15s;position:relative;margin-bottom:1px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--purple-dim);color:var(--text);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--purple-lt),var(--gold))}
+.nav-icon{width:17px;height:17px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-spacer{flex:1}
+.sidebar-user{margin:0 12px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.user-meta{flex:1;min-width:0}
+.user-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10.5px;color:var(--muted);margin-top:1px;text-transform:capitalize}
+.signout-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all 0.15s}
+.signout-btn:hover{color:var(--coral);background:var(--coral-dim)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:36px 40px 60px;max-width:calc(100vw - var(--sidebar-w))}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;animation:fadeUp 0.4s ease both}
+.page-title{font-family:var(--font-disp);font-size:30px;font-weight:600;letter-spacing:-0.3px}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px;font-weight:300}
+
+/* The Vine badge */
+.vine-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(62,207,142,0.1),rgba(20,184,166,0.08));border:1px solid rgba(62,207,142,0.2);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:1px;color:var(--green);margin-bottom:6px;text-transform:uppercase}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#9060d8);color:#fff;border:1px solid rgba(201,168,76,0.15)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,191,0.35)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#b88020);color:#1a1000;font-weight:600}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(201,168,76,0.4)}
+.btn-green{background:linear-gradient(135deg,var(--green),#2ab878);color:#071f14;font-weight:600}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(62,207,142,0.3)}
+.btn-coral{background:var(--coral-dim);color:var(--coral);border:1px solid rgba(240,107,107,0.2)}
+.btn-coral:hover{background:rgba(240,107,107,0.18)}
+.btn-teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(20,184,166,0.2)}
+.btn-teal:hover{background:rgba(20,184,166,0.18)}
+.btn:disabled{opacity:0.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;animation:fadeUp 0.4s ease 0.05s both}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s;cursor:pointer}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-card.active-filter{border-color:var(--purple-lt)!important;background:var(--purple-dim)}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius) var(--radius) 0 0}
+.sc-all::after    {background:var(--purple-lt)}
+.sc-res::after    {background:var(--amber)}
+.sc-conf::after   {background:var(--green)}
+.sc-in::after     {background:var(--blue)}
+.sc-avail::after  {background:var(--gold)}
+.stat-val{font-family:var(--font-disp);font-size:32px;font-weight:600;line-height:1;margin-bottom:5px}
+.sc-all   .stat-val{color:var(--purple-lt)}
+.sc-res   .stat-val{color:var(--amber)}
+.sc-conf  .stat-val{color:var(--green)}
+.sc-in    .stat-val{color:var(--blue)}
+.sc-avail .stat-val{color:var(--gold-lt)}
+.stat-label{font-size:11.5px;color:var(--muted)}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;animation:fadeUp 0.4s ease 0.08s both;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:300px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(124,92,191,0.4)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:11px}
+.filter-select,.form-input-bare{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 30px 9px 14px;color:var(--text2);font-family:var(--font-body);font-size:13px;outline:none;cursor:pointer;appearance:none}
+.filter-select:focus{border-color:rgba(124,92,191,0.4)}
+.results-count{margin-left:auto;font-size:12px;color:var(--muted)}
+
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp 0.4s ease 0.1s both}
+.bookings-table{width:100%;border-collapse:collapse}
+.bookings-table thead th{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:13px 18px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
+.bookings-table thead th:first-child{padding-left:22px}
+.bookings-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.12s;cursor:pointer}
+.bookings-table tbody tr:last-child{border-bottom:none}
+.bookings-table tbody tr:hover{background:var(--surface2)}
+.bookings-table td{padding:13px 18px;font-size:13px;vertical-align:middle}
+.bookings-table td:first-child{padding-left:22px}
+
+.guest-cell{display:flex;align-items:center;gap:11px}
+.guest-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:700;flex-shrink:0}
+.guest-name{font-size:13.5px;font-weight:500}
+.guest-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+/* Status chips */
+.chip{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.chip::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.chip-pending    {background:var(--purple-dim);color:var(--purple-lt);border:1px solid rgba(124,92,191,0.2)}
+.chip-pending::before{background:var(--purple-lt)}
+.chip-reserved   {background:var(--amber-dim); color:var(--amber);    border:1px solid rgba(245,158,11,0.2)}
+.chip-reserved::before{background:var(--amber)}
+.chip-confirmed  {background:var(--green-dim); color:var(--green);    border:1px solid rgba(62,207,142,0.2)}
+.chip-confirmed::before{background:var(--green)}
+.chip-checked_in {background:var(--blue-dim);  color:var(--blue);     border:1px solid rgba(91,156,246,0.2)}
+.chip-checked_in::before{background:var(--blue)}
+.chip-checked_out{background:var(--teal-dim);  color:var(--teal);     border:1px solid rgba(20,184,166,0.2)}
+.chip-checked_out::before{background:var(--teal)}
+.chip-cancelled  {background:var(--coral-dim); color:var(--coral);    border:1px solid rgba(240,107,107,0.2)}
+.chip-cancelled::before{background:var(--coral)}
+.chip-unpaid     {color:var(--coral);font-size:12px;font-weight:600}
+.chip-part_paid  {color:var(--amber);font-size:12px;font-weight:600}
+.chip-fully_paid {color:var(--green);font-size:12px;font-weight:600}
+
+.doc-icon{font-size:14px}
+.empty-table{padding:70px 20px;text-align:center}
+.empty-icon{font-size:40px;opacity:0.18;margin-bottom:14px}
+.empty-title{font-family:var(--font-disp);font-size:20px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--muted)}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:0;width:620px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;transform:translateY(14px);transition:transform 0.2s}
+.modal.wide{width:760px}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border)}
+.modal-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:var(--font-disp);font-size:22px;font-weight:600}
+.modal-subtitle{font-size:12px;color:var(--muted);margin-top:3px}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all 0.15s;flex-shrink:0}
+.modal-close:hover{color:var(--text);background:var(--surface3)}
+.modal-body{padding:24px 28px}
+.modal-footer{padding:16px 28px 22px;border-top:1px solid var(--border);display:flex;gap:10px}
+.modal-footer .btn{flex:1;justify-content:center}
+
+/* FORM */
+.form-group{margin-bottom:17px}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(124,92,191,0.45);box-shadow:0 0 0 3px rgba(124,92,191,0.08)}
+.form-input::placeholder{color:var(--muted);opacity:0.6}
+.form-input[readonly]{opacity:0.6;cursor:not-allowed}
+.form-select{appearance:none;cursor:pointer}
+.form-textarea{resize:vertical;min-height:76px;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.form-error{color:var(--coral);font-size:12px;margin-bottom:12px;padding:9px 13px;background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);border-radius:8px;display:none}
+.form-error.visible{display:block}
+
+/* Detail sections */
+.detail-section{margin-bottom:22px}
+.detail-section-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-cell{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 14px}
+.detail-label{font-size:9.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.detail-value{font-size:13.5px;font-weight:500}
+.detail-value.muted{color:var(--text2);font-weight:400}
+.detail-value a{color:var(--gold-lt);text-decoration:none}
+.detail-value a:hover{text-decoration:underline}
+
+/* Quick actions */
+.quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+
+/* Gold rule */
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin:18px 0}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Sales Finance</a>
+    <a class="nav-item" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Inquiries</a>
+    <a class="nav-item" href="influencers.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Influencers</a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">The Vine</div>
+    <a class="nav-item active" href="bookings.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Bookings</a>
+    <a class="nav-item" href="vine-finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Vine Finance</a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="vine-badge">🌿 The Vine</div>
+      <div class="page-title">Apartment Bookings</div>
+      <div class="page-sub">Manage reservations, check-ins, payments and documents for all 12 units</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn btn-ghost" href="vine-finance.html">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Finance Desk
+      </a>
+      <button class="btn btn-primary" id="new-booking-btn" onclick="openBookingModal()" style="display:none">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Booking
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card sc-all"  id="sc-all"       onclick="filterGroup('all')">      <div class="stat-val" id="sv-total">—</div>    <div class="stat-label">Total Bookings</div></div>
+    <div class="stat-card sc-res"  id="sc-reserved"  onclick="filterGroup('reserved')"> <div class="stat-val" id="sv-reserved">—</div>  <div class="stat-label">Reserved</div></div>
+    <div class="stat-card sc-conf" id="sc-confirmed" onclick="filterGroup('confirmed')"><div class="stat-val" id="sv-confirmed">—</div> <div class="stat-label">Confirmed</div></div>
+    <div class="stat-card sc-in"   id="sc-checked_in" onclick="filterGroup('checked_in')"><div class="stat-val" id="sv-checked-in">—</div><div class="stat-label">Checked In</div></div>
+    <div class="stat-card sc-avail" id="sc-available" onclick="filterGroup('available')"><div class="stat-val" id="sv-available">—</div><div class="stat-label">Units Available Today</div></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="search-input" placeholder="Search guest name, phone, unit..." oninput="renderTable()"/>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="status-filter" onchange="renderTable()">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="reserved">Reserved</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="checked_in">Checked In</option>
+        <option value="checked_out">Checked Out</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="type-filter" onchange="renderTable()">
+        <option value="">All Unit Types</option>
+        <option value="one_bedroom">One-Bedroom</option>
+        <option value="two_bedroom">Two-Bedroom</option>
+      </select>
+    </div>
+    <input type="date" id="date-filter" onchange="renderTable()" style="background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 14px;color:var(--text2);font-family:var(--font-body);font-size:13px;outline:none"/>
+    <div class="results-count" id="results-count">— bookings</div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="bookings-table">
+      <thead>
+        <tr>
+          <th>Guest</th>
+          <th>Apartment</th>
+          <th>Stay Dates</th>
+          <th>Booking Status</th>
+          <th>Payment</th>
+          <th>Balance Due</th>
+          <th>Invoice</th>
+          <th>Receipt</th>
+        </tr>
+      </thead>
+      <tbody id="bookings-tbody">
+        <tr><td colspan="8"><div class="empty-table"><div class="empty-icon">⏳</div><div class="empty-title">Loading bookings...</div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- NEW / EDIT BOOKING MODAL -->
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div><div class="modal-title" id="booking-modal-title">New Booking</div><div class="modal-subtitle">The Vine apartment reservation</div></div>
+        <button class="modal-close" onclick="closeBookingModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-error" id="booking-error"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Guest Full Name *</label><input class="form-input" id="b-guest" placeholder="Guest name"/></div>
+        <div class="form-group"><label class="form-label">Phone Number *</label><input class="form-input" id="b-phone" placeholder="+233 ..."/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" type="email" id="b-email" placeholder="guest@email.com"/></div>
+        <div class="form-group"><label class="form-label">Booking Source</label>
+          <select class="form-select" id="b-source">
+            <option value="direct">Direct</option>
+            <option value="agent">Agent</option>
+            <option value="social_media">Social Media</option>
+            <option value="referral">Referral</option>
+            <option value="walk_in">Walk-in</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Apartment Unit *</label><select class="form-select" id="b-unit"></select></div>
+        <div class="form-group"><label class="form-label">Booking Status</label>
+          <select class="form-select" id="b-status">
+            <option value="pending">Pending</option>
+            <option value="reserved">Reserved</option>
+            <option value="confirmed">Confirmed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Check-In Date *</label><input class="form-input" type="date" id="b-checkin" onchange="calcTotals()"/></div>
+        <div class="form-group"><label class="form-label">Check-Out Date *</label><input class="form-input" type="date" id="b-checkout" onchange="calcTotals()"/></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Nights</label><input class="form-input" id="b-nights" readonly/></div>
+        <div class="form-group"><label class="form-label">Rate / Night (GHS)</label><input class="form-input" type="number" id="b-rate" placeholder="0.00" oninput="calcTotals()"/></div>
+        <div class="form-group"><label class="form-label">Total Amount (GHS)</label><input class="form-input" id="b-total" readonly/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Deposit Paid (GHS)</label><input class="form-input" type="number" id="b-deposit" placeholder="0.00" oninput="calcTotals()"/></div>
+        <div class="form-group"><label class="form-label">Balance Due (GHS)</label><input class="form-input" id="b-balance" readonly/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="b-notes" placeholder="Special requests, notes..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeBookingModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-booking-btn" onclick="saveBooking()">Save Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div>
+          <div class="modal-title" id="det-title">Booking Detail</div>
+          <div class="modal-subtitle" id="det-subtitle">—</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="det-chip"></span>
+          <button class="modal-close" onclick="closeDetailModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body" id="det-body"></div>
+    <div class="modal-footer" id="det-footer"></div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div><div class="modal-title">Record Payment</div><div class="modal-subtitle" id="pay-subtitle">—</div></div>
+        <button class="modal-close" onclick="closePaymentModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-error" id="payment-error"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount (GHS) *</label><input class="form-input" type="number" id="p-amount" placeholder="0.00"/></div>
+        <div class="form-group"><label class="form-label">Payment Method *</label>
+          <select class="form-select" id="p-method">
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="cash">Cash</option>
+            <option value="mobile_money">Mobile Money</option>
+            <option value="cheque">Cheque</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Transaction Reference</label><input class="form-input" id="p-ref" placeholder="TXN-..."/></div>
+        <div class="form-group"><label class="form-label">Payment Date</label><input class="form-input" type="date" id="p-date"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="p-desc">Payment towards The Vine booking</textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePaymentModal()">Cancel</button>
+      <button class="btn btn-green" id="save-payment-btn" onclick="savePayment()">Record Payment & Generate Receipt</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, query, where, orderBy, getDocs, addDoc,
+  doc, getDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── Constants ──
+const UNITS = [
+  { id:'vine-1a', name:'Vine 1A', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1b', name:'Vine 1B', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1c', name:'Vine 1C', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1d', name:'Vine 1D', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1e', name:'Vine 1E', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1f', name:'Vine 1F', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-2a', name:'Vine 2A', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2b', name:'Vine 2B', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2c', name:'Vine 2C', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2d', name:'Vine 2D', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2e', name:'Vine 2E', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2f', name:'Vine 2F', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+];
+
+const STATUS_LABELS    = { pending:'Pending', reserved:'Reserved', confirmed:'Confirmed', checked_in:'Checked In', checked_out:'Checked Out', cancelled:'Cancelled' };
+const PAYMENT_LABELS   = { unpaid:'Unpaid', part_paid:'Part Paid', fully_paid:'Fully Paid' };
+const EDIT_ROLES       = ['admin','finance','listings','cs'];
+const VIEW_ROLES       = ['admin','ceo','finance','listings','cs'];
+
+// ── State ──
+let currentUser = null, currentRole = null, currentName = '';
+let bookings = [], selectedBooking = null, editingId = null, activeGroup = 'all';
+
+// ── Helpers ──
+const avatarColors = ['#7c5cbf','#f06b6b','#3ecf8e','#c9a84c','#5b9cf6','#e879f9'];
+function getColor(s) { if(!s) return avatarColors[0]; let h=0; for(const c of s) h=(h*31+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+function initials(n) { return (n||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function capitalize(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):''; }
+function money(n)    { return 'GH₵ '+Number(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fdate(v)    { if(!v) return '—'; const d=v.toDate?v.toDate():new Date(v); return isNaN(d)?'—':d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function nights(a,b) { if(!a||!b) return 0; const n=Math.round((new Date(b)-new Date(a))/86400000); return n>0?n:0; }
+function todayISO()  { return new Date().toISOString().slice(0,10); }
+function chip(s)     { return `<span class="chip chip-${s}">${STATUS_LABELS[s]||s||'—'}</span>`; }
+function pLabel(s)   { return `<span class="chip-${s}">${PAYMENT_LABELS[s]||'Unpaid'}</span>`; }
+function methodLabel(m){ return {bank_transfer:'Bank Transfer',cash:'Cash',mobile_money:'Mobile Money',cheque:'Cheque'}[m]||m||'—'; }
+function canEdit()   { return EDIT_ROLES.includes(currentRole); }
+function docUrl(type,bid,did){ return `booking-document.html?bookingId=${bid}&type=${type}&${type}Id=${did}`; }
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role; currentName = data.name || user.email;
+
+  if (!VIEW_ROLES.includes(currentRole)) { alert('No access to bookings.'); window.location.href = 'dashboard.html'; return; }
+
+  document.getElementById('sb-name').textContent   = currentName;
+  document.getElementById('sb-role').textContent   = capitalize(currentRole);
+  document.getElementById('sb-avatar').textContent = initials(currentName);
+  if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
+  if (canEdit()) document.getElementById('new-booking-btn').style.display = '';
+
+  populateUnitSelect();
+  await loadBookings();
+});
+
+function populateUnitSelect() {
+  const sel = document.getElementById('b-unit');
+  sel.innerHTML = UNITS.map(u => `<option value="${u.id}">${u.name} — ${u.display}</option>`).join('');
+}
+
+// ── Load bookings ──
+async function loadBookings() {
+  try {
+    const snap = await getDocs(query(collection(db,'bookings'), orderBy('createdAt','desc')));
+    bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    await enrichDocs();
+    updateStats();
+    renderTable();
+  } catch(e) { console.error('loadBookings error:', e); }
+}
+
+async function enrichDocs() {
+  await Promise.all(bookings.map(async b => {
+    try {
+      const [invSnap, recSnap] = await Promise.all([
+        getDocs(collection(db,'bookings',b.id,'invoices')),
+        getDocs(collection(db,'bookings',b.id,'receipts')),
+      ]);
+      b.invoiceIssued = !invSnap.empty;
+      b.invoiceId     = invSnap.empty ? null : invSnap.docs[0].id;
+      b.hasReceipt    = !recSnap.empty;
+      b.receiptId     = recSnap.empty ? null : recSnap.docs[0].id;
+    } catch(_) {}
+  }));
+}
+
+// ── Stats ──
+function updateStats() {
+  const today = todayISO();
+  const activeUnitIds = new Set(
+    bookings.filter(b => b.bookingStatus !== 'cancelled' && b.checkIn <= today && b.checkOut > today).map(b => b.unitId)
+  );
+  const c = { total: bookings.length, reserved: 0, confirmed: 0, checked_in: 0, available: Math.max(UNITS.length - activeUnitIds.size, 0) };
+  bookings.forEach(b => {
+    if (b.bookingStatus === 'reserved')    c.reserved++;
+    if (b.bookingStatus === 'confirmed')   c.confirmed++;
+    if (b.bookingStatus === 'checked_in')  c.checked_in++;
+  });
+  document.getElementById('sv-total').textContent      = c.total;
+  document.getElementById('sv-reserved').textContent   = c.reserved;
+  document.getElementById('sv-confirmed').textContent  = c.confirmed;
+  document.getElementById('sv-checked-in').textContent = c.checked_in;
+  document.getElementById('sv-available').textContent  = c.available;
+}
+
+// ── Filter by stat card ──
+window.filterGroup = (group) => {
+  activeGroup = group;
+  ['all','reserved','confirmed','checked_in','available'].forEach(g => {
+    document.getElementById(`sc-${g}`)?.classList.toggle('active-filter', g === group);
+  });
+  renderTable();
+};
+
+// ── Render table ──
+window.renderTable = () => {
+  const search  = document.getElementById('search-input').value.toLowerCase().trim();
+  const statusF = document.getElementById('status-filter').value;
+  const typeF   = document.getElementById('type-filter').value;
+  const dateF   = document.getElementById('date-filter').value;
+
+  let rows = bookings.filter(b => {
+    const matchSearch = !search
+      || (b.guestName||'').toLowerCase().includes(search)
+      || (b.guestPhone||'').toLowerCase().includes(search)
+      || (b.unitName||'').toLowerCase().includes(search);
+    const matchStatus  = !statusF || b.bookingStatus === statusF;
+    const matchType    = !typeF   || b.unitType === typeF;
+    const matchDate    = !dateF   || (b.checkIn <= dateF && b.checkOut > dateF);
+    const matchGroup   = activeGroup === 'all' || b.bookingStatus === activeGroup;
+    return matchSearch && matchStatus && matchType && matchDate && matchGroup;
+  });
+
+  // Available filter — show units not booked today (conceptual; just shows clear table)
+  if (activeGroup === 'available') {
+    const today = todayISO();
+    const busyIds = new Set(bookings.filter(b => b.bookingStatus !== 'cancelled' && b.checkIn <= today && b.checkOut > today).map(b => b.unitId));
+    rows = UNITS.filter(u => !busyIds.has(u.id)).map(u => ({ _isUnit: true, unitId: u.id, unitName: u.name, displayType: u.display }));
+  }
+
+  document.getElementById('results-count').textContent = `${rows.length} ${activeGroup === 'available' ? 'unit' : 'booking'}${rows.length !== 1 ? 's' : ''}`;
+  const tbody = document.getElementById('bookings-tbody');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-table"><div class="empty-icon">🏢</div><div class="empty-title">No bookings found</div><div class="empty-sub">Try adjusting filters or create a new booking</div></div></td></tr>`;
+    return;
+  }
+
+  if (activeGroup === 'available') {
+    tbody.innerHTML = rows.map(u => `
+      <tr>
+        <td colspan="2" style="font-weight:500;color:var(--green)">${u.unitName}</td>
+        <td>${u.displayType}</td>
+        <td colspan="5"><span class="chip chip-confirmed">Available Today</span></td>
+      </tr>`).join('');
+    return;
+  }
+
+  tbody.innerHTML = rows.map((b,i) => {
+    const color = getColor(b.guestName);
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both" onclick="openDetail('${b.id}')">
+        <td>
+          <div class="guest-cell">
+            <div class="guest-av" style="background:${color}22;color:${color}">${initials(b.guestName)}</div>
+            <div>
+              <div class="guest-name">${b.guestName||'—'}</div>
+              <div class="guest-sub">${b.guestPhone||'—'}</div>
+            </div>
+          </div>
+        </td>
+        <td><strong>${b.unitName||'—'}</strong><div class="guest-sub">${b.displayType||b.unitType||'—'}</div></td>
+        <td>${fdate(b.checkIn)} → ${fdate(b.checkOut)}<div class="guest-sub">${b.nights||0} night${(b.nights||0)!==1?'s':''}</div></td>
+        <td>${chip(b.bookingStatus)}</td>
+        <td>${pLabel(b.paymentStatus)}</td>
+        <td style="font-weight:600;color:var(--coral)">${money(b.balanceDue)}</td>
+        <td style="text-align:center">${b.invoiceIssued ? '<span style="color:var(--green)">✓</span>' : '<span style="color:var(--muted)">—</span>'}</td>
+        <td style="text-align:center">${b.hasReceipt ? '<span style="color:var(--green)">✓</span>' : '<span style="color:var(--muted)">—</span>'}</td>
+      </tr>`;
+  }).join('');
+};
+
+// ── Booking form ──
+window.openBookingModal = (id = null) => {
+  if (!canEdit()) { alert('You do not have permission to create or edit bookings.'); return; }
+  editingId = id;
+  document.getElementById('booking-modal-title').textContent = id ? 'Edit Booking' : 'New Booking';
+  document.getElementById('booking-error').classList.remove('visible');
+  ['b-guest','b-phone','b-email','b-rate','b-deposit','b-notes','b-nights','b-total','b-balance','b-checkin','b-checkout'].forEach(i => {
+    const el = document.getElementById(i); if (el) el.value = '';
+  });
+  document.getElementById('b-source').value = 'direct';
+  document.getElementById('b-status').value = 'reserved';
+
+  if (id) {
+    const b = bookings.find(x => x.id === id);
+    if (b) {
+      document.getElementById('b-guest').value    = b.guestName    || '';
+      document.getElementById('b-phone').value    = b.guestPhone   || '';
+      document.getElementById('b-email').value    = b.guestEmail   || '';
+      document.getElementById('b-unit').value     = b.unitId       || '';
+      document.getElementById('b-status').value   = b.bookingStatus|| 'reserved';
+      document.getElementById('b-checkin').value  = b.checkIn      || '';
+      document.getElementById('b-checkout').value = b.checkOut     || '';
+      document.getElementById('b-rate').value     = b.ratePerNight || 0;
+      document.getElementById('b-deposit').value  = b.depositPaid  || 0;
+      document.getElementById('b-notes').value    = b.notes        || '';
+      document.getElementById('b-source').value   = b.source       || 'direct';
+      window.calcTotals();
+    }
+  }
+  document.getElementById('booking-modal').classList.add('open');
+};
+
+window.closeBookingModal = () => document.getElementById('booking-modal').classList.remove('open');
+
+window.calcTotals = () => {
+  const n     = nights(document.getElementById('b-checkin').value, document.getElementById('b-checkout').value);
+  const rate  = Number(document.getElementById('b-rate').value || 0);
+  const dep   = Number(document.getElementById('b-deposit').value || 0);
+  const total = n * rate;
+  document.getElementById('b-nights').value  = n;
+  document.getElementById('b-total').value   = total.toFixed(2);
+  document.getElementById('b-balance').value = Math.max(total - dep, 0).toFixed(2);
+};
+
+// ── Check date overlap ──
+async function hasOverlap(unitId, checkIn, checkOut, excludeId = null) {
+  const snap = await getDocs(query(collection(db,'bookings'), where('unitId','==',unitId)));
+  return snap.docs.some(d => {
+    if (d.id === excludeId) return false;
+    const b = d.data();
+    if (b.bookingStatus === 'cancelled') return false;
+    return b.checkIn < checkOut && b.checkOut > checkIn;
+  });
+}
+
+// ── Save booking ──
+window.saveBooking = async () => {
+  const errEl = document.getElementById('booking-error');
+  const btn   = document.getElementById('save-booking-btn');
+  errEl.classList.remove('visible');
+
+  const unitId    = document.getElementById('b-unit').value;
+  const unit      = UNITS.find(u => u.id === unitId);
+  const guestName = document.getElementById('b-guest').value.trim();
+  const guestPhone= document.getElementById('b-phone').value.trim();
+  const guestEmail= document.getElementById('b-email').value.trim();
+  const checkIn   = document.getElementById('b-checkin').value;
+  const checkOut  = document.getElementById('b-checkout').value;
+  const n         = nights(checkIn, checkOut);
+  const rate      = Number(document.getElementById('b-rate').value || 0);
+  const total     = Number(document.getElementById('b-total').value || 0);
+  const deposit   = Number(document.getElementById('b-deposit').value || 0);
+  const balance   = Number(document.getElementById('b-balance').value || 0);
+  const status    = document.getElementById('b-status').value;
+
+  if (!unitId || !guestName || !guestPhone || !checkIn || !checkOut || n <= 0) {
+    errEl.textContent = 'Please fill all required fields. Check-out must be after check-in.';
+    errEl.classList.add('visible'); return;
+  }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving...';
+
+  try {
+    if (await hasOverlap(unitId, checkIn, checkOut, editingId)) {
+      errEl.textContent = 'This apartment is already booked for the selected dates. Please choose different dates or a different unit.';
+      errEl.classList.add('visible'); return;
+    }
+
+    const paymentStatus = balance <= 0 && total > 0 ? 'fully_paid' : deposit > 0 ? 'part_paid' : 'unpaid';
+    const data = {
+      propertyName: 'The Vine',
+      unitId, unitName: unit.name, unitType: unit.type, displayType: unit.display,
+      guestName, guestPhone, guestEmail, checkIn, checkOut,
+      nights: n, ratePerNight: rate, totalAmount: total,
+      depositPaid: deposit, balanceDue: balance,
+      bookingStatus: status, paymentStatus,
+      source: document.getElementById('b-source').value,
+      notes:  document.getElementById('b-notes').value.trim(),
+      updatedAt: serverTimestamp(),
+    };
+
+    if (editingId) {
+      await updateDoc(doc(db,'bookings',editingId), data);
+    } else {
+      data.createdBy   = currentUser.uid;
+      data.createdByName = currentName;
+      data.createdAt   = serverTimestamp();
+      const ref = await addDoc(collection(db,'bookings'), data);
+      // Auto-create invoice on new booking
+      await createInvoice(ref.id, { id: ref.id, ...data });
+    }
+
+    closeBookingModal();
+    await loadBookings();
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Booking';
+  }
+};
+
+// ── Create invoice ──
+async function createInvoice(bookingId, b) {
+  const invoiceNo = `CV-VNE-INV-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`;
+  const ref = await addDoc(collection(db,'bookings',bookingId,'invoices'), {
+    invoiceNo, bookingId,
+    propertyName: 'The Vine',
+    unitName: b.unitName, unitType: b.unitType, displayType: b.displayType,
+    guestName: b.guestName, guestPhone: b.guestPhone, guestEmail: b.guestEmail,
+    checkIn: b.checkIn, checkOut: b.checkOut,
+    nights: b.nights, ratePerNight: b.ratePerNight,
+    totalAmount: b.totalAmount, depositPaid: b.depositPaid, balanceDue: b.balanceDue,
+    status: 'issued',
+    issuedBy: currentUser.uid, issuedByName: currentName,
+    createdAt: serverTimestamp(),
+  });
+  await updateDoc(doc(db,'bookings',bookingId), { invoiceIssued: true, invoiceId: ref.id, updatedAt: serverTimestamp() });
+  return ref.id;
+}
+
+// ── Detail modal ──
+window.openDetail = async (id) => {
+  selectedBooking = bookings.find(b => b.id === id);
+  if (!selectedBooking) return;
+  await enrichOne(selectedBooking);
+  document.getElementById('det-title').textContent    = selectedBooking.guestName;
+  document.getElementById('det-subtitle').textContent = `${selectedBooking.unitName} · ${fdate(selectedBooking.checkIn)} → ${fdate(selectedBooking.checkOut)}`;
+  document.getElementById('det-chip').innerHTML       = chip(selectedBooking.bookingStatus);
+  renderDetail();
+  document.getElementById('detail-modal').classList.add('open');
+};
+
+window.closeDetailModal = () => {
+  selectedBooking = null;
+  document.getElementById('detail-modal').classList.remove('open');
+};
+
+async function enrichOne(b) {
+  const [invSnap, recSnap, paySnap] = await Promise.all([
+    getDocs(collection(db,'bookings',b.id,'invoices')),
+    getDocs(collection(db,'bookings',b.id,'receipts')),
+    getDocs(collection(db,'bookings',b.id,'payments')),
+  ]);
+  b.invoiceIssued = !invSnap.empty;
+  b.invoiceId     = invSnap.empty ? null : invSnap.docs[0].id;
+  b.hasReceipt    = !recSnap.empty;
+  b.receiptId     = recSnap.empty ? null : recSnap.docs[0].id;
+  b.payments      = paySnap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+function renderDetail() {
+  const b = selectedBooking;
+  const can = canEdit();
+  const isCancelled = b.bookingStatus === 'cancelled';
+
+  document.getElementById('det-body').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">Guest & Booking Information</div>
+      <div class="detail-grid">
+        <div class="detail-cell"><div class="detail-label">Guest Name</div><div class="detail-value">${b.guestName||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Phone</div><div class="detail-value muted">${b.guestPhone||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Email</div><div class="detail-value muted">${b.guestEmail||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Source</div><div class="detail-value muted">${capitalize(b.source||'Direct')}</div></div>
+        <div class="detail-cell"><div class="detail-label">Apartment</div><div class="detail-value">${b.unitName||'—'} · ${b.displayType||b.unitType||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Stay Dates</div><div class="detail-value muted">${fdate(b.checkIn)} → ${fdate(b.checkOut)} · ${b.nights||0} night${(b.nights||0)!==1?'s':''}</div></div>
+        <div class="detail-cell"><div class="detail-label">Rate / Night</div><div class="detail-value">${money(b.ratePerNight)}</div></div>
+        <div class="detail-cell"><div class="detail-label">Total Amount</div><div class="detail-value">${money(b.totalAmount)}</div></div>
+        <div class="detail-cell"><div class="detail-label">Deposit Paid</div><div class="detail-value" style="color:var(--green)">${money(b.depositPaid)}</div></div>
+        <div class="detail-cell"><div class="detail-label">Balance Due</div><div class="detail-value" style="color:${Number(b.balanceDue)>0?'var(--coral)':'var(--green)'}">${money(b.balanceDue)}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Documents</div>
+      <div class="detail-grid">
+        <div class="detail-cell"><div class="detail-label">Invoice</div><div class="detail-value">${b.invoiceIssued ? `✅ Issued &nbsp;<a href="${docUrl('invoice',b.id,b.invoiceId)}" target="_blank">Open Invoice ↗</a>` : '⬜ Not issued'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Receipt</div><div class="detail-value">${b.hasReceipt ? `✅ Generated &nbsp;<a href="${docUrl('receipt',b.id,b.receiptId)}" target="_blank">Open Receipt ↗</a>` : '⬜ No receipt yet'}</div></div>
+      </div>
+    </div>
+
+    ${b.notes ? `<div class="detail-section"><div class="detail-section-title">Notes</div><div class="detail-cell"><div class="detail-value muted">${b.notes}</div></div></div>` : ''}
+
+    ${can && !isCancelled ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Actions</div>
+        <div class="quick-actions">${buildActions(b)}</div>
+      </div>` : ''}
+  `;
+
+  document.getElementById('det-footer').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeDetailModal()">Close</button>
+    ${can ? `<button class="btn btn-primary" onclick="closeDetailModal();openBookingModal('${b.id}')">Edit Booking</button>` : ''}
+  `;
+}
+
+function buildActions(b) {
+  let h = '';
+  if (!b.invoiceIssued) {
+    h += `<button class="btn btn-gold" onclick="issueInvoice()">📄 Issue Invoice</button>`;
+  } else {
+    h += `<a class="btn btn-gold" href="${docUrl('invoice',b.id,b.invoiceId)}" target="_blank">📄 Open Invoice</a>`;
+  }
+  h += `<button class="btn btn-green" onclick="openPaymentModal()">💳 Record Payment</button>`;
+  if (b.hasReceipt) h += `<a class="btn btn-ghost" href="${docUrl('receipt',b.id,b.receiptId)}" target="_blank">🧾 Open Receipt</a>`;
+  if (b.bookingStatus === 'reserved')    h += `<button class="btn btn-teal" onclick="updateStatus('confirmed')">✓ Confirm Booking</button>`;
+  if (b.bookingStatus === 'confirmed')   h += `<button class="btn btn-primary" onclick="updateStatus('checked_in')">🔑 Check In</button>`;
+  if (b.bookingStatus === 'checked_in')  h += `<button class="btn btn-primary" onclick="updateStatus('checked_out')">🚪 Check Out</button>`;
+  if (!['cancelled','checked_out'].includes(b.bookingStatus)) h += `<button class="btn btn-coral" onclick="updateStatus('cancelled')">✕ Cancel Booking</button>`;
+  return h;
+}
+
+// ── Issue invoice ──
+window.issueInvoice = async () => {
+  const id = await createInvoice(selectedBooking.id, selectedBooking);
+  selectedBooking.invoiceIssued = true;
+  selectedBooking.invoiceId = id;
+  const idx = bookings.findIndex(b => b.id === selectedBooking.id);
+  if (idx !== -1) { bookings[idx].invoiceIssued = true; bookings[idx].invoiceId = id; }
+  renderDetail(); renderTable();
+};
+
+// ── Update booking status ──
+window.updateStatus = async (newStatus) => {
+  if (newStatus === 'checked_in' && selectedBooking.paymentStatus === 'unpaid') {
+    alert('Please record at least a deposit payment before checking in.'); return;
+  }
+  if (!confirm(`Change booking status to "${STATUS_LABELS[newStatus]}"?`)) return;
+  await updateDoc(doc(db,'bookings',selectedBooking.id), { bookingStatus: newStatus, updatedAt: serverTimestamp() });
+  selectedBooking.bookingStatus = newStatus;
+  const idx = bookings.findIndex(b => b.id === selectedBooking.id);
+  if (idx !== -1) bookings[idx].bookingStatus = newStatus;
+  document.getElementById('det-chip').innerHTML = chip(newStatus);
+  renderDetail(); updateStats(); renderTable();
+};
+
+// ── Payment modal ──
+window.openPaymentModal = () => {
+  document.getElementById('pay-subtitle').textContent = `${selectedBooking.guestName} · ${selectedBooking.unitName} · Balance: ${money(selectedBooking.balanceDue)}`;
+  document.getElementById('payment-error').classList.remove('visible');
+  document.getElementById('p-amount').value  = selectedBooking.balanceDue || '';
+  document.getElementById('p-date').value    = todayISO();
+  document.getElementById('p-ref').value     = '';
+  document.getElementById('p-desc').value    = 'Payment towards The Vine booking';
+  document.getElementById('payment-modal').classList.add('open');
+};
+
+window.closePaymentModal = () => document.getElementById('payment-modal').classList.remove('open');
+
+// ── Save payment ──
+window.savePayment = async () => {
+  const errEl = document.getElementById('payment-error');
+  const btn   = document.getElementById('save-payment-btn');
+  errEl.classList.remove('visible');
+
+  const amount = Number(document.getElementById('p-amount').value || 0);
+  const method = document.getElementById('p-method').value;
+  if (!selectedBooking || amount <= 0) {
+    errEl.textContent = 'Please enter a valid payment amount.'; errEl.classList.add('visible'); return;
+  }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Processing...';
+
+  try {
+    const prevPaid  = Number(selectedBooking.depositPaid || 0);
+    const total     = Number(selectedBooking.totalAmount || 0);
+    const totalPaid = prevPaid + amount;
+    const balanceDue = Math.max(total - totalPaid, 0);
+    const paymentStatus = balanceDue <= 0 ? 'fully_paid' : 'part_paid';
+    const txnRef    = document.getElementById('p-ref').value.trim();
+    const payDate   = document.getElementById('p-date').value;
+    const desc      = document.getElementById('p-desc').value.trim();
+
+    // Save payment record
+    const payRef = await addDoc(collection(db,'bookings',selectedBooking.id,'payments'), {
+      amount, method, transactionRef: txnRef, paymentDate: payDate, description: desc,
+      recordedBy: currentUser.uid, recordedByName: currentName, createdAt: serverTimestamp(),
+    });
+
+    // Auto-generate receipt
+    const receiptNo = `CV-VNE-REC-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`;
+    const recRef = await addDoc(collection(db,'bookings',selectedBooking.id,'receipts'), {
+      receiptNo, bookingId: selectedBooking.id, paymentId: payRef.id,
+      amount, method, transactionRef: txnRef, paymentDate: payDate,
+      description: desc,
+      totalPaid, balanceDue, totalAmount: total,
+      guestName:    selectedBooking.guestName,
+      guestPhone:   selectedBooking.guestPhone || '',
+      guestEmail:   selectedBooking.guestEmail || '',
+      unitName:     selectedBooking.unitName,
+      unitType:     selectedBooking.unitType,
+      displayType:  selectedBooking.displayType,
+      checkIn:      selectedBooking.checkIn,
+      checkOut:     selectedBooking.checkOut,
+      nights:       selectedBooking.nights,
+      ratePerNight: selectedBooking.ratePerNight,
+      generatedBy:  currentUser.uid, generatedByName: currentName,
+      createdAt:    serverTimestamp(),
+    });
+
+    // Update booking totals
+    await updateDoc(doc(db,'bookings',selectedBooking.id), {
+      depositPaid: totalPaid, balanceDue, paymentStatus,
+      hasReceipt: true, receiptId: recRef.id, updatedAt: serverTimestamp(),
+    });
+
+    // Update local state
+    selectedBooking.depositPaid   = totalPaid;
+    selectedBooking.balanceDue    = balanceDue;
+    selectedBooking.paymentStatus = paymentStatus;
+    selectedBooking.hasReceipt    = true;
+    selectedBooking.receiptId     = recRef.id;
+    const idx = bookings.findIndex(b => b.id === selectedBooking.id);
+    if (idx !== -1) Object.assign(bookings[idx], { depositPaid: totalPaid, balanceDue, paymentStatus, hasReceipt: true, receiptId: recRef.id });
+
+    closePaymentModal();
+    renderDetail(); updateStats(); renderTable();
+
+    // Open receipt in new tab
+    window.open(docUrl('receipt', selectedBooking.id, recRef.id), '_blank');
+  } catch(e) {
+    errEl.textContent = 'Error saving payment: ' + e.message; errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Record Payment & Generate Receipt';
+  }
+};
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+document.getElementById('booking-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBookingModal(); });
+document.getElementById('detail-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetailModal(); });
+document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closePaymentModal(); });
+</script>
+<script src="../assets/mobile.js"></script>
+</body>
+</html>

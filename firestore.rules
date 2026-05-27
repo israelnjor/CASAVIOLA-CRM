@@ -3,23 +3,12 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ─────────────────────────────────────────────
-    // HELPERS
-    // NOTE: getUserData() calls get() on the users collection.
-    // We deliberately avoid calling it in the /users rules themselves
-    // to prevent a circular dependency (new user has no doc yet).
+    // HELPER FUNCTIONS
     // ─────────────────────────────────────────────
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-
-    function userRole() {
-      return getUserData().role;
-    }
+    function isSignedIn()  { return request.auth != null; }
+    function getUserData() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function userRole()    { return getUserData().role; }
 
     function isAdmin()    { return isSignedIn() && userRole() == 'admin'; }
     function isCEO()      { return isSignedIn() && userRole() == 'ceo'; }
@@ -27,51 +16,53 @@ service cloud.firestore {
     function isListings() { return isSignedIn() && userRole() == 'listings'; }
     function isCS()       { return isSignedIn() && userRole() == 'cs'; }
     function isFinance()  { return isSignedIn() && userRole() == 'finance'; }
-    function isAdminOrCEO() { return isAdmin() || isCEO(); }
+
+    function isAdminOrCEO()      { return isAdmin() || isCEO(); }
+    function isAdminCEOFinance() { return isAdmin() || isCEO() || isFinance(); }
+
+    // The Vine — CS has full editor access
+    function isVineStaff()  { return isAdmin() || isCEO() || isFinance() || isListings() || isCS(); }
+    function isVineEditor() { return isAdmin() || isFinance() || isListings() || isCS(); }
 
 
     // ─────────────────────────────────────────────
     // USERS
-    //
-    // IMPORTANT — why allow create for own uid:
-    // When admin calls createUserWithEmailAndPassword(), Firebase
-    // automatically signs IN the new user and signs OUT the admin.
-    // The new user has no Firestore doc yet, so calling getUserData()
-    // (i.e. isAdmin()) would itself fail with a permissions error.
-    // Solution: allow any signed-in user to create their OWN document.
-    // This is safe — the new user can only write to their own uid path.
+    // Admin manages all users.
+    // Staff can read all users (needed for lookups/dropdowns).
+    // Users can update their own profile but NEVER change their role.
+    // Roles are permanent — only admin can change them.
     // ─────────────────────────────────────────────
 
     match /users/{userId} {
-      // All signed-in staff can read user docs (needed for name lookups)
       allow read: if isSignedIn();
 
-      // A signed-in user can create their own document.
-      // This handles the new-user creation flow without needing isAdmin().
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn()
+                    && request.auth.uid == userId;
 
-      // Admin can update any user doc.
-      // Users can update their own doc but CANNOT change their role — permanent.
       allow update: if isAdmin()
                     || (isSignedIn()
                         && request.auth.uid == userId
                         && !request.resource.data.diff(resource.data)
                            .affectedKeys().hasAny(['role']));
 
-      // Never delete user docs — deactivate instead (isActive: false)
       allow delete: if false;
     }
 
 
     // ─────────────────────────────────────────────
     // CLIENTS
+    // All signed-in staff can read.
+    // Agents, CS, Listings, Admin can create.
+    // CS and Admin can edit any client.
+    // Agents can edit their own clients.
     // ─────────────────────────────────────────────
 
     match /clients/{clientId} {
       allow read: if isSignedIn();
 
       allow create: if isSignedIn()
-                    && request.resource.data.createdBy == request.auth.uid;
+                    && request.resource.data.createdBy == request.auth.uid
+                    && (isAgent() || isCS() || isListings() || isAdmin());
 
       allow update: if isAdmin()
                     || isCS()
@@ -83,6 +74,7 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────
     // PROPERTIES
+    // Everyone reads. Listings and Admin manage.
     // ─────────────────────────────────────────────
 
     match /properties/{propertyId} {
@@ -95,11 +87,25 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────
     // LEADS
-    // Status flow:
-    //   interested → viewing → closed_pending → closed_validated
+    // Workflow:
+    //   new → contacted → viewing_scheduled → viewing_completed
+    //   → negotiation → closed_pending → closed_validated
+    //   → no_show / rescheduled / not_interested / lost
     //
-    // closed_pending:   set by agent (agent leads) or listings (company leads)
-    // closed_validated: set ONLY by admin after CS uploads all 3 documents
+    // Who can create leads:
+    //   Agent: own agent-type leads
+    //   Listings: company-type leads
+    //   CS: any lead type (CS interfaces clients first)
+    //   Admin: any
+    //
+    // Who can update leads:
+    //   Agent: own leads, cannot validate, cannot change agreedPrice
+    //   Listings: company leads, cannot validate, cannot change agreedPrice
+    //   CS: all leads (schedule viewings, update status, upload docs flag)
+    //       cannot validate, cannot change agreedPrice
+    //   Finance: only invoice/payment related fields
+    //   CEO: all fields except status
+    //   Admin: full control including validation
     // ─────────────────────────────────────────────
 
     match /leads/{leadId} {
@@ -108,57 +114,209 @@ service cloud.firestore {
       allow create: if isSignedIn()
                     && request.resource.data.createdBy == request.auth.uid
                     && (
-                      (isAgent()    && request.resource.data.leadType == 'agent')
-                      || ((isListings() || isAdmin()) && request.resource.data.leadType == 'company')
+                      isAdmin()
+                      || isCS()
+                      || (isAgent()    && request.resource.data.leadType == 'agent')
+                      || (isListings() && request.resource.data.leadType == 'company')
                     );
 
       allow update: if isAdmin()
-                    // Agents update their own agent leads (cannot validate)
+
+                    // CEO: can update any field EXCEPT status
+                    || (isCEO()
+                        && !request.resource.data.diff(resource.data)
+                           .affectedKeys().hasAny(['status']))
+
+                    // Agent: own agent leads
+                    // Cannot: validate, change agreedPrice or priceOverride
                     || (isAgent()
                         && resource.data.createdBy == request.auth.uid
-                        && resource.data.leadType == 'agent'
-                        && request.resource.data.status != 'closed_validated')
-                    // Listings update company leads (cannot validate)
+                        && resource.data.leadType  == 'agent'
+                        && request.resource.data.status != 'closed_validated'
+                        && !request.resource.data.diff(resource.data)
+                           .affectedKeys().hasAny(['agreedPrice', 'priceOverride']))
+
+                    // Listings: company leads
+                    // Cannot: validate, change agreedPrice or priceOverride
                     || (isListings()
                         && resource.data.leadType == 'company'
-                        && request.resource.data.status != 'closed_validated');
+                        && request.resource.data.status != 'closed_validated'
+                        && !request.resource.data.diff(resource.data)
+                           .affectedKeys().hasAny(['agreedPrice', 'priceOverride']))
+
+                    // CS: all leads — schedule viewings, update status, add notes
+                    // Cannot: validate deals, change agreedPrice or priceOverride
+                    || (isCS()
+                        && request.resource.data.status != 'closed_validated'
+                        && !request.resource.data.diff(resource.data)
+                           .affectedKeys().hasAny(['agreedPrice', 'priceOverride']))
+
+                    // Finance: can only update invoice and payment tracking fields
+                    || (isFinance()
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly([
+                             'invoiceIssued', 'invoiceId', 'paymentPlan',
+                             'agreedPrice', 'currency', 'totalPaid', 'balanceDue',
+                             'paymentPlanSetBy', 'paymentPlanSetAt', 'updatedAt'
+                           ]));
 
       allow delete: if isAdmin();
     }
 
 
     // ─────────────────────────────────────────────
-    // LEAD DOCUMENTS (subcollection)
-    // Uploaded by CS, read by admin/ceo/cs, never deleted
+    // LEAD — INVOICES SUBCOLLECTION
+    // Finance, Admin, CEO can issue and update invoices.
+    // All signed-in staff can read.
+    // ─────────────────────────────────────────────
+
+    match /leads/{leadId}/invoices/{invoiceId} {
+      allow read: if isSignedIn();
+
+      allow create: if isAdminCEOFinance()
+                    && request.resource.data.issuedBy == request.auth.uid;
+
+      allow update: if isAdminCEOFinance();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // LEAD — LEDGER SUBCOLLECTION
+    // Finance and Admin record payment entries.
+    // All signed-in staff can read.
+    // ─────────────────────────────────────────────
+
+    match /leads/{leadId}/ledger/{entryId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isFinance() || isAdmin())
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      allow update: if isFinance() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // LEAD — RECEIPTS SUBCOLLECTION
+    // Finance generates receipts per ledger entry.
+    // All signed-in staff can read.
+    // ─────────────────────────────────────────────
+
+    match /leads/{leadId}/receipts/{receiptId} {
+      allow read: if isSignedIn();
+
+      allow create: if (isFinance() || isAdmin())
+                    && request.resource.data.generatedBy == request.auth.uid;
+
+      allow update: if isFinance() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // LEAD — DOCUMENTS SUBCOLLECTION
+    // CS uploads: purchase_agreement, land_title
+    // Finance uploads: final_receipt, payment_receipt
+    // Admin can upload anything.
+    // IMMUTABLE — no updates, no deletes ever.
+    // All signed-in staff can read.
     // ─────────────────────────────────────────────
 
     match /leads/{leadId}/documents/{docId} {
-      allow read: if isAdminOrCEO() || isCS();
+      allow read: if isSignedIn();
 
-      allow create: if isCS()
+      allow create: if (isCS() || isFinance() || isAdmin())
                     && request.resource.data.uploadedBy == request.auth.uid;
 
-      // Documents are immutable and permanent — no update or delete
       allow update: if false;
       allow delete: if false;
     }
 
 
     // ─────────────────────────────────────────────
-    // MESSAGES
+    // THE VINE — BOOKINGS
+    // CS has FULL access — CS is the primary operator of The Vine.
+    // Finance, Listings, Admin can also create and edit.
+    // CEO can read only.
+    // Only Admin can delete.
+    // ─────────────────────────────────────────────
+
+    match /bookings/{bookingId} {
+      allow read: if isSignedIn() && isVineStaff();
+
+      allow create: if isVineEditor()
+                    && request.resource.data.createdBy == request.auth.uid;
+
+      allow update: if isVineEditor();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // THE VINE — BOOKING INVOICES SUBCOLLECTION
+    // CS, Finance, Listings, Admin can create and update.
+    // All Vine staff can read.
+    // ─────────────────────────────────────────────
+
+    match /bookings/{bookingId}/invoices/{invoiceId} {
+      allow read: if isSignedIn() && isVineStaff();
+
+      allow create: if isVineEditor();
+
+      allow update: if isVineEditor();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // THE VINE — BOOKING PAYMENTS SUBCOLLECTION
+    // CS, Finance, Listings, Admin record payments.
+    // All Vine staff can read.
+    // ─────────────────────────────────────────────
+
+    match /bookings/{bookingId}/payments/{paymentId} {
+      allow read: if isSignedIn() && isVineStaff();
+
+      allow create: if isVineEditor();
+
+      allow update: if isVineEditor();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // THE VINE — BOOKING RECEIPTS SUBCOLLECTION
+    // CS, Finance, Listings, Admin generate receipts.
+    // All Vine staff can read.
+    // ─────────────────────────────────────────────
+
+    match /bookings/{bookingId}/receipts/{receiptId} {
+      allow read: if isSignedIn() && isVineStaff();
+
+      allow create: if isVineEditor();
+
+      allow update: if isVineEditor();
+      allow delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    // MESSAGES (staff announcement board)
+    // All signed-in staff can read and post.
+    // Staff can delete their own messages. Admin can delete any.
     // ─────────────────────────────────────────────
 
     match /messages/{messageId} {
-      allow read:   if isSignedIn();
+      allow read: if isSignedIn();
 
       allow create: if isSignedIn()
                     && request.resource.data.postedBy == request.auth.uid;
 
-      // Admin can pin/unpin; owner can edit their own message
       allow update: if isAdmin()
                     || (isSignedIn() && resource.data.postedBy == request.auth.uid);
 
-      // Admin or message owner can delete
       allow delete: if isAdmin()
                     || (isSignedIn() && resource.data.postedBy == request.auth.uid);
     }
@@ -166,19 +324,17 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────
     // NOTIFICATIONS
+    // Each user reads only their own notifications.
+    // Any signed-in user can create (e.g. deal closed → notify admin).
+    // Users can only mark their own as read (isRead field only).
     // ─────────────────────────────────────────────
 
     match /notifications/{notifId} {
-      // Users read only their own notifications
       allow read: if isSignedIn()
                   && resource.data.userId == request.auth.uid;
 
-      // Admin creates notifications (e.g. when agent closes a deal)
-      allow create: if isAdmin()
-                    // Also allow the creating user (agent/listings) to notify admin
-                    || isSignedIn();
+      allow create: if isSignedIn();
 
-      // Users can only mark their own as read
       allow update: if isSignedIn()
                     && resource.data.userId == request.auth.uid
                     && request.resource.data.diff(resource.data)
@@ -190,40 +346,29 @@ service cloud.firestore {
 
     // ─────────────────────────────────────────────
     // INQUIRIES (public form submissions)
-    // - Anyone can create (no auth required — public form)
-    // - Only admin and CS can read
-    // - No update or delete — permanent records
+    // Anyone can submit — public inquiry form requires no auth.
+    // Admin, CEO, CS can read and manage inquiries.
     // ─────────────────────────────────────────────
 
     match /inquiries/{inquiryId} {
-      // Public can submit — no login required
       allow create: if true;
 
-      // Only authenticated admin, CEO and CS can read full inquiry details
-      // The stats page reads from influencer_stats instead — no client data exposed
       allow read: if isSignedIn()
-                  && (userRole() == 'admin'
-                      || userRole() == 'ceo'
-                      || userRole() == 'cs');
+                  && (isAdmin() || isCEO() || isCS());
 
-      allow update: if isAdmin();
+      allow update: if isAdmin() || isCS();
       allow delete: if false;
     }
 
 
     // ─────────────────────────────────────────────
     // INFLUENCERS
-    // - Admin, CS, CEO can read and manage
-    // - Public can read own record by referral code (for stats page)
-    // - Only admin can create/update/delete
+    // All signed-in staff can read.
+    // Admin manages influencer profiles.
     // ─────────────────────────────────────────────
 
     match /influencers/{influencerId} {
-      // Admin, CS, CEO can read all (authenticated)
-      // Public can also read — needed for the stats page which has no login.
-      // The referral code acts as the access key. No sensitive data is stored here.
-      allow read: if true;
-
+      allow read:   if isSignedIn();
       allow create: if isAdmin();
       allow update: if isAdmin();
       allow delete: if isAdmin();
@@ -231,115 +376,16 @@ service cloud.firestore {
 
 
     // ─────────────────────────────────────────────
-    // INFLUENCER_STATS (public aggregate summaries)
-    // Contains ONLY counts — no client data whatsoever.
-    // Written by the inquiry form submission (public).
-    // Read by the public stats page.
-    // Admin/CS/CEO can also read and update.
+    // INFLUENCER STATS (public aggregate counts)
+    // Fully public read and write — the public stats page
+    // and the public inquiry form both operate without auth.
+    // Admin can delete stale entries.
     // ─────────────────────────────────────────────
 
     match /influencer_stats/{refCode} {
-      // Fully public read — only aggregate counts, zero client data
-      allow read: if true;
-
-      // Public can create/update their own stat doc when submitting an inquiry
-      // Only fields: total, contacted, converted, lastActivity, referralCode
+      allow read:   if true;
       allow create: if true;
       allow update: if true;
-
-      // Only admin can delete
-      allow delete: if isAdmin();
-    }
-
-    // ---------------------------------------------
-    // LEAD PAYMENTS / LEDGER (subcollection under leads)
-    // Finance manages payment entries per deal
-    // ---------------------------------------------
-
-    match /leads/{leadId}/payments/{paymentId} {
-      // Finance, Admin, CEO can read payment records
-      allow read: if isSignedIn()
-                  && (isAdmin() || isCEO() || isFinance());
-
-      // Finance and Admin can create payment entries
-      allow create: if (isFinance() || isAdmin())
-                    && request.resource.data.recordedBy == request.auth.uid;
-
-      // Finance and Admin can update payment entries / approvals
-      allow update: if isFinance() || isAdmin();
-
-      // Only Admin can delete payment entries
-      allow delete: if isAdmin();
-    }
-
-
-    // ---------------------------------------------
-    // LEAD LEDGER (legacy/support path)
-    // Keep this only because finance.html may still use /ledger
-    // ---------------------------------------------
-
-    match /leads/{leadId}/ledger/{entryId} {
-      // Finance, Admin, CEO can read
-      allow read: if isSignedIn()
-                  && (isAdmin() || isCEO() || isFinance());
-
-      // Finance and Admin can create entries
-      allow create: if (isFinance() || isAdmin())
-                    && request.resource.data.createdBy == request.auth.uid;
-
-      // Finance and Admin can update entries
-      allow update: if isFinance() || isAdmin();
-
-      // Only Admin can delete ledger entries
-      allow delete: if isAdmin();
-    }
-
-
-    // ---------------------------------------------
-    // LEAD RECEIPTS (subcollection under leads)
-    // Finance generates and uploads receipts per deal
-    // ---------------------------------------------
-
-    match /leads/{leadId}/receipts/{receiptId} {
-      // Finance, Admin, CEO, and CS can read receipts
-      allow read: if isSignedIn()
-                  && (isAdmin() || isCEO() || isFinance() || isCS());
-
-      // Finance and Admin can create receipts
-      allow create: if (isFinance() || isAdmin())
-                    && request.resource.data.generatedBy == request.auth.uid;
-
-      // Finance and Admin can update draft/final receipt records
-      allow update: if isFinance() || isAdmin();
-
-      // Only Admin can delete receipts
-      allow delete: if isAdmin();
-    }
-
-    // ---------------------------------------------
-    // LEAD INVOICES (subcollection)
-    // Invoice records generated for a deal
-    // ---------------------------------------------
-
-    match /leads/{leadId}/invoices/{invoiceId} {
-      // Staff involved in the deal process can read invoices
-      allow read: if isSignedIn()
-                  && (
-                    isAdmin()
-                    || isCEO()
-                    || isFinance()
-                    || isCS()
-                    || isAgent()
-                    || isListings()
-                  );
-
-      // Finance, Admin, and CEO can create invoices
-      allow create: if isFinance() || isAdmin() || isCEO();
-
-      // Finance, Admin, and CEO can update invoice records
-      allow update: if isFinance() || isAdmin() || isCEO();
-
-      // Only Admin can delete invoices
       allow delete: if isAdmin();
     }
 

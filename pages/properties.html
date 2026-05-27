@@ -412,8 +412,16 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Price (GHS)</label>
-        <input class="form-input" id="f-price" type="number" placeholder="e.g. 450000" min="0"/>
+        <label class="form-label">List Price & Currency</label>
+        <div style="display:flex;gap:8px">
+          <select class="form-select" id="f-currency" style="width:110px;flex-shrink:0">
+            <option value="USD">$ USD</option>
+            <option value="EUR">€ EUR</option>
+            <option value="GBP">£ GBP</option>
+            <option value="GHS">₵ GHS</option>
+          </select>
+          <input class="form-input" id="f-price" type="number" placeholder="e.g. 250000" min="0" style="flex:1"/>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">Size</label>
@@ -484,7 +492,15 @@ let selectedProp = null;
 function initials(n) { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 function capitalize(s) { if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
 function formatDate(ts) { if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
-function formatPrice(p) { if(!p && p!==0) return '—'; return 'GHS ' + Number(p).toLocaleString(); }
+const CURRENCY_SYMBOLS = { USD:'$', EUR:'€', GBP:'£', GHS:'₵' };
+const CURRENCY_LABELS  = { USD:'USD', EUR:'EUR', GBP:'GBP', GHS:'GHS' };
+
+function formatPrice(p, currency) {
+  if (!p && p !== 0) return '—';
+  const sym = CURRENCY_SYMBOLS[currency] || '$';
+  const code = CURRENCY_LABELS[currency] || 'USD';
+  return sym + ' ' + Number(p).toLocaleString('en-US', {minimumFractionDigits:0,maximumFractionDigits:0}) + ' ' + code;
+}
 function canEdit() { return ['admin','listings'].includes(currentRole); }
 
 // ── Auth ──
@@ -585,7 +601,7 @@ function renderCard(p) {
         <div class="prop-title">${p.title||'Untitled'}</div>
         <div class="prop-location">📍 ${p.location||'—'}</div>
         <div class="prop-meta">
-          <div class="prop-price">${formatPrice(p.price)}</div>
+          <div class="prop-price">${formatPrice(p.price, p.currency)}</div>
           ${p.size ? `<span class="prop-size">${p.size}</span>` : ''}
         </div>
       </div>
@@ -609,7 +625,7 @@ function renderListItem(p) {
           <div class="prop-list-title">${p.title||'Untitled'}</div>
           <div class="prop-list-location">📍 ${p.location||'—'}</div>
         </div>
-        <div class="prop-list-price">${formatPrice(p.price)}</div>
+        <div class="prop-list-price">${formatPrice(p.price, p.currency)}</div>
         <div class="prop-list-type">${capitalize(p.type||'')}</div>
         <div class="prop-list-size">${p.size||'—'}</div>
         <span class="prop-status-badge ${p.status==='available'?'badge-available':p.status==='sold'?'badge-sold':'badge-rented'}">${capitalize(p.status)}</span>
@@ -681,6 +697,7 @@ window.openEditModal = (id) => {
   document.getElementById('f-status').value   = p.status   || 'available';
   document.getElementById('f-location').value = p.location || '';
   document.getElementById('f-price').value    = p.price    || '';
+  document.getElementById('f-currency').value  = p.currency || 'USD';
   document.getElementById('f-size').value     = p.size     || '';
   document.getElementById('f-notes').value    = p.notes    || '';
   if (p.imageUrl) {
@@ -696,6 +713,7 @@ window.openEditModal = (id) => {
 
 function resetForm() {
   ['f-title','f-location','f-price','f-size','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-currency').value = 'USD';
   document.getElementById('f-type').value   = 'house';
   document.getElementById('f-status').value = 'available';
   document.getElementById('upload-preview').src = '';
@@ -726,7 +744,8 @@ window.submitProperty = async () => {
   btn.disabled = true; btn.textContent = 'Saving...';
 
   try {
-    const propData = { title, type, status, location, price, size, notes, updatedAt: serverTimestamp() };
+    const currency = document.getElementById('f-currency').value;
+    const propData = { title, type, status, location, price, currency, size, notes, updatedAt: serverTimestamp() };
 
     if (editingId) {
       // ── Edit ──
@@ -810,7 +829,7 @@ window.openDetailModal = (id) => {
     ${p.imageUrl
       ? `<img class="detail-img" src="${p.imageUrl}" alt="${p.title}"/>`
       : `<div class="detail-no-img">🏠</div>`}
-    <div class="detail-price">${formatPrice(p.price)}</div>
+    <div class="detail-price">${formatPrice(p.price, p.currency)}</div>
     <div class="detail-grid">
       <div class="detail-field"><label>Type</label><span>${capitalize(p.type||'—')}</span></div>
       <div class="detail-field"><label>Size</label><span>${p.size||'—'}</span></div>

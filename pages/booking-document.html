@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Document — The Vine · Casaviola Properties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:       #0f0c18;
+  --ink2:      #3a3450;
+  --ink3:      #7a7590;
+  --ink4:      #aea9c0;
+  --forest:    #0d3320;
+  --forest2:   #164d30;
+  --vine:      #1a6b42;
+  --vine2:     #22a865;
+  --vine-pale: #eaf5ee;
+  --gold:      #b88c2a;
+  --gold2:     #d4a83a;
+  --gold3:     #f0c060;
+  --gold-pale: #faf4e2;
+  --cream:     #fdfcf9;
+  --paper:     #ffffff;
+  --line:      #e8e2d8;
+  --line2:     #d5cdc0;
+  --amber:     #9a6010;
+  --amber-pale:#fef5e4;
+  --coral:     #c0342a;
+  --font-disp: 'Playfair Display', serif;
+  --font-body: 'Mulish', sans-serif;
+  --page-max:  860px;
+}
+
+html { font-size: 13.5px; }
+
+body {
+  background: #eae6de;
+  font-family: var(--font-body);
+  color: var(--ink);
+  padding: 32px 18px 56px;
+  line-height: 1.6;
+}
+
+/* Loading */
+#loading-state {
+  min-height: 80vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+}
+.loading-ring {
+  width: 48px; height: 48px;
+  border: 2px solid var(--line2);
+  border-top-color: var(--vine);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 12px; color: var(--ink3); letter-spacing: 1px; }
+
+#doc-content { display: none; }
+
+/* Action bar */
+.action-bar {
+  max-width: var(--page-max);
+  margin: 0 auto 18px;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.action-left { display: flex; align-items: center; gap: 10px; }
+.abtn {
+  padding: 8px 18px; border-radius: 6px;
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--line2);
+  background: white; color: var(--ink2); letter-spacing: 0.3px;
+  transition: all 0.15s;
+}
+.abtn:hover { border-color: var(--gold2); color: var(--ink); }
+.abtn-print { background: var(--forest); color: white; border-color: var(--forest); letter-spacing: 0.5px; }
+.abtn-print:hover { background: var(--forest2); }
+
+.dtype-badge {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 3px;
+}
+.dtype-invoice { background: var(--forest); color: rgba(255,255,255,0.85); }
+.dtype-receipt { background: var(--vine); color: rgba(255,255,255,0.9); }
+
+/* ══ DOCUMENT SHELL ══ */
+.doc {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  background: var(--paper);
+  border: 1px solid var(--line2);
+  box-shadow:
+    0 2px 4px rgba(15,12,24,0.04),
+    0 8px 28px rgba(15,12,24,0.08),
+    0 32px 64px rgba(15,12,24,0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left accent — forest green for The Vine */
+.doc::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  background: linear-gradient(180deg, var(--gold2) 0%, var(--vine) 40%, var(--forest) 100%);
+  z-index: 10;
+}
+
+/* Subtle watermark */
+.doc::after {
+  content: attr(data-wm);
+  position: absolute; right: 28px; bottom: 110px;
+  font-family: var(--font-disp);
+  font-size: 200px; font-weight: 600; font-style: italic;
+  color: var(--vine); opacity: 0.015;
+  pointer-events: none; user-select: none; line-height: 1;
+}
+
+/* ── Top bar strip — The Vine identifier ── */
+.vine-strip {
+  background: var(--forest);
+  padding: 9px 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2;
+}
+.vine-strip-label {
+  font-family: var(--font-disp);
+  font-size: 12px; font-weight: 400; font-style: italic;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 1px;
+}
+.vine-strip-tag {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold3); opacity: 0.8;
+}
+
+/* ── Header ── */
+.doc-head {
+  padding: 30px 48px 26px 52px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 28px; align-items: start;
+  border-bottom: 1px solid var(--line);
+  background: var(--cream);
+  position: relative; z-index: 1;
+}
+
+/* Gold accent line under header */
+.doc-head::after {
+  content: '';
+  position: absolute; bottom: 0; left: 52px; right: 48px; height: 2px;
+  background: linear-gradient(90deg, var(--gold2), var(--vine2), transparent);
+}
+
+.brand { display: flex; align-items: flex-start; gap: 18px; }
+.logo-frame {
+  width: 68px; height: 68px;
+  border: 1px solid var(--line2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0; background: white;
+}
+.logo-frame img { width: 100%; height: 100%; object-fit: contain; }
+.logo-placeholder {
+  font-family: var(--font-disp);
+  font-size: 20px; font-weight: 600; color: var(--forest);
+  letter-spacing: 1px;
+}
+
+.brand-text { padding-top: 2px; }
+.company-name {
+  font-family: var(--font-disp);
+  font-size: 20px; font-weight: 600; color: var(--forest);
+  letter-spacing: 0.2px; line-height: 1.1;
+}
+.company-tag {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); margin-top: 4px;
+}
+.company-info {
+  margin-top: 10px; font-size: 11px; color: var(--ink3);
+  line-height: 1.8; font-weight: 400;
+}
+
+.head-right { text-align: right; }
+.doc-kind {
+  font-family: var(--font-disp);
+  font-size: 36px; font-weight: 500; font-style: italic;
+  color: var(--ink); line-height: 1; letter-spacing: -0.5px;
+}
+.doc-kind-sub {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--vine); margin-top: 6px;
+}
+.doc-meta { margin-top: 14px; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+.doc-meta-row { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.meta-key { color: var(--ink3); }
+.meta-val { font-weight: 700; color: var(--ink); }
+.doc-serial {
+  display: inline-block;
+  background: var(--forest);
+  color: rgba(255,255,255,0.85);
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  padding: 5px 14px; border-radius: 2px; margin-top: 12px;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Addressed to strip ── */
+.addr-strip {
+  padding: 22px 48px 20px 52px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 28px; align-items: center;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.addr-eyebrow {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.addr-name {
+  font-family: var(--font-disp);
+  font-size: 23px; font-weight: 500;
+  color: var(--forest); line-height: 1.15;
+}
+.addr-sub { font-size: 12px; color: var(--ink3); margin-top: 4px; }
+
+.amount-block { text-align: right; }
+.amount-eyebrow {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 5px;
+}
+.amount-figure {
+  font-family: var(--font-disp);
+  font-size: 38px; font-weight: 500;
+  color: var(--forest); line-height: 1; letter-spacing: -1px;
+}
+.amount-sym {
+  font-size: 18px; font-weight: 400; color: var(--gold);
+  vertical-align: top; margin-top: 5px;
+  display: inline-block; margin-right: 2px;
+}
+.status-tag {
+  display: inline-block; margin-top: 8px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 2px;
+}
+.tag-pending { background: var(--amber-pale); color: var(--amber); }
+.tag-paid    { background: var(--vine-pale);  color: var(--vine); }
+
+/* ── Stay summary card ── */
+.stay-card {
+  margin: 0 48px 0 52px;
+  background: var(--forest);
+  border-radius: 0;
+  padding: 16px 22px;
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+}
+.stay-item { padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.1); }
+.stay-item:first-child { padding-left: 0; }
+.stay-item:last-child  { border-right: none; }
+.stay-label { font-size: 8.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 5px; }
+.stay-val   { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+.stay-val.accent { color: var(--gold3); }
+
+/* ── Body ── */
+.doc-body { padding: 30px 48px 34px 52px; }
+
+.h-rule {
+  height: 1px; background: var(--line); margin: 26px 0;
+  position: relative;
+}
+.h-rule::before {
+  content: ''; position: absolute; left: 0; top: -1px;
+  width: 36px; height: 3px;
+  background: linear-gradient(90deg, var(--gold2), var(--vine));
+}
+
+/* Section header */
+.sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; }
+.sec-num  { font-family: var(--font-disp); font-size: 11px; font-weight: 400; font-style: italic; color: var(--vine2); flex-shrink: 0; }
+.sec-title{ font-family: var(--font-disp); font-size: 17px; font-weight: 500; color: var(--forest); }
+.sec-line { flex: 1; height: 1px; background: var(--line); }
+
+/* Info grid */
+.info-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.info-cell { background: var(--cream); padding: 13px 16px; }
+.ic-label  { font-size: 9px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--ink4); margin-bottom: 5px; }
+.ic-val    { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+.ic-val.accent { font-family: var(--font-disp); font-size: 15px; color: var(--forest); font-weight: 500; }
+
+/* Table */
+.tbl-wrap { border: 1px solid var(--line); overflow: hidden; }
+.ptbl { width: 100%; border-collapse: collapse; }
+.ptbl thead { background: var(--forest); }
+.ptbl th { padding: 11px 16px; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.65); text-align: left; }
+.ptbl th:last-child { text-align: right; }
+.ptbl td { padding: 13px 16px; font-size: 12.5px; color: var(--ink2); border-bottom: 1px solid var(--line); vertical-align: top; }
+.ptbl td:last-child { text-align: right; font-weight: 700; color: var(--ink); }
+.ptbl tbody tr:last-child td { border-bottom: none; }
+.ptbl tbody tr:hover td { background: var(--cream); }
+.ptype { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; background: var(--vine-pale); color: var(--vine); border: 1px solid rgba(26,107,66,0.2); }
+
+/* Totals */
+.totals-right { display: flex; justify-content: flex-end; margin-top: 16px; }
+.totals-box { width: 340px; border: 1px solid var(--line); }
+.trow { display: flex; justify-content: space-between; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+.trow:last-child { border-bottom: none; }
+.tl { color: var(--ink3); }
+.tv { font-weight: 700; color: var(--ink); }
+.trow.bg-cream { background: var(--cream); }
+.trow.grand  { background: var(--forest); padding: 14px 16px; }
+.trow.grand .tl { color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.5px; }
+.trow.grand .tv { color: var(--gold3); font-family: var(--font-disp); font-size: 19px; font-weight: 500; }
+.trow.balance { background: var(--amber-pale); }
+.trow.balance .tl, .trow.balance .tv { color: var(--amber); }
+.trow.balance .tv { font-family: var(--font-disp); font-size: 17px; }
+.trow.fullpaid { background: var(--vine-pale); }
+.trow.fullpaid .tl, .trow.fullpaid .tv { color: var(--vine); }
+.trow.fullpaid .tv { font-family: var(--font-disp); font-size: 17px; }
+
+/* Notes */
+.notes-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); }
+.note-col { padding: 18px 20px; }
+.note-col:first-child { border-right: 1px solid var(--line); background: var(--cream); }
+.note-head { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--forest); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.note-head::after { content: ''; flex: 1; height: 1px; background: var(--line2); }
+.note-body { font-size: 12px; color: var(--ink2); line-height: 1.8; }
+
+/* Disclaimer */
+.disclaimer {
+  margin-top: 16px; padding: 13px 16px;
+  border-left: 3px solid var(--line2); background: var(--cream);
+  font-size: 11px; color: var(--ink3); line-height: 1.7; font-style: italic;
+}
+
+/* Signatures */
+.sig-cols {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
+  border: 1px solid var(--line); border-top: 3px solid var(--forest);
+  margin-top: 30px;
+}
+.sig-col { padding: 22px 20px 18px; border-right: 1px solid var(--line); }
+.sig-col:last-child { border-right: none; }
+.sig-space { height: 44px; border-bottom: 1px solid var(--line2); margin-bottom: 10px; }
+.sig-role { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--forest); }
+.sig-name { font-size: 11px; color: var(--ink3); margin-top: 3px; }
+
+/* Footer */
+.doc-foot {
+  background: var(--forest);
+  padding: 16px 48px 16px 52px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 24px; align-items: center;
+}
+.foot-company { font-family: var(--font-disp); font-size: 14px; color: rgba(255,255,255,0.85); font-weight: 500; margin-bottom: 3px; }
+.foot-detail  { font-size: 10.5px; color: rgba(255,255,255,0.4); line-height: 1.8; }
+.foot-right   { text-align: right; }
+.foot-brand   { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold3); opacity: 0.7; }
+.foot-serial  { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; font-family: 'Courier New', monospace; }
+
+/* Gold micro line */
+.gold-micro { height: 2px; background: linear-gradient(90deg, var(--gold2) 0%, var(--vine2) 50%, transparent 100%); }
+
+/* Print */
+@media print {
+  body { background: white; padding: 0; }
+  .action-bar { display: none !important; }
+  .doc { box-shadow: none; max-width: 100%; }
+  .vine-strip, .doc-head, .stay-card, .ptbl thead, .trow.grand, .doc-foot, .doc::before, .sig-cols { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc::after { display: none; }
+  body { font-size: 12px; }
+}
+
+/* Responsive */
+@media (max-width: 680px) {
+  body { padding: 12px 8px 40px; }
+  .vine-strip { padding: 8px 20px; }
+  .doc-head { grid-template-columns: 1fr; padding: 22px 22px 22px 26px; }
+  .doc-head::after { left: 26px; right: 22px; }
+  .head-right { text-align: left; }
+  .addr-strip { grid-template-columns: 1fr; padding: 18px 22px 16px 26px; }
+  .amount-block { text-align: left; }
+  .stay-card { grid-template-columns: 1fr 1fr; margin: 0 22px 0 26px; gap: 12px; padding: 14px 16px; }
+  .stay-item { border-right: none; padding: 0; }
+  .doc-body { padding: 22px 22px 28px 26px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .notes-cols, .sig-cols { grid-template-columns: 1fr; }
+  .note-col:first-child, .sig-col { border-right: none; border-bottom: 1px solid var(--line); }
+  .sig-col:last-child { border-bottom: none; }
+  .totals-box { width: 100%; }
+  .doc-foot { grid-template-columns: 1fr; padding: 14px 22px 14px 26px; }
+  .foot-right { text-align: left; }
+  .doc-kind { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-state">
+  <div class="loading-ring"></div>
+  <div class="loading-text">Preparing document</div>
+</div>
+
+<!-- Content -->
+<div id="doc-content">
+
+  <div class="action-bar">
+    <div class="action-left">
+      <button class="abtn" onclick="window.close()">← Close</button>
+      <span class="dtype-badge" id="dtype-badge">—</span>
+    </div>
+    <button class="abtn abtn-print" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+  <div class="doc" id="doc-wrap" data-wm="VNE">
+
+    <!-- The Vine top strip -->
+    <div class="vine-strip">
+      <span class="vine-strip-label">The Vine — Casaviola Properties</span>
+      <span class="vine-strip-tag">Apartment Bookings</span>
+    </div>
+
+    <!-- Header -->
+    <header class="doc-head">
+      <div class="brand">
+        <div class="logo-frame">
+          <img src="logo.jpeg" alt="Casaviola Properties" onerror="this.style.display='none'"/>
+          <div class="logo-placeholder" id="logo-ph" style="display:none">CV</div>
+        </div>
+        <div class="brand-text">
+          <div class="company-name">Casa Viola Properties</div>
+          <div class="company-tag">Real Estate · Sales · Rentals · Investment</div>
+          <div class="company-info">
+            Oasis Estate / No. 021, Spintex Road, Accra<br/>
+            +233 (0) 55 501 1644<br/>
+            support@casaviolaproperties.com
+          </div>
+        </div>
+      </div>
+
+      <div class="head-right">
+        <div class="doc-kind" id="doc-kind">Document</div>
+        <div class="doc-kind-sub" id="doc-kind-sub">—</div>
+        <div class="doc-meta">
+          <div class="doc-meta-row"><span class="meta-key">No.</span><span class="meta-val" id="doc-no">—</span></div>
+          <div class="doc-meta-row"><span class="meta-key">Date</span><span class="meta-val" id="doc-date">—</span></div>
+          <div class="doc-meta-row" id="ref-row" style="display:none"><span class="meta-key">Invoice Ref.</span><span class="meta-val" id="doc-ref">—</span></div>
+        </div>
+        <div class="doc-serial" id="doc-serial">—</div>
+      </div>
+    </header>
+
+    <!-- Addressed to strip -->
+    <div class="addr-strip">
+      <div>
+        <div class="addr-eyebrow" id="addr-eyebrow">—</div>
+        <div class="addr-name"    id="addr-name">—</div>
+        <div class="addr-sub"     id="addr-sub">—</div>
+      </div>
+      <div class="amount-block">
+        <div class="amount-eyebrow" id="amount-label">Amount</div>
+        <div class="amount-figure">
+          <span class="amount-sym">GH₵</span><span id="amount-val">0.00</span>
+        </div>
+        <div id="amount-status">—</div>
+      </div>
+    </div>
+
+    <!-- Stay summary bar -->
+    <div class="stay-card" id="stay-card">
+      <div class="stay-item">
+        <div class="stay-label">Apartment</div>
+        <div class="stay-val accent" id="stay-unit">—</div>
+      </div>
+      <div class="stay-item">
+        <div class="stay-label">Check-In</div>
+        <div class="stay-val" id="stay-checkin">—</div>
+      </div>
+      <div class="stay-item">
+        <div class="stay-label">Check-Out</div>
+        <div class="stay-val" id="stay-checkout">—</div>
+      </div>
+      <div class="stay-item">
+        <div class="stay-label">Duration</div>
+        <div class="stay-val accent" id="stay-nights">—</div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <main class="doc-body" id="doc-body"><!-- populated by JS --></main>
+
+    <div class="gold-micro"></div>
+
+    <!-- Footer -->
+    <footer class="doc-foot">
+      <div>
+        <div class="foot-company">Casa Viola Properties Ltd — The Vine</div>
+        <div class="foot-detail">
+          Oasis Estate / No. 021, Spintex Road · Digital Address: GZ-191-1247<br/>
+          First Atlantic Bank · Branch: Abossey Okai · SWIFT: FAMCGHAC
+        </div>
+      </div>
+      <div class="foot-right">
+        <div class="foot-brand">The Vine · Casaviola</div>
+        <div class="foot-serial" id="foot-serial">—</div>
+      </div>
+    </footer>
+
+  </div>
+</div>
+
+<script type="module">
+import { auth, db } from './js/firebase-config.js';
+import {
+  browserLocalStoragePersistence,
+  setPersistence,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, getDocs, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── Company constants ──
+const CO = {
+  name:    'Casa Viola Properties Ltd',
+  address: 'Oasis Estate / No. 021, Spintex Road, Accra',
+  phone:   '+233 (0) 55 501 1644',
+  email:   'support@casaviolaproperties.com',
+  digital: 'GZ-191-1247',
+  bank:    'First Atlantic Bank',
+  branch:  'Abossey Okai',
+  cedi:    '2407272751019',
+  usd:     '2407271112014',
+  swift:   'FAMCGHAC',
+};
+
+// ── Helpers ──
+const $ = id => document.getElementById(id);
+const set = (id, val) => { const el=$(id); if(el) el.textContent = val||'—'; };
+
+function fGHS(n) { return Number(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fDate(v) {
+  if (!v) return '—';
+  // Handle plain date strings like "2026-05-15"
+  const d = v.toDate ? v.toDate() : new Date(v);
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+function fDateShort(v) {
+  if (!v) return '—';
+  const d = v.toDate ? v.toDate() : new Date(v);
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function today() { return new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); }
+function mLabel(m) { return {bank_transfer:'Bank Transfer',cash:'Cash',mobile_money:'Mobile Money',cheque:'Cheque'}[m]||m||'—'; }
+
+// ── Handle logo load error ──
+document.querySelector('.logo-frame img')?.addEventListener('error', function(){
+  this.style.display = 'none';
+  $('logo-ph').style.display = '';
+});
+
+// ── URL params ──
+const P         = new URLSearchParams(window.location.search);
+const bookingId = P.get('bookingId');
+const type      = P.get('type') || 'invoice';
+const invoiceId = P.get('invoiceId');
+const receiptId = P.get('receiptId');
+
+if (!bookingId) {
+  showError('Missing booking reference. Please go back and try again.');
+} else {
+  // Use localStorage persistence so auth survives across new tabs
+  setPersistence(auth, browserLocalStoragePersistence)
+    .then(() => {
+      onAuthStateChanged(auth, user => {
+        if (user) {
+          loadDoc();
+        } else {
+          showError('Session expired. Please log in again and reopen this document.');
+        }
+      });
+    })
+    .catch(() => {
+      // Fallback — try anyway (rules may allow read)
+      loadDoc();
+    });
+}
+
+async function loadDoc() {
+  try {
+    // Load booking
+    const bSnap = await getDoc(doc(db,'bookings',bookingId));
+    if (!bSnap.exists()) { showError('Booking not found.'); return; }
+    const booking = { id: bSnap.id, ...bSnap.data() };
+
+    // Populate stay summary bar
+    set('stay-unit',    booking.unitName || '—');
+    set('stay-checkin', fDateShort(booking.checkIn));
+    set('stay-checkout',fDateShort(booking.checkOut));
+    set('stay-nights',  `${booking.nights||0} Night${(booking.nights||0)!==1?'s':''}`);
+
+    if (type === 'invoice') await renderInvoice(booking);
+    else                    await renderReceipt(booking);
+
+    $('loading-state').style.display = 'none';
+    $('doc-content').style.display   = 'block';
+  } catch(e) {
+    console.error('Load error:', e);
+    showError('Could not load document: ' + e.message);
+  }
+}
+
+// ─────────────────────────────────────────────
+// INVOICE
+// ─────────────────────────────────────────────
+async function renderInvoice(booking) {
+  let inv = null;
+  if (invoiceId) {
+    const s = await getDoc(doc(db,'bookings',bookingId,'invoices',invoiceId));
+    if (s.exists()) inv = { id:s.id, ...s.data() };
+  }
+  if (!inv) {
+    const s = await getDocs(collection(db,'bookings',bookingId,'invoices'));
+    if (!s.empty) inv = { id:s.docs[0].id, ...s.docs[0].data() };
+  }
+  if (!inv) { showError('Invoice not found for this booking.'); return; }
+
+  const total   = Number(inv.totalAmount || booking.totalAmount || 0);
+  const deposit = Number(inv.depositPaid || booking.depositPaid || 0);
+  const balance = Number(inv.balanceDue  || booking.balanceDue  || 0);
+  const invNo   = inv.invoiceNo || `CV-VNE-INV-${inv.id?.substring(0,6).toUpperCase()}`;
+
+  document.title = `Invoice ${invNo} — The Vine · Casaviola Properties`;
+
+  $('dtype-badge').textContent = 'Invoice';
+  $('dtype-badge').className   = 'dtype-badge dtype-invoice';
+  set('doc-kind',     'Invoice');
+  set('doc-kind-sub', 'Official Booking Invoice');
+  set('doc-no',       invNo);
+  set('doc-date',     fDate(inv.createdAt) || today());
+  set('doc-serial',   invNo);
+  set('foot-serial',  invNo);
+
+  set('addr-eyebrow', 'Invoiced To');
+  set('addr-name',    inv.guestName || booking.guestName);
+  set('addr-sub',     `Re: ${inv.unitName||booking.unitName||'—'} · The Vine Apartment`);
+  set('amount-label', 'Total Invoice Amount');
+  set('amount-val',   fGHS(total));
+  $('amount-status').innerHTML = `<span class="status-tag tag-pending">Awaiting Payment</span>`;
+
+  $('doc-body').innerHTML = `
+
+    <!-- 01 Guest Details -->
+    <div>
+      <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">Guest Details</span><span class="sec-line"></span></div>
+      <div class="info-grid">
+        <div class="info-cell"><div class="ic-label">Guest Name</div><div class="ic-val accent">${inv.guestName||booking.guestName||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Phone</div><div class="ic-val">${inv.guestPhone||booking.guestPhone||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Email</div><div class="ic-val">${inv.guestEmail||booking.guestEmail||'—'}</div></div>
+      </div>
+    </div>
+
+    <div class="h-rule"></div>
+
+    <!-- 02 Booking Summary -->
+    <div>
+      <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">Booking Summary</span><span class="sec-line"></span></div>
+      <div class="tbl-wrap">
+        <table class="ptbl">
+          <thead><tr><th>Description</th><th>Unit</th><th>Rate / Night</th><th>Nights</th><th>Total Amount (GH₵)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Apartment Stay — The Vine<br/><span style="font-size:11.5px;color:var(--ink3)">${fDateShort(inv.checkIn||booking.checkIn)} to ${fDateShort(inv.checkOut||booking.checkOut)}</span></td>
+              <td><span class="ptype">${inv.unitName||booking.unitName||'—'}</span><br/><span style="font-size:11px;color:var(--ink3)">${inv.displayType||booking.displayType||'—'}</span></td>
+              <td>${fGHS(inv.ratePerNight||booking.ratePerNight)}</td>
+              <td>${inv.nights||booking.nights||0}</td>
+              <td>${fGHS(total)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="totals-right">
+        <div class="totals-box">
+          <div class="trow bg-cream"><span class="tl">Booking Total</span><span class="tv">GH₵ ${fGHS(total)}</span></div>
+          <div class="trow"><span class="tl">Deposit Required</span><span class="tv">GH₵ ${fGHS(deposit)}</span></div>
+          <div class="trow grand"><span class="tl">Total Invoice Amount</span><span class="tv">GH₵ ${fGHS(total)}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-rule"></div>
+
+    <!-- 03 Terms & Bank Details -->
+    <div>
+      <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">Terms & Payment Details</span><span class="sec-line"></span></div>
+      <div class="notes-cols">
+        <div class="note-col">
+          <div class="note-head">Bank Details</div>
+          <div class="note-body">
+            Bank: ${CO.bank}<br/>
+            Branch: ${CO.branch}<br/>
+            Account Name: ${CO.name}<br/>
+            GHS Account: ${CO.cedi}<br/>
+            USD Account: ${CO.usd}<br/>
+            SWIFT: ${CO.swift}<br/>
+            Payment Ref: ${invNo}
+          </div>
+        </div>
+        <div class="note-col">
+          <div class="note-head">Terms & Conditions</div>
+          <div class="note-body">
+            A deposit is required to secure this reservation. This invoice is valid for 7 days from the issue date.
+            The balance is due upon check-in unless otherwise agreed in writing.
+            Cancellation policy applies as per The Vine booking terms.
+            Please quote the invoice number in all payment correspondence.
+          </div>
+        </div>
+      </div>
+      <div class="disclaimer">
+        This invoice is issued by Casa Viola Properties Ltd on behalf of The Vine Apartments. Payment confirms acceptance of the stated terms.
+        Issued by: <strong>${inv.issuedByName||'Finance Department'}</strong> · ${fDate(inv.createdAt)||today()}
+      </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-cols">
+      <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Issued By</div><div class="sig-name">Finance Officer · The Vine</div></div>
+      <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Authorized By</div><div class="sig-name">Management / Director</div></div>
+      <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Guest Acceptance</div><div class="sig-name">Signature & Date</div></div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+// RECEIPT
+// ─────────────────────────────────────────────
+async function renderReceipt(booking) {
+  let rcp = null;
+  if (receiptId) {
+    const s = await getDoc(doc(db,'bookings',bookingId,'receipts',receiptId));
+    if (s.exists()) rcp = { id:s.id, ...s.data() };
+  }
+  if (!rcp) { showError('Receipt not found.'); return; }
+
+  // Load linked invoice for reference number
+  let inv = null;
+  const is = await getDocs(collection(db,'bookings',bookingId,'invoices'));
+  if (!is.empty) inv = { id:is.docs[0].id, ...is.docs[0].data() };
+
+  const total     = Number(rcp.totalAmount || booking.totalAmount || 0);
+  const paid      = Number(rcp.amount      || 0);
+  const totalPaid = Number(rcp.totalPaid   || 0);
+  const balance   = Number(rcp.balanceDue  || 0);
+  const prevPaid  = Math.max(totalPaid - paid, 0);
+  const isFull    = balance <= 0;
+  const rcpNo     = rcp.receiptNo || `CV-VNE-REC-${rcp.id?.substring(0,6).toUpperCase()}`;
+
+  document.title = `Receipt ${rcpNo} — The Vine · Casaviola Properties`;
+
+  $('dtype-badge').textContent = 'Payment Receipt';
+  $('dtype-badge').className   = 'dtype-badge dtype-receipt';
+  set('doc-kind',     'Receipt');
+  set('doc-kind-sub', 'Official Payment Receipt');
+  set('doc-no',       rcpNo);
+  set('doc-date',     fDate(rcp.createdAt) || today());
+  set('doc-serial',   rcpNo);
+  set('foot-serial',  rcpNo);
+
+  if (inv) {
+    $('ref-row').style.display = '';
+    set('doc-ref', inv.invoiceNo || '—');
+  }
+
+  set('addr-eyebrow', 'Received From');
+  set('addr-name',    rcp.guestName || booking.guestName);
+  set('addr-sub',     `Re: ${rcp.unitName||booking.unitName||'—'} · The Vine Apartment`);
+  set('amount-label', 'This Payment');
+  set('amount-val',   fGHS(paid));
+  $('amount-status').innerHTML = `<span class="status-tag ${isFull?'tag-paid':'tag-pending'}">${isFull?'Fully Paid':'Part Payment'}</span>`;
+
+  $('doc-body').innerHTML = `
+
+    <!-- 01 Guest Details -->
+    <div>
+      <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">Guest Details</span><span class="sec-line"></span></div>
+      <div class="info-grid">
+        <div class="info-cell"><div class="ic-label">Guest Name</div><div class="ic-val accent">${rcp.guestName||booking.guestName||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Phone</div><div class="ic-val">${rcp.guestPhone||booking.guestPhone||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Email</div><div class="ic-val">${rcp.guestEmail||booking.guestEmail||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Apartment</div><div class="ic-val accent">${rcp.unitName||booking.unitName||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Unit Type</div><div class="ic-val">${rcp.displayType||booking.displayType||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Payment Method</div><div class="ic-val">${mLabel(rcp.method)}</div></div>
+      </div>
+    </div>
+
+    <div class="h-rule"></div>
+
+    <!-- 02 Payment Breakdown -->
+    <div>
+      <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">Payment Breakdown</span><span class="sec-line"></span></div>
+      <div class="tbl-wrap">
+        <table class="ptbl">
+          <thead><tr><th>Description</th><th>Type</th><th>Reference</th><th>Amount (GH₵)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>${rcp.description||'Payment towards apartment booking'}<br/>
+                  <span style="font-size:11.5px;color:var(--ink3)">${fDateShort(rcp.checkIn||booking.checkIn)} to ${fDateShort(rcp.checkOut||booking.checkOut)} · ${rcp.nights||booking.nights||0} night${(rcp.nights||booking.nights||0)!==1?'s':''}</span></td>
+              <td><span class="ptype">Payment</span></td>
+              <td style="font-family:monospace;font-size:11.5px;color:var(--ink3)">${rcp.transactionRef||'—'}</td>
+              <td>${fGHS(paid)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="totals-right">
+        <div class="totals-box">
+          <div class="trow bg-cream"><span class="tl">Total Booking Amount</span><span class="tv">GH₵ ${fGHS(total)}</span></div>
+          <div class="trow"><span class="tl">Previous Payments</span><span class="tv">GH₵ ${fGHS(prevPaid)}</span></div>
+          <div class="trow"><span class="tl">This Payment</span><span class="tv">GH₵ ${fGHS(paid)}</span></div>
+          <div class="trow grand"><span class="tl">Total Paid to Date</span><span class="tv">GH₵ ${fGHS(totalPaid)}</span></div>
+          <div class="trow ${isFull?'fullpaid':'balance'}">
+            <span class="tl">${isFull?'Fully Paid ✓':'Outstanding Balance'}</span>
+            <span class="tv">GH₵ ${fGHS(balance)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-rule"></div>
+
+    <!-- 03 Notes & Bank Details -->
+    <div>
+      <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">Notes & Payment Details</span><span class="sec-line"></span></div>
+      <div class="notes-cols">
+        <div class="note-col">
+          <div class="note-head">Bank Details</div>
+          <div class="note-body">
+            Bank: ${CO.bank}<br/>
+            Branch: ${CO.branch}<br/>
+            Account Name: ${CO.name}<br/>
+            GHS Account: ${CO.cedi}<br/>
+            Invoice Ref: ${inv?.invoiceNo||'—'}
+          </div>
+        </div>
+        <div class="note-col">
+          <div class="note-head">Important Note</div>
+          <div class="note-body">
+            This receipt confirms that the above payment has been duly recorded by Casa Viola Properties Ltd.
+            ${isFull
+              ? 'Full payment confirmed for this booking. We look forward to welcoming you to The Vine.'
+              : `An outstanding balance of GH₵ ${fGHS(balance)} remains payable as per the booking terms.`}
+            Please retain this receipt for your records.
+          </div>
+        </div>
+      </div>
+      <div class="disclaimer">
+        This is a computer-generated receipt issued by Casa Viola Properties Ltd on behalf of The Vine Apartments.
+        Generated by: <strong>${rcp.generatedByName||'Finance Department'}</strong> · ${fDate(rcp.createdAt)||today()}
+      </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-cols">
+      <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Prepared By</div><div class="sig-name">Finance Officer · The Vine</div></div>
+      <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Authorized By</div><div class="sig-name">Management / Director</div></div>
+      <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Guest Acknowledgement</div><div class="sig-name">Signature & Date</div></div>
+    </div>`;
+}
+
+function showError(msg) {
+  $('loading-state').innerHTML = `
+    <div style="font-size:36px;opacity:0.2;margin-bottom:12px">📄</div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:500;color:#0d3320;margin-bottom:8px">Document Error</div>
+    <div style="font-size:12px;color:#7a7590;max-width:340px;text-align:center;line-height:1.7">${msg}</div>
+    <button onclick="window.close()" style="margin-top:20px;padding:8px 20px;border-radius:4px;border:1px solid #e8e2d8;background:white;font-size:12px;cursor:pointer;font-family:'Mulish',sans-serif">← Close</button>`;
+}
+</script>
+</body>
+</html>

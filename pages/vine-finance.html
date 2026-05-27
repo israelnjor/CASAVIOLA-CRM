@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Vine Finance — Casaviola CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/mobile.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0b0b0f; --surface:#111118; --surface2:#18181f; --surface3:#1f1f28;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
+  --text:#eeeaf5; --text2:#a09cb0; --muted:#5e5c6e;
+  --purple:#7c5cbf; --purple-lt:#9d7de0; --purple-dim:rgba(124,92,191,0.12);
+  --gold:#c9a84c; --gold-lt:#e0c070; --gold-dim:rgba(201,168,76,0.1);
+  --green:#3ecf8e; --green-dim:rgba(62,207,142,0.1);
+  --coral:#f06b6b; --coral-dim:rgba(240,107,107,0.1);
+  --blue:#5b9cf6; --blue-dim:rgba(91,156,246,0.1);
+  --amber:#f59e0b; --amber-dim:rgba(245,158,11,0.1);
+  --teal:#14b8a6; --teal-dim:rgba(20,184,166,0.1);
+  --font-disp:'Cormorant Garamond',serif; --font-body:'Outfit',sans-serif;
+  --sidebar-w:256px; --radius:13px;
+}
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); display:flex; min-height:100vh; overflow-x:hidden; }
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;padding:0 0 24px;overflow-y:auto}
+.sidebar-top{padding:28px 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;flex-shrink:0}
+.brand-mark{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--purple) 0%,#5a3e9e 50%,#8a6820 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:16px;font-weight:600;color:var(--gold-lt);box-shadow:0 0 0 1px rgba(201,168,76,0.2),0 4px 16px rgba(124,92,191,0.3);flex-shrink:0}
+.brand-name{font-family:var(--font-disp);font-size:17px;font-weight:600}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-section{padding:0 12px;margin-bottom:4px}
+.nav-section-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--text2);text-decoration:none;cursor:pointer;transition:all 0.15s;position:relative;margin-bottom:1px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--purple-dim);color:var(--text);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--purple-lt),var(--gold))}
+.nav-icon{width:17px;height:17px;flex-shrink:0;opacity:0.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-spacer{flex:1}
+.sidebar-user{margin:0 12px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.user-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:13px;font-weight:600;color:white;flex-shrink:0}
+.user-meta{flex:1;min-width:0}
+.user-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10.5px;color:var(--muted);margin-top:1px;text-transform:capitalize}
+.signout-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:all 0.15s}
+.signout-btn:hover{color:var(--coral);background:var(--coral-dim)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:36px 40px 60px;max-width:calc(100vw - var(--sidebar-w))}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:16px;animation:fadeUp 0.4s ease both}
+.page-title{font-family:var(--font-disp);font-size:30px;font-weight:600;letter-spacing:-0.3px}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px;font-weight:300}
+.vine-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(62,207,142,0.1),rgba(20,184,166,0.08));border:1px solid rgba(62,207,142,0.2);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:1px;color:var(--green);margin-bottom:6px;text-transform:uppercase}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:9px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#9060d8);color:#fff;border:1px solid rgba(201,168,76,0.15)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,191,0.35)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#b88020);color:#1a1000;font-weight:600}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(201,168,76,0.4)}
+.btn-green{background:linear-gradient(135deg,var(--green),#2ab878);color:#071f14;font-weight:600}
+.btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(62,207,142,0.3)}
+.btn:disabled{opacity:0.45;cursor:not-allowed;transform:none!important}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;animation:fadeUp 0.4s ease 0.05s both}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius) var(--radius) 0 0}
+.sc-revenue::after{background:var(--gold-lt)}
+.sc-paid::after   {background:var(--green)}
+.sc-balance::after{background:var(--coral)}
+.sc-invoices::after{background:var(--purple-lt)}
+.sc-receipts::after{background:var(--blue)}
+.stat-val{font-family:var(--font-disp);font-size:26px;font-weight:600;line-height:1;margin-bottom:5px}
+.sc-revenue .stat-val{color:var(--gold-lt)}
+.sc-paid    .stat-val{color:var(--green)}
+.sc-balance .stat-val{color:var(--coral)}
+.sc-invoices .stat-val{color:var(--purple-lt)}
+.sc-receipts .stat-val{color:var(--blue)}
+.stat-label{font-size:11.5px;color:var(--muted)}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;font-style:italic}
+
+/* TABS */
+.tabs-bar{display:flex;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:4px;width:fit-content;margin-bottom:20px;animation:fadeUp 0.4s ease 0.07s both}
+.tab-btn{padding:8px 18px;border-radius:8px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);transition:all 0.15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{background:var(--surface2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.tab-count{font-size:10px;font-weight:700;padding:2px 6px;border-radius:99px;background:var(--surface3);color:var(--muted)}
+.tab-btn.active .tab-count{background:var(--purple-dim);color:var(--purple-lt)}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;animation:fadeUp 0.4s ease 0.09s both;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:320px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 14px 9px 36px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(124,92,191,0.4)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:11px}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 30px 9px 14px;color:var(--text2);font-family:var(--font-body);font-size:13px;outline:none;cursor:pointer;appearance:none}
+.filter-select:focus{border-color:rgba(124,92,191,0.4)}
+.results-count{margin-left:auto;font-size:12px;color:var(--muted)}
+
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp 0.4s ease 0.11s both}
+.fin-table{width:100%;border-collapse:collapse}
+.fin-table thead th{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:13px 18px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
+.fin-table thead th:first-child{padding-left:22px}
+.fin-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.12s}
+.fin-table tbody tr:last-child{border-bottom:none}
+.fin-table tbody tr:hover{background:var(--surface2)}
+.fin-table td{padding:13px 18px;font-size:13px;vertical-align:middle}
+.fin-table td:first-child{padding-left:22px}
+
+.primary-cell{font-weight:500;color:var(--text)}
+.sub-cell{font-size:11.5px;color:var(--muted);margin-top:2px}
+.money-green{color:var(--green);font-weight:600;font-family:var(--font-disp);font-size:14px}
+.money-gold {color:var(--gold-lt);font-weight:600;font-family:var(--font-disp);font-size:14px}
+.money-red  {color:var(--coral);font-weight:600;font-family:var(--font-disp);font-size:14px}
+
+/* Status chips */
+.chip{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
+.chip-issued   {background:var(--gold-dim);    color:var(--gold-lt);  border-color:rgba(201,168,76,0.2)}
+.chip-generated{background:var(--green-dim);   color:var(--green);    border-color:rgba(62,207,142,0.2)}
+.chip-unpaid   {background:var(--coral-dim);   color:var(--coral);    border-color:rgba(240,107,107,0.2)}
+.chip-part_paid{background:var(--amber-dim);   color:var(--amber);    border-color:rgba(245,158,11,0.2)}
+.chip-fully_paid{background:var(--green-dim);  color:var(--green);    border-color:rgba(62,207,142,0.2)}
+
+/* Empty state */
+.empty-state{padding:70px 20px;text-align:center}
+.empty-icon{font-size:40px;opacity:0.18;margin-bottom:14px}
+.empty-title{font-family:var(--font-disp);font-size:20px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--muted)}
+
+/* Payment modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:0;width:560px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;transform:translateY(14px);transition:transform 0.2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border)}
+.modal-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:var(--font-disp);font-size:22px;font-weight:600}
+.modal-subtitle{font-size:12px;color:var(--muted);margin-top:3px}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all 0.15s;flex-shrink:0}
+.modal-close:hover{color:var(--text);background:var(--surface3)}
+.modal-body{padding:24px 28px}
+.modal-footer{padding:16px 28px 22px;border-top:1px solid var(--border);display:flex;gap:10px}
+.modal-footer .btn{flex:1;justify-content:center}
+.form-group{margin-bottom:17px}
+.form-label{display:block;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(124,92,191,0.45)}
+.form-input::placeholder{color:var(--muted);opacity:0.6}
+.form-select{appearance:none;cursor:pointer}
+.form-textarea{resize:vertical;min-height:70px;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-error{color:var(--coral);font-size:12px;margin-bottom:12px;padding:9px 13px;background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);border-radius:8px;display:none}
+.form-error.visible{display:block}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-mark">
+      <div class="brand-icon">CV</div>
+      <div><div class="brand-name">Casaviola</div><div class="brand-sub">Properties CRM</div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+    <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a>
+    <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
+    <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
+    <a class="nav-item" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Sales Finance</a>
+    <a class="nav-item" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Inquiries</a>
+    <a class="nav-item" href="influencers.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Influencers</a>
+    <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">The Vine</div>
+    <a class="nav-item" href="bookings.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Bookings</a>
+    <a class="nav-item active" href="vine-finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Vine Finance</a>
+  </div>
+  <div class="nav-section" id="admin-nav" style="display:none">
+    <div class="nav-section-label">Admin</div>
+    <a class="nav-item" href="users.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Users</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sb-avatar">CV</div>
+    <div class="user-meta">
+      <div class="user-name" id="sb-name">Loading...</div>
+      <div class="user-role" id="sb-role">—</div>
+    </div>
+    <button class="signout-btn" onclick="handleSignOut()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="vine-badge">🌿 The Vine</div>
+      <div class="page-title">Finance Desk</div>
+      <div class="page-sub">Invoices, payments, receipts and outstanding balances for all apartment bookings</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <a class="btn btn-ghost" href="bookings.html">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        All Bookings
+      </a>
+      <button class="btn btn-primary" onclick="loadAll()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card sc-revenue">
+      <div class="stat-val" id="stat-revenue">—</div>
+      <div class="stat-label">Total Booking Value</div>
+      <div class="stat-sub">All active bookings</div>
+    </div>
+    <div class="stat-card sc-paid">
+      <div class="stat-val" id="stat-paid">—</div>
+      <div class="stat-label">Total Collected</div>
+      <div class="stat-sub">Deposits received</div>
+    </div>
+    <div class="stat-card sc-balance">
+      <div class="stat-val" id="stat-balance">—</div>
+      <div class="stat-label">Outstanding Balance</div>
+      <div class="stat-sub">Across all bookings</div>
+    </div>
+    <div class="stat-card sc-invoices">
+      <div class="stat-val" id="stat-invoices">—</div>
+      <div class="stat-label">Invoices Issued</div>
+    </div>
+    <div class="stat-card sc-receipts">
+      <div class="stat-val" id="stat-receipts">—</div>
+      <div class="stat-label">Receipts Generated</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tab-invoices"  onclick="switchTab('invoices')">📄 Invoices <span class="tab-count" id="tc-invoices">0</span></button>
+    <button class="tab-btn"        id="tab-ledger"    onclick="switchTab('ledger')">📒 Payments <span class="tab-count" id="tc-ledger">0</span></button>
+    <button class="tab-btn"        id="tab-receipts"  onclick="switchTab('receipts')">🧾 Receipts <span class="tab-count" id="tc-receipts">0</span></button>
+    <button class="tab-btn"        id="tab-balances"  onclick="switchTab('balances')">⚖️ Balances <span class="tab-count" id="tc-balances">0</span></button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="search-input" placeholder="Search guest name, unit, document number..." oninput="renderCurrentTab()"/>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="booking-status-filter" onchange="renderCurrentTab()">
+        <option value="">All Booking Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="reserved">Reserved</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="checked_in">Checked In</option>
+        <option value="checked_out">Checked Out</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="select-wrap">
+      <select class="filter-select" id="payment-status-filter" onchange="renderCurrentTab()">
+        <option value="">All Payment Statuses</option>
+        <option value="unpaid">Unpaid</option>
+        <option value="part_paid">Part Paid</option>
+        <option value="fully_paid">Fully Paid</option>
+      </select>
+    </div>
+    <div class="results-count" id="results-count">— records</div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="fin-table">
+      <thead id="fin-thead"></thead>
+      <tbody id="fin-tbody">
+        <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Loading finance records...</div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div><div class="modal-title">Record Payment</div><div class="modal-subtitle" id="pay-subtitle">—</div></div>
+        <button class="modal-close" onclick="closePaymentModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-error" id="payment-error"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount (GHS) *</label><input class="form-input" type="number" id="p-amount" placeholder="0.00"/></div>
+        <div class="form-group"><label class="form-label">Payment Method *</label>
+          <select class="form-select" id="p-method">
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="cash">Cash</option>
+            <option value="mobile_money">Mobile Money</option>
+            <option value="cheque">Cheque</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Transaction Reference</label><input class="form-input" id="p-ref" placeholder="TXN-..."/></div>
+        <div class="form-group"><label class="form-label">Payment Date</label><input class="form-input" type="date" id="p-date"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="p-desc">Payment towards The Vine booking</textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePaymentModal()">Cancel</button>
+      <button class="btn btn-green" id="save-pay-btn" onclick="savePayment()">Record Payment & Generate Receipt</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import '../js/session.js';
+import { auth, db } from '../js/firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  collection, getDocs, addDoc, doc, getDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── Constants ──
+const VIEW_ROLES = ['admin','ceo','finance','listings','cs'];
+const EDIT_ROLES = ['admin','finance','listings','cs'];
+
+// ── State ──
+let currentUser = null, currentRole = null, currentName = '';
+let bookings = [], invoices = [], payments = [], receipts = [];
+let currentTab = 'invoices';
+let selectedBooking = null;
+
+// ── Helpers ──
+function capitalize(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):''; }
+function initials(n)  { return (n||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function money(n)     { return 'GH₵ '+Number(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function moneyCompact(n){
+  const v = Number(n||0);
+  if (v >= 1000000) return 'GH₵ '+(v/1000000).toFixed(1)+'M';
+  if (v >= 1000)    return 'GH₵ '+(v/1000).toFixed(1)+'K';
+  return money(v);
+}
+function fdate(v){ if(!v) return '—'; const d=v.toDate?v.toDate():new Date(v); return isNaN(d)?'—':d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function methodLabel(m){ return {bank_transfer:'Bank Transfer',cash:'Cash',mobile_money:'Mobile Money',cheque:'Cheque'}[m]||m||'—'; }
+function canEdit(){ return EDIT_ROLES.includes(currentRole); }
+function docUrl(type,bid,did){ return `booking-document.html?bookingId=${bid}&type=${type}&${type}Id=${did}`; }
+function getSearch(){ return document.getElementById('search-input').value.toLowerCase().trim(); }
+function getBookingStatusF(){ return document.getElementById('booking-status-filter').value; }
+function getPaymentStatusF(){ return document.getElementById('payment-status-filter').value; }
+
+function matchesFilters(record) {
+  const bs = getBookingStatusF(), ps = getPaymentStatusF();
+  if (bs && record.bookingStatus !== bs) return false;
+  if (ps && record.paymentStatus !== ps) return false;
+  return true;
+}
+
+function matchesSearch(record) {
+  const s = getSearch(); if (!s) return true;
+  return [record.guestName, record.unitName, record.invoiceNo, record.receiptNo, record.transactionRef, record.description]
+    .some(v => String(v||'').toLowerCase().includes(s));
+}
+
+function setHead(html){ document.getElementById('fin-thead').innerHTML = html; }
+function setBody(html){ document.getElementById('fin-tbody').innerHTML = html; }
+function setCount(n)  { document.getElementById('results-count').textContent = `${n} record${n!==1?'s':''}`; }
+
+function empty(title, sub){
+  setBody(`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">${title}</div><div class="empty-sub">${sub}</div></div></td></tr>`);
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = '../index.html'; return; }
+  currentUser = user;
+  const snap = await getDoc(doc(db,'users',user.uid));
+  if (!snap.exists()) { await signOut(auth); return; }
+  const data = snap.data();
+  currentRole = data.role; currentName = data.name || user.email;
+  if (!VIEW_ROLES.includes(currentRole)) { alert('No access to The Vine Finance.'); window.location.href = 'dashboard.html'; return; }
+  document.getElementById('sb-name').textContent   = currentName;
+  document.getElementById('sb-role').textContent   = capitalize(currentRole);
+  document.getElementById('sb-avatar').textContent = initials(currentName);
+  if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
+  await loadAll();
+});
+
+// ── Load all data ──
+window.loadAll = async () => {
+  setBody(`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Loading finance records...</div></div></td></tr>`);
+  bookings = []; invoices = []; payments = []; receipts = [];
+
+  const bSnap = await getDocs(collection(db,'bookings'));
+  bookings = bSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // Load subcollections for all bookings in parallel
+  await Promise.all(bookings.map(async b => {
+    try {
+      const [invSnap, paySnap, recSnap] = await Promise.all([
+        getDocs(collection(db,'bookings',b.id,'invoices')),
+        getDocs(collection(db,'bookings',b.id,'payments')),
+        getDocs(collection(db,'bookings',b.id,'receipts')),
+      ]);
+      invSnap.docs.forEach(d => invoices.push({ id:d.id, bookingId:b.id, bookingStatus:b.bookingStatus, paymentStatus:b.paymentStatus, guestName:b.guestName, unitName:b.unitName, ...d.data() }));
+      paySnap.docs.forEach(d => payments.push({ id:d.id, bookingId:b.id, bookingStatus:b.bookingStatus, paymentStatus:b.paymentStatus, guestName:b.guestName, unitName:b.unitName, ...d.data() }));
+      recSnap.docs.forEach(d => receipts.push({ id:d.id, bookingId:b.id, bookingStatus:b.bookingStatus, paymentStatus:b.paymentStatus, guestName:b.guestName, unitName:b.unitName, ...d.data() }));
+    } catch(_) {}
+  }));
+
+  // Sort all by date desc
+  const sortDesc = arr => arr.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+  sortDesc(invoices); sortDesc(payments); sortDesc(receipts);
+
+  updateStats();
+  updateTabCounts();
+  renderCurrentTab();
+};
+
+function updateStats() {
+  const totalRevenue = bookings.reduce((s,b) => s+Number(b.totalAmount||0), 0);
+  const totalPaid    = bookings.reduce((s,b) => s+Number(b.depositPaid||0), 0);
+  const totalBalance = bookings.reduce((s,b) => s+Number(b.balanceDue||0), 0);
+  document.getElementById('stat-revenue').textContent  = moneyCompact(totalRevenue);
+  document.getElementById('stat-paid').textContent     = moneyCompact(totalPaid);
+  document.getElementById('stat-balance').textContent  = moneyCompact(totalBalance);
+  document.getElementById('stat-invoices').textContent = invoices.length;
+  document.getElementById('stat-receipts').textContent = receipts.length;
+}
+
+function updateTabCounts() {
+  document.getElementById('tc-invoices').textContent = invoices.length;
+  document.getElementById('tc-ledger').textContent   = payments.length;
+  document.getElementById('tc-receipts').textContent = receipts.length;
+  const balanceCount = bookings.filter(b => Number(b.balanceDue||0) > 0).length;
+  document.getElementById('tc-balances').textContent = balanceCount;
+}
+
+// ── Tab switching ──
+window.switchTab = (tab) => {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.id === `tab-${tab}`));
+  renderCurrentTab();
+};
+
+window.renderCurrentTab = () => {
+  if (currentTab === 'invoices')  renderInvoices();
+  if (currentTab === 'ledger')    renderLedger();
+  if (currentTab === 'receipts')  renderReceipts();
+  if (currentTab === 'balances')  renderBalances();
+};
+
+// ── INVOICES ──
+function renderInvoices() {
+  const rows = invoices.filter(r => matchesFilters(r) && matchesSearch(r));
+  setCount(rows.length);
+  setHead(`<tr>
+    <th>Invoice No.</th>
+    <th>Guest</th>
+    <th>Apartment / Stay</th>
+    <th>Total Amount</th>
+    <th>Status</th>
+    <th>Date Issued</th>
+    <th>Action</th>
+  </tr>`);
+  if (!rows.length) { empty('No invoices found', 'Invoices are auto-generated when a new booking is created.'); return; }
+  setBody(rows.map((r,i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both">
+      <td><div class="primary-cell">${r.invoiceNo||'—'}</div><div class="sub-cell">Booking #${r.bookingId?.slice(-6)||'—'}</div></td>
+      <td><div class="primary-cell">${r.guestName||'—'}</div><div class="sub-cell">${r.unitName||'—'} · The Vine</div></td>
+      <td>${fdate(r.checkIn)} → ${fdate(r.checkOut)}<div class="sub-cell">${r.nights||0} night${(r.nights||0)!==1?'s':''}</div></td>
+      <td><span class="money-gold">${money(r.totalAmount)}</span></td>
+      <td><span class="chip chip-${r.status||'issued'}">${capitalize(r.status||'issued')}</span></td>
+      <td style="color:var(--text2);font-size:12px">${fdate(r.createdAt)}</td>
+      <td><a class="btn btn-gold" style="padding:6px 12px;font-size:12px" href="${docUrl('invoice',r.bookingId,r.id)}" target="_blank">Open ↗</a></td>
+    </tr>`).join(''));
+}
+
+// ── LEDGER ──
+function renderLedger() {
+  const rows = payments.filter(r => matchesFilters(r) && matchesSearch(r));
+  setCount(rows.length);
+  setHead(`<tr>
+    <th>Date</th>
+    <th>Guest</th>
+    <th>Description / Ref</th>
+    <th>Method</th>
+    <th>Amount</th>
+    <th>Recorded By</th>
+    <th>Receipt</th>
+  </tr>`);
+  if (!rows.length) { empty('No payments recorded', 'Payments recorded from the Bookings page will appear here.'); return; }
+  setBody(rows.map((r,i) => {
+    const linkedReceipt = receipts.find(rc => rc.paymentId === r.id);
+    return `
+      <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both">
+        <td style="color:var(--text2);font-size:12px;white-space:nowrap">${fdate(r.paymentDate||r.createdAt)}</td>
+        <td><div class="primary-cell">${r.guestName||'—'}</div><div class="sub-cell">${r.unitName||'—'} · The Vine</div></td>
+        <td><div class="primary-cell">${r.description||'Booking payment'}</div><div class="sub-cell">${r.transactionRef||'No reference'}</div></td>
+        <td style="color:var(--text2);font-size:12.5px">${methodLabel(r.method)}</td>
+        <td><span class="money-green">${money(r.amount)}</span></td>
+        <td style="color:var(--text2);font-size:12px">${r.recordedByName||'—'}</td>
+        <td>${linkedReceipt
+          ? `<a class="btn btn-ghost" style="padding:5px 11px;font-size:11.5px" href="${docUrl('receipt',r.bookingId,linkedReceipt.id)}" target="_blank">${linkedReceipt.receiptNo||'Receipt ↗'}</a>`
+          : '<span style="color:var(--muted);font-size:12px">—</span>'}</td>
+      </tr>`;
+  }).join(''));
+}
+
+// ── RECEIPTS ──
+function renderReceipts() {
+  const rows = receipts.filter(r => matchesFilters(r) && matchesSearch(r));
+  setCount(rows.length);
+  setHead(`<tr>
+    <th>Receipt No.</th>
+    <th>Guest</th>
+    <th>Apartment</th>
+    <th>Method</th>
+    <th>This Payment</th>
+    <th>Status</th>
+    <th>Action</th>
+  </tr>`);
+  if (!rows.length) { empty('No receipts generated', 'Receipts are auto-generated each time a payment is recorded.'); return; }
+  setBody(rows.map((r,i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both">
+      <td><div class="primary-cell">${r.receiptNo||'—'}</div><div class="sub-cell">${fdate(r.paymentDate||r.createdAt)}</div></td>
+      <td><div class="primary-cell">${r.guestName||'—'}</div><div class="sub-cell">${r.unitName||'—'} · The Vine</div></td>
+      <td>${r.checkIn?`${fdate(r.checkIn)} → ${fdate(r.checkOut)}`:'—'}<div class="sub-cell">${r.nights||0} night${(r.nights||0)!==1?'s':''}</div></td>
+      <td style="color:var(--text2);font-size:12.5px">${methodLabel(r.method)}</td>
+      <td><span class="money-green">${money(r.amount)}</span></td>
+      <td><span class="chip chip-generated">Generated</span></td>
+      <td><a class="btn btn-gold" style="padding:6px 12px;font-size:12px" href="${docUrl('receipt',r.bookingId,r.id)}" target="_blank">Open ↗</a></td>
+    </tr>`).join(''));
+}
+
+// ── BALANCES ──
+function renderBalances() {
+  const statusF  = getBookingStatusF();
+  const paymentF = getPaymentStatusF();
+  const search   = getSearch();
+
+  const rows = bookings.filter(b => {
+    const matchSearch = !search || (b.guestName||'').toLowerCase().includes(search) || (b.unitName||'').toLowerCase().includes(search);
+    const matchBS = !statusF  || b.bookingStatus === statusF;
+    const matchPS = !paymentF || b.paymentStatus === paymentF;
+    return matchSearch && matchBS && matchPS && Number(b.balanceDue||0) > 0;
+  });
+
+  setCount(rows.length);
+  setHead(`<tr>
+    <th>Guest</th>
+    <th>Apartment / Stay</th>
+    <th>Total Amount</th>
+    <th>Paid</th>
+    <th>Balance Due</th>
+    <th>Payment Status</th>
+    <th>${canEdit() ? 'Action' : ''}</th>
+  </tr>`);
+
+  if (!rows.length) {
+    empty('No outstanding balances', 'All bookings are either fully paid or cancelled.');
+    return;
+  }
+
+  setBody(rows.map((b,i) => `
+    <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both">
+      <td><div class="primary-cell">${b.guestName||'—'}</div><div class="sub-cell">${b.guestPhone||'—'}</div></td>
+      <td><strong>${b.unitName||'—'}</strong><div class="sub-cell">${fdate(b.checkIn)} → ${fdate(b.checkOut)}</div></td>
+      <td><span class="money-gold">${money(b.totalAmount)}</span></td>
+      <td><span class="money-green">${money(b.depositPaid)}</span></td>
+      <td><span class="money-red">${money(b.balanceDue)}</span></td>
+      <td><span class="chip chip-${b.paymentStatus||'unpaid'}">${{unpaid:'Unpaid',part_paid:'Part Paid',fully_paid:'Fully Paid'}[b.paymentStatus]||'Unpaid'}</span></td>
+      <td>${canEdit()
+        ? `<button class="btn btn-green" style="padding:6px 12px;font-size:12px" onclick="openPaymentModal('${b.id}')">💳 Record Payment</button>`
+        : '—'}</td>
+    </tr>`).join(''));
+}
+
+// ── Payment modal ──
+window.openPaymentModal = (bookingId) => {
+  if (!canEdit()) { alert('You do not have permission to record payments.'); return; }
+  selectedBooking = bookings.find(b => b.id === bookingId);
+  if (!selectedBooking) { alert('Booking not found.'); return; }
+  document.getElementById('pay-subtitle').textContent = `${selectedBooking.guestName} · ${selectedBooking.unitName} · Balance: ${money(selectedBooking.balanceDue)}`;
+  document.getElementById('payment-error').classList.remove('visible');
+  document.getElementById('p-amount').value = selectedBooking.balanceDue || '';
+  document.getElementById('p-method').value = 'bank_transfer';
+  document.getElementById('p-ref').value    = '';
+  document.getElementById('p-date').value   = todayISO();
+  document.getElementById('p-desc').value   = 'Payment towards The Vine booking';
+  document.getElementById('payment-modal').classList.add('open');
+};
+
+window.closePaymentModal = () => {
+  selectedBooking = null;
+  document.getElementById('payment-modal').classList.remove('open');
+};
+
+// ── Save payment ──
+window.savePayment = async () => {
+  const errEl = document.getElementById('payment-error');
+  const btn   = document.getElementById('save-pay-btn');
+  errEl.classList.remove('visible');
+
+  const amount = Number(document.getElementById('p-amount').value || 0);
+  const method = document.getElementById('p-method').value;
+  if (!selectedBooking || amount <= 0) {
+    errEl.textContent = 'Please enter a valid payment amount.'; errEl.classList.add('visible'); return;
+  }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Processing...';
+
+  try {
+    const prevPaid   = Number(selectedBooking.depositPaid || 0);
+    const total      = Number(selectedBooking.totalAmount || 0);
+    const totalPaid  = prevPaid + amount;
+    const balanceDue = Math.max(total - totalPaid, 0);
+    const payStatus  = balanceDue <= 0 ? 'fully_paid' : 'part_paid';
+    const txnRef     = document.getElementById('p-ref').value.trim();
+    const payDate    = document.getElementById('p-date').value;
+    const desc       = document.getElementById('p-desc').value.trim();
+
+    const payRef = await addDoc(collection(db,'bookings',selectedBooking.id,'payments'), {
+      amount, method, transactionRef: txnRef, paymentDate: payDate, description: desc,
+      recordedBy: currentUser.uid, recordedByName: currentName, createdAt: serverTimestamp(),
+    });
+
+    const receiptNo = `CV-VNE-REC-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`;
+    const recRef = await addDoc(collection(db,'bookings',selectedBooking.id,'receipts'), {
+      receiptNo, bookingId: selectedBooking.id, paymentId: payRef.id,
+      amount, method, transactionRef: txnRef, paymentDate: payDate, description: desc,
+      totalPaid, balanceDue, totalAmount: total,
+      guestName: selectedBooking.guestName, guestPhone: selectedBooking.guestPhone||'',
+      guestEmail: selectedBooking.guestEmail||'', unitName: selectedBooking.unitName,
+      unitType: selectedBooking.unitType, displayType: selectedBooking.displayType,
+      checkIn: selectedBooking.checkIn, checkOut: selectedBooking.checkOut,
+      nights: selectedBooking.nights, ratePerNight: selectedBooking.ratePerNight,
+      generatedBy: currentUser.uid, generatedByName: currentName,
+      createdAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db,'bookings',selectedBooking.id), {
+      depositPaid: totalPaid, balanceDue, paymentStatus: payStatus,
+      hasReceipt: true, receiptId: recRef.id, updatedAt: serverTimestamp(),
+    });
+
+    closePaymentModal();
+    await loadAll();
+    window.open(docUrl('receipt', selectedBooking.id, recRef.id), '_blank');
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Record Payment & Generate Receipt';
+  }
+};
+
+window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
+document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closePaymentModal(); });
+</script>
+<script src="../assets/mobile.js"></script>
+</body>
+</html>

@@ -246,9 +246,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);display
     <a class="nav-item" href="clients.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clients</a>
     <a class="nav-item" href="properties.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Properties</a>
     <a class="nav-item" href="leads.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Leads</a>
-    <a class="nav-item active" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a class="nav-item active" href="finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Sales Finance</a>
     <a class="nav-item" href="inquiries.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Inquiries</a>
     <a class="nav-item" href="messages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">The Vine</div>
+    <a class="nav-item" href="bookings.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Bookings</a>
+    <a class="nav-item" href="vine-finance.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Vine Finance</a>
   </div>
   <div class="nav-section" id="admin-nav" style="display:none">
     <div class="nav-section-label">Admin</div>
@@ -277,8 +282,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);display
 
   <div class="stats-strip">
     <div class="strip-card sc-gold"><div class="strip-icon">📄</div><div><div class="strip-val" id="sc-invoiced">—</div><div class="strip-label">Invoices Issued</div></div></div>
-    <div class="strip-card sc-green"><div class="strip-icon">💰</div><div><div class="strip-val" id="sc-collected">—</div><div class="strip-label">Total Collected (GHS)</div></div></div>
-    <div class="strip-card sc-amber"><div class="strip-icon">⏳</div><div><div class="strip-val" id="sc-pending">—</div><div class="strip-label">Awaiting Invoice</div></div></div>
+    <div class="strip-card sc-green"><div class="strip-icon">💰</div><div><div class="strip-val" id="sc-collected">—</div><div class="strip-label">Total Collected</div></div></div>
+    <div class="strip-card sc-amber"><div class="strip-icon">⏳</div><div><div class="strip-val" id="sc-pending">—</div><div class="strip-label">Negotiation · No Invoice</div></div></div>
     <div class="strip-card sc-blue"><div class="strip-icon">🧾</div><div><div class="strip-val" id="sc-receipts">—</div><div class="strip-label">Receipts Generated</div></div></div>
   </div>
 
@@ -297,9 +302,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);display
     <div class="select-wrap">
       <select class="filter-select" id="status-filter" onchange="renderTable()">
         <option value="">All Statuses</option>
-        <option value="viewing">Viewing (pre-close)</option>
-        <option value="closed_pending">Pending Validation</option>
-        <option value="closed_validated">Validated</option>
+        <option value="negotiation">Negotiation (Invoice Needed)</option>
+        <option value="closed_pending">Closed · Pending Validation</option>
+        <option value="closed_validated">Closed · Validated</option>
       </select>
     </div>
     <div class="results-count" id="results-count">— deals</div>
@@ -386,7 +391,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);display
               <input class="form-input" type="text" id="entry-desc" placeholder="e.g. Deposit payment, Survey fee..."/>
             </div>
             <div class="form-group">
-              <div class="form-label">Amount (GHS)</div>
+              <div class="form-label">Amount *</div>
               <input class="form-input" type="number" id="entry-amount" placeholder="0.00"/>
             </div>
             <div class="form-group">
@@ -448,20 +453,39 @@ function getColor(s)  { if(!s) return avatarColors[0]; let h=0; for(let c of s) 
 function initials(n)  { if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 function capitalize(s){ if(!s) return ''; return s.charAt(0).toUpperCase()+s.slice(1); }
 function formatDate(ts){ if(!ts) return '—'; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
-function formatGHS(n)  { return 'GHS ' + Number(n||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+const CURRENCY_SYMBOLS = { USD:'$', EUR:'€', GBP:'£', GHS:'₵' };
+const CURRENCY_LABELS  = { USD:'USD', EUR:'EUR', GBP:'GBP', GHS:'GHS' };
+
+function formatMoney(n, currency) {
+  const cur = currency || 'USD';
+  const sym = CURRENCY_SYMBOLS[cur] || '$';
+  const val = Number(n || 0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  return sym + ' ' + val + ' ' + cur;
+}
+
+// Legacy alias — uses deal currency if available
+function formatGHS(n, currency) { return formatMoney(n, currency || 'USD'); }
 function methodLabel(m){ return {bank_transfer:'Bank Transfer',cash:'Cash',mobile_money:'Mobile Money',cheque:'Cheque'}[m]||capitalize(m||''); }
 
 function getTotalPaid() { return ledgerEntries.filter(e => e.type==='income').reduce((s,e)=>s+(e.amount||0),0); }
 function getTotalExpense(){ return ledgerEntries.filter(e => e.type==='expense').reduce((s,e)=>s+(e.amount||0),0); }
 
 function updateDealStrip() {
-  const price    = selectedDeal?.agreedPrice || 0;
-  const paid     = getTotalPaid();
-  const balance  = Math.max(0, price - paid);
-  const pct      = price > 0 ? Math.round(paid/price*100) : 0;
-  document.getElementById('ds-price').textContent     = formatGHS(price);
-  document.getElementById('ds-collected').textContent = formatGHS(paid);
-  document.getElementById('ds-balance').textContent   = formatGHS(balance);
+  // Priority: invoice agreedPrice > lead agreedPrice > property price
+  const price   = dealInvoice?.agreedPrice || selectedDeal?.agreedPrice || 0;
+  const paid    = getTotalPaid();
+  const balance = Math.max(0, price - paid);
+  const pct     = price > 0 ? Math.round(paid / price * 100) : 0;
+
+  // Also sync agreedPrice onto selectedDeal so ledger addPayment uses correct value
+  if (dealInvoice?.agreedPrice && !selectedDeal.agreedPrice) {
+    selectedDeal.agreedPrice = dealInvoice.agreedPrice;
+  }
+
+  const cur = dealInvoice?.currency || selectedDeal?.currency || 'USD';
+  document.getElementById('ds-price').textContent     = formatMoney(price, cur);
+  document.getElementById('ds-collected').textContent = formatMoney(paid, cur);
+  document.getElementById('ds-balance').textContent   = formatMoney(balance, cur);
   document.getElementById('ds-pct').textContent       = pct + '%';
 }
 
@@ -490,17 +514,19 @@ async function loadPropertiesMap() {
   snap.forEach(d => { propertiesMap[d.id] = d.data(); });
 }
 
-// ── Load deals — viewing + closed ──
+// ── Load deals ──
+// Finance sees: negotiation (ready for invoice), closed_pending, closed_validated
+// Old 'viewing' status no longer exists — replaced by viewing_scheduled/viewing_completed/negotiation
 async function loadDeals() {
   try {
-    const [viewingSnap, pendingSnap, validatedSnap] = await Promise.all([
-      getDocs(query(collection(db,'leads'), where('status','==','viewing'),           orderBy('createdAt','desc'))),
-      getDocs(query(collection(db,'leads'), where('status','==','closed_pending'),    orderBy('createdAt','desc'))),
-      getDocs(query(collection(db,'leads'), where('status','==','closed_validated'),  orderBy('createdAt','desc'))),
+    const [negSnap, pendingSnap, validatedSnap] = await Promise.all([
+      getDocs(query(collection(db,'leads'), where('status','==','negotiation'),        orderBy('createdAt','desc'))),
+      getDocs(query(collection(db,'leads'), where('status','==','closed_pending'),     orderBy('createdAt','desc'))),
+      getDocs(query(collection(db,'leads'), where('status','==','closed_validated'),   orderBy('createdAt','desc'))),
     ]);
 
     allDeals = [
-      ...viewingSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+      ...negSnap.docs.map(d     => ({ id: d.id, ...d.data() })),
       ...pendingSnap.docs.map(d => ({ id: d.id, ...d.data() })),
       ...validatedSnap.docs.map(d => ({ id: d.id, ...d.data() })),
     ];
@@ -515,20 +541,31 @@ async function loadDeals() {
 
     // Stats
     const invoiced  = allDeals.filter(d => d.invoiceIssued).length;
-    const noInvoice = allDeals.filter(d => !d.invoiceIssued && d.status !== 'viewing').length;
+    // "Awaiting invoice" = negotiation deals without an invoice yet
+    const noInvoice = allDeals.filter(d => !d.invoiceIssued && d.status === 'negotiation').length;
     document.getElementById('sc-invoiced').textContent = invoiced;
     document.getElementById('sc-pending').textContent  = noInvoice;
 
-    // Total collected + receipts across all deals
+    // Total collected + receipts across all deals (parallel, capped at 30 to avoid overload)
     let totalCollected = 0, totalReceipts = 0;
-    for (const deal of allDeals.slice(0,20)) { // limit to avoid too many reads
+    await Promise.all(allDeals.slice(0, 30).map(async deal => {
       try {
-        const lSnap = await getDocs(collection(db,'leads',deal.id,'ledger'));
+        const [lSnap, rSnap] = await Promise.all([
+          getDocs(collection(db,'leads',deal.id,'ledger')),
+          getDocs(collection(db,'leads',deal.id,'receipts')),
+        ]);
         lSnap.forEach(d => { if(d.data().type==='income') totalCollected += (d.data().amount||0); });
-        const rSnap = await getDocs(collection(db,'leads',deal.id,'receipts'));
         totalReceipts += rSnap.size;
+        // Also sync invoiceIssued from subcollection for negotiation deals
+        if (deal.status === 'negotiation' && !deal.invoiceIssued) {
+          const invSnap = await getDocs(collection(db,'leads',deal.id,'invoices'));
+          if (!invSnap.empty) {
+            deal.invoiceIssued = true;
+            deal.invoiceId = invSnap.docs[0].id;
+          }
+        }
       } catch(_) {}
-    }
+    }));
     document.getElementById('sc-collected').textContent = 'GHS ' + totalCollected.toLocaleString('en-GH');
     document.getElementById('sc-receipts').textContent  = totalReceipts;
 
@@ -586,7 +623,13 @@ window.renderTable = () => {
             <div class="prog-pct">${pct}%</div>
           </div>
         </td>
-        <td><span class="status-pill ${isValidated?'sp-validated':'sp-pending'}">${isValidated?'✅ Validated':'⏳ Pending'}</span></td>
+        <td>
+          ${d.status === 'negotiation'
+            ? '<span class="status-pill" style="background:rgba(232,121,249,0.1);color:#e879f9;border:1px solid rgba(232,121,249,0.2)">🤝 Negotiation</span>'
+            : isValidated
+              ? '<span class="status-pill sp-validated">✅ Validated</span>'
+              : '<span class="status-pill sp-pending">⏳ Pending</span>'}
+        </td>
         <td>
           <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();openDeal('${d.id}')">
             ${d.invoiceIssued ? 'Manage →' : 'Issue Invoice →'}
@@ -653,6 +696,14 @@ async function loadInvoice() {
   try {
     const snap = await getDocs(collection(db,'leads',selectedDeal.id,'invoices'));
     dealInvoice = snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
+
+    // Sync agreedPrice from invoice onto selectedDeal so ledger + strip use it
+    if (dealInvoice?.agreedPrice) {
+      selectedDeal.agreedPrice = dealInvoice.agreedPrice;
+      // Also mark invoiceIssued in memory so ledger gate opens
+      selectedDeal.invoiceIssued = true;
+    }
+
     renderInvoiceTab();
   } catch(e) { console.error('Invoice load error:', e); }
 }
@@ -743,8 +794,16 @@ function showInvoiceForm() {
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Agreed Price (GHS) *</label>
-          <input class="form-input" type="number" id="inv-price" value="${price}" placeholder="0.00"/>
+          <label class="form-label">Agreed Price & Currency *</label>
+          <div style="display:flex;gap:8px">
+            <select class="form-select" id="inv-currency" style="width:110px;flex-shrink:0">
+              <option value="USD" ${(inv?.currency||'USD')==='USD'?'selected':''}>$ USD</option>
+              <option value="EUR" ${(inv?.currency||'USD')==='EUR'?'selected':''}>€ EUR</option>
+              <option value="GBP" ${(inv?.currency||'USD')==='GBP'?'selected':''}>£ GBP</option>
+              <option value="GHS" ${(inv?.currency||'USD')==='GHS'?'selected':''}>₵ GHS</option>
+            </select>
+            <input class="form-input" type="number" id="inv-price" value="${price}" placeholder="0.00" style="flex:1"/>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Payment Method *</label>
@@ -813,11 +872,12 @@ window.saveInvoice = async () => {
   if (!price || price <= 0) { alert('Please enter a valid agreed price.'); return; }
   if (!method)              { alert('Please select a payment method.'); return; }
 
+  const currency  = document.getElementById('inv-currency')?.value || selectedDeal?.currency || 'USD';
   const invoiceNo = dealInvoice?.invoiceNo || `CV-INV-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
 
   try {
     const data = {
-      invoiceNo, agreedPrice: price, paymentMethod: method,
+      invoiceNo, agreedPrice: price, currency, paymentMethod: method,
       depositAmount: deposit, depositDue, balanceAmount: balance, balanceDue, terms,
       issuedBy: currentUser.uid, issuedByName: currentName,
       updatedAt: serverTimestamp(),
@@ -836,11 +896,13 @@ window.saveInvoice = async () => {
         invoiceIssued: true,
         invoiceId:     dealInvoice.id,
         agreedPrice:   price,
+        currency,
         paymentPlan: { depositAmount: deposit, depositDue, balanceDue, method },
         updatedAt:     serverTimestamp(),
       });
       selectedDeal.invoiceIssued = true;
       selectedDeal.agreedPrice   = price;
+      selectedDeal.currency      = currency;
       const idx = allDeals.findIndex(d => d.id === selectedDeal.id);
       if (idx !== -1) { allDeals[idx].invoiceIssued = true; allDeals[idx].agreedPrice = price; }
     }
@@ -884,7 +946,9 @@ async function loadLedger() {
 }
 
 function renderLedger() {
-  const hasInvoice = !!selectedDeal.invoiceIssued;
+  // Use dealInvoice object directly — do NOT rely on invoiceIssued flag on the lead
+  // because the flag may not have been written if the invoice was created before this fix
+  const hasInvoice = !!dealInvoice;
   document.getElementById('ledger-no-invoice').style.display = hasInvoice ? 'none' : 'block';
   document.getElementById('add-payment-form').style.display  = hasInvoice && ['finance','admin'].includes(currentRole) ? 'block' : 'none';
 
@@ -901,7 +965,7 @@ function renderLedger() {
         <div class="entry-desc">${e.description||'—'}</div>
         <div class="entry-meta">${capitalize(e.type)} · ${methodLabel(e.method)} · ${formatDate(e.createdAt)} · ${e.createdByName||'—'}</div>
       </div>
-      <div class="entry-amount amount-${e.type}">${e.type==='income'?'+':'-'} ${formatGHS(e.amount)}</div>
+      <div class="entry-amount amount-${e.type}">${e.type==='income'?'+':'-'} ${formatMoney(e.amount, selectedDeal?.currency)}</div>
       ${e.receiptId ? `<button class="entry-btn receipt" onclick="viewReceipt('${e.receiptId}')">🧾 View Receipt</button>` : `<button class="entry-btn" onclick="generateReceiptForEntry('${e.id}')">Generate Receipt</button>`}
       ${['finance','admin'].includes(currentRole) ? `<button class="entry-btn" onclick="deleteEntry('${e.id}')">✕</button>` : ''}
     </div>`).join('');
@@ -928,6 +992,7 @@ window.addPayment = async () => {
     if (type === 'income') {
       const newTotal = (selectedDeal.totalPaid||0) + amount;
       const newBal   = Math.max(0,(selectedDeal.agreedPrice||0) - newTotal);
+      const payCur   = selectedDeal.currency || 'USD';
       await updateDoc(doc(db,'leads',selectedDeal.id), {
         totalPaid: newTotal, balanceDue: newBal, updatedAt: serverTimestamp(),
       });
