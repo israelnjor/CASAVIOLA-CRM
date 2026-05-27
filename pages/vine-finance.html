@@ -501,7 +501,7 @@ function renderInvoices() {
       <td><span class="money-gold">${money(r.totalAmount)}</span></td>
       <td><span class="chip chip-${r.status||'issued'}">${capitalize(r.status||'issued')}</span></td>
       <td style="color:var(--text2);font-size:12px">${fdate(r.createdAt)}</td>
-      <td><a class="btn btn-gold" style="padding:6px 12px;font-size:12px" href="${docUrl('invoice',r.bookingId,r.id)}" target="_blank">Open ↗</a></td>
+      <td><a class="btn btn-gold" style="padding:6px 12px;font-size:12px" href="${docUrl('invoice',r.bookingId,r.id)}">Open</a></td>
     </tr>`).join(''));
 }
 
@@ -530,7 +530,7 @@ function renderLedger() {
         <td><span class="money-green">${money(r.amount)}</span></td>
         <td style="color:var(--text2);font-size:12px">${r.recordedByName||'—'}</td>
         <td>${linkedReceipt
-          ? `<a class="btn btn-ghost" style="padding:5px 11px;font-size:11.5px" href="${docUrl('receipt',r.bookingId,linkedReceipt.id)}" target="_blank">${linkedReceipt.receiptNo||'Receipt ↗'}</a>`
+          ? `<a class="btn btn-ghost" style="padding:5px 11px;font-size:11.5px" href="${docUrl('receipt',r.bookingId,linkedReceipt.id)}">Open Receipt</a>`
           : '<span style="color:var(--muted);font-size:12px">—</span>'}</td>
       </tr>`;
   }).join(''));
@@ -558,8 +558,7 @@ function renderReceipts() {
       <td style="color:var(--text2);font-size:12.5px">${methodLabel(r.method)}</td>
       <td><span class="money-green">${money(r.amount)}</span></td>
       <td><span class="chip chip-generated">Generated</span></td>
-      <td><a class="btn btn-gold" style="padding:6px 12px;font-size:12px" href="${docUrl('receipt',r.bookingId,r.id)}" target="_blank">Open ↗</a></td>
-    </tr>`).join(''));
+      <td><a class="btn btn-gold" style="padding:6px 12px;font-size:12px" href="${docUrl('receipt',r.bookingId,r.id)}">Open</a></td>    </tr>`).join(''));
 }
 
 // ── BALANCES ──
