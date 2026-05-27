@@ -828,9 +828,8 @@ function renderDetail() {
     <div class="detail-section">
       <div class="detail-section-title">Documents</div>
       <div class="detail-grid">
-        <div class="detail-cell"><div class="detail-label">Invoice</div><div class="detail-value">${b.invoiceIssued ? `✅ Issued &nbsp;<a href="${docUrl('invoice',b.id,b.invoiceId)}" target="_blank">Open Invoice ↗</a>` : '⬜ Not issued'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Receipt</div><div class="detail-value">${b.hasReceipt ? `✅ Generated &nbsp;<a href="${docUrl('receipt',b.id,b.receiptId)}" target="_blank">Open Receipt ↗</a>` : '⬜ No receipt yet'}</div></div>
-      </div>
+       <div class="detail-cell"><div class="detail-label">Invoice</div><div class="detail-value">${b.invoiceIssued ? `✅ Issued &nbsp;<a href="${docUrl('invoice',b.id,b.invoiceId)}">Open Invoice</a>` : '⬜ Not issued'}</div></div>
+       <div class="detail-cell"><div class="detail-label">Receipt</div><div class="detail-value">${b.hasReceipt ? `✅ Generated &nbsp;<a href="${docUrl('receipt',b.id,b.receiptId)}">Open Receipt</a>` : '⬜ No receipt yet'}</div></div>      </div>
     </div>
 
     ${b.notes ? `<div class="detail-section"><div class="detail-section-title">Notes</div><div class="detail-cell"><div class="detail-value muted">${b.notes}</div></div></div>` : ''}

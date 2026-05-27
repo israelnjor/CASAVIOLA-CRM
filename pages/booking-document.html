@@ -418,7 +418,7 @@ body {
 
   <div class="action-bar">
     <div class="action-left">
-      <button class="abtn" onclick="window.close()">← Close</button>
+      <button class="abtn" onclick="history.back()">← Back</button>
       <span class="dtype-badge" id="dtype-badge">—</span>
     </div>
     <button class="abtn abtn-print" onclick="window.print()">Print / Save PDF</button>
@@ -522,9 +522,9 @@ body {
 </div>
 
 <script type="module">
-import { auth, db } from './js/firebase-config.js';
+import { auth, db } from '../js/firebase-config.js';
 import {
-  browserLocalStoragePersistence,
+  browserLocalPersistence,
   setPersistence,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -532,6 +532,7 @@ import {
   collection, getDocs, doc, getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// const payloadRaw = localStorage.getItem('cv_booking_document_payload');
 // ── Company constants ──
 const CO = {
   name:    'Casa Viola Properties Ltd',
@@ -584,7 +585,7 @@ if (!bookingId) {
   showError('Missing booking reference. Please go back and try again.');
 } else {
   // Use localStorage persistence so auth survives across new tabs
-  setPersistence(auth, browserLocalStoragePersistence)
+  setPersistence(auth, browserLocalPersistence)
     .then(() => {
       onAuthStateChanged(auth, user => {
         if (user) {
