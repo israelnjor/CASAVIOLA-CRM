@@ -864,7 +864,7 @@ async function renderReceipt(lead) {
   set('addr-eyebrow', 'Received From');
   set('addr-name',    lead.clientName || rcp.clientName);
   set('addr-sub',     `Re: ${lead.propTitle || rcp.propTitle || '—'}`);
-  set('amount-eyebrow','This Payment');
+  set('amount-eyebrow','Current Payment');
   set('amount-val',   fGHS(paid));
   $('amount-status').innerHTML = `<span class="status-tag ${isFull?'tag-paid':'tag-pending'}">${isFull?'Fully Paid':'Part Payment'}</span>`;
 
@@ -905,7 +905,7 @@ async function renderReceipt(lead) {
         <div class="totals-box">
           <div class="trow bg-cream"><span class="tl">Agreed Property Price</span><span class="tv">GH₵ ${fGHS(agreed)}</span></div>
           <div class="trow"><span class="tl">Previous Payments</span><span class="tv">GH₵ ${fGHS(prevPaid)}</span></div>
-          <div class="trow"><span class="tl">This Payment</span><span class="tv">GH₵ ${fGHS(paid)}</span></div>
+          <div class="trow"><span class="tl">Current Payment</span><span class="tv">GH₵ ${fGHS(paid)}</span></div>
           <div class="trow grand"><span class="tl">Total Paid to Date</span><span class="tv">GH₵ ${fGHS(totalPaid)}</span></div>
           <div class="trow ${isFull?'fullpaid':'balance'}">
             <span class="tl">${isFull?'Fully Paid ✓':'Outstanding Balance'}</span>
