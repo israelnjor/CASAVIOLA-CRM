@@ -786,6 +786,7 @@ async function renderReceipt(booking) {
     set('doc-ref', inv.invoiceNo || '—');
   }
 
+  const items    = Array.isArray(rcp.items) ? rcp.items : (Array.isArray(booking.items) ? booking.items : []);
   const unitName = rcp.unitName || booking.unitName || '';
   const cIn  = rcp.checkIn  || booking.checkIn;
   const cOut = rcp.checkOut || booking.checkOut;
@@ -810,8 +811,11 @@ async function renderReceipt(booking) {
         <div class="info-cell"><div class="ic-label">Guest Name</div><div class="ic-val accent">${rcp.guestName||booking.guestName||'—'}</div></div>
         <div class="info-cell"><div class="ic-label">Phone</div><div class="ic-val">${rcp.guestPhone||booking.guestPhone||'—'}</div></div>
         <div class="info-cell"><div class="ic-label">Email</div><div class="ic-val">${rcp.guestEmail||booking.guestEmail||'—'}</div></div>
+        ${items.length ? `
+        <div class="info-cell"><div class="ic-label">Apartments</div><div class="ic-val accent">${unitName||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Transaction Ref.</div><div class="ic-val">${rcp.transactionRef||'—'}</div></div>` : `
         <div class="info-cell"><div class="ic-label">Apartment</div><div class="ic-val accent">${rcp.unitName||booking.unitName||'—'}</div></div>
-        <div class="info-cell"><div class="ic-label">Unit Type</div><div class="ic-val">${rcp.displayType||booking.displayType||'—'}</div></div>
+        <div class="info-cell"><div class="ic-label">Unit Type</div><div class="ic-val">${rcp.displayType||booking.displayType||'—'}</div></div>`}
         <div class="info-cell"><div class="ic-label">Payment Method</div><div class="ic-val">${mLabel(rcp.method)}</div></div>
       </div>
     </div>
@@ -822,6 +826,21 @@ async function renderReceipt(booking) {
     <div>
       <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">Payment Breakdown</span><span class="sec-line"></span></div>
       <div class="tbl-wrap">
+        ${items.length ? `
+        <table class="ptbl">
+          <thead><tr><th>Description</th><th>Qty</th><th>Nights</th><th>Rate / Night (GH₵)</th><th>Amount (GH₵)</th></tr></thead>
+          <tbody>
+            ${items.map(it => `
+            <tr>
+              <td>${it.display||'Apartment'} — The Vine${stayLine
+                  ? `<br/><span style="font-size:11.5px;color:var(--ink3)">${stayLine}</span>` : ''}</td>
+              <td>${it.qty}</td>
+              <td>${it.nights}</td>
+              <td>${fGHS(it.rate)}</td>
+              <td>${fGHS(it.amount)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>` : `
         <table class="ptbl">
           <thead><tr><th>Description</th><th>Type</th><th>Reference</th><th>Amount (GH₵)</th></tr></thead>
           <tbody>
@@ -833,8 +852,9 @@ async function renderReceipt(booking) {
               <td>${fGHS(paid)}</td>
             </tr>
           </tbody>
-        </table>
+        </table>`}
       </div>
+      ${items.length && rcp.description ? `<div style="font-size:11.5px;color:var(--ink3);margin-top:10px">${rcp.description}</div>` : ''}
       <div class="totals-right">
         <div class="totals-box">
           <div class="trow bg-cream"><span class="tl">Total Booking Amount</span><span class="tv">GH₵ ${fGHS(total)}</span></div>

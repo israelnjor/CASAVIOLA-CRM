@@ -164,6 +164,27 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); di
 .form-error{color:var(--coral);font-size:12px;margin-bottom:12px;padding:9px 13px;background:var(--coral-dim);border:1px solid rgba(240,107,107,0.2);border-radius:8px;display:none}
 .form-error.visible{display:block}
 
+/* Quick receipt apartment lines */
+.q-row3{display:grid;grid-template-columns:1fr 1fr 90px;gap:14px}
+.q-line{display:grid;grid-template-columns:1.5fr 64px 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:8px}
+.q-line .form-input,.q-line .form-select{padding:9px 10px}
+.q-line-head{font-size:9.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.q-line-total{font-family:var(--font-disp);font-size:15px;font-weight:600;color:var(--gold-lt);text-align:right;white-space:nowrap}
+.q-line-del{background:none;border:1px solid var(--border);border-radius:7px;width:30px;height:30px;color:var(--muted);cursor:pointer}
+.q-line-del:hover{color:var(--coral);border-color:rgba(240,107,107,0.3)}
+.q-total-box{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:12px 16px;margin-bottom:17px}
+.q-total-box #q-total-calc{grid-column:1/-1;font-size:11.5px;color:var(--text2)}
+.q-total-box span:nth-child(2){font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.q-total-box strong{font-family:var(--font-disp);font-size:24px;color:var(--gold-lt);font-weight:600}
+@media (max-width:560px){
+  .q-row3{grid-template-columns:1fr 1fr}
+  .q-line{grid-template-columns:1fr 1fr;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .q-line-head{display:none}
+  .q-line .q-type{grid-column:1/-1}
+  .q-line .q-line-total{text-align:left}
+  .q-line .q-line-del{justify-self:end}
+}
+
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -361,16 +382,28 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); di
         <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="q-phone" placeholder="+233..."/></div>
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="q-email" placeholder="optional"/></div>
       </div>
-      <div class="form-group"><label class="form-label">Apartment (optional)</label>
-        <select class="form-select" id="q-unit"></select>
+      <div class="q-row3">
+        <div class="form-group"><label class="form-label">Check-In</label><input class="form-input" type="date" id="q-checkin" onchange="qDatesChanged()"/></div>
+        <div class="form-group"><label class="form-label">Check-Out</label><input class="form-input" type="date" id="q-checkout" onchange="qDatesChanged()"/></div>
+        <div class="form-group"><label class="form-label">Nights *</label><input class="form-input" type="number" min="1" step="1" id="q-nights" value="1" oninput="calcQuick()"/></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Check-In (optional)</label><input class="form-input" type="date" id="q-checkin"/></div>
-        <div class="form-group"><label class="form-label">Check-Out (optional)</label><input class="form-input" type="date" id="q-checkout"/></div>
+
+      <div class="form-group">
+        <label class="form-label">Apartments *</label>
+        <div class="q-line q-line-head"><span>Type</span><span>Qty</span><span>Price / Night (GH₵)</span><span>Line Total</span><span></span></div>
+        <div id="q-lines"></div>
+        <button type="button" class="btn btn-ghost" style="padding:6px 12px;font-size:12px;margin-top:6px" onclick="addQuickLine()">+ Add apartment type</button>
       </div>
+
+      <div class="q-total-box">
+        <span id="q-total-calc">—</span>
+        <span>Total Amount</span>
+        <strong id="q-total-val">GH₵ 0.00</strong>
+      </div>
+
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Amount Received (GHS) *</label><input class="form-input" type="number" min="0" step="0.01" id="q-amount" placeholder="0.00"/></div>
-        <div class="form-group"><label class="form-label">Total Amount Due (GHS)</label><input class="form-input" type="number" min="0" step="0.01" id="q-total" placeholder="Leave blank = fully paid"/></div>
+        <div class="form-group"><label class="form-label">Amount Received (GHS) *</label><input class="form-input" type="number" min="0" step="0.01" id="q-amount" placeholder="0.00" oninput="window.qAmountTouched=true;calcQuick()"/></div>
+        <div class="form-group"><label class="form-label">Balance</label><input class="form-input" id="q-balance" readonly tabindex="-1" style="opacity:0.75"/></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Payment Method *</label>
@@ -398,27 +431,12 @@ import '../js/session.js';
 import { auth, db } from '../js/firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  collection, getDocs, addDoc, doc, getDoc, updateDoc, serverTimestamp, query, where
+  collection, getDocs, addDoc, doc, getDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ── Constants ──
 const VIEW_ROLES = ['admin','ceo','finance','listings','cs'];
 const EDIT_ROLES = ['admin','finance','listings','cs'];
-// Keep in sync with UNITS in bookings.html
-const UNITS = [
-  { id:'vine-1a', name:'Vine 1A', type:'one_bedroom', display:'One-Bedroom Apartment' },
-  { id:'vine-1b', name:'Vine 1B', type:'one_bedroom', display:'One-Bedroom Apartment' },
-  { id:'vine-1c', name:'Vine 1C', type:'one_bedroom', display:'One-Bedroom Apartment' },
-  { id:'vine-1d', name:'Vine 1D', type:'one_bedroom', display:'One-Bedroom Apartment' },
-  { id:'vine-1e', name:'Vine 1E', type:'one_bedroom', display:'One-Bedroom Apartment' },
-  { id:'vine-1f', name:'Vine 1F', type:'one_bedroom', display:'One-Bedroom Apartment' },
-  { id:'vine-2a', name:'Vine 2A', type:'two_bedroom', display:'Two-Bedroom Apartment' },
-  { id:'vine-2b', name:'Vine 2B', type:'two_bedroom', display:'Two-Bedroom Apartment' },
-  { id:'vine-2c', name:'Vine 2C', type:'two_bedroom', display:'Two-Bedroom Apartment' },
-  { id:'vine-2d', name:'Vine 2D', type:'two_bedroom', display:'Two-Bedroom Apartment' },
-  { id:'vine-2e', name:'Vine 2E', type:'two_bedroom', display:'Two-Bedroom Apartment' },
-  { id:'vine-2f', name:'Vine 2F', type:'two_bedroom', display:'Two-Bedroom Apartment' },
-];
 
 // ── State ──
 let currentUser = null, currentRole = null, currentName = '';
@@ -480,9 +498,6 @@ onAuthStateChanged(auth, async user => {
   document.getElementById('sb-avatar').textContent = initials(currentName);
   if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
   if (canEdit()) document.getElementById('quick-receipt-btn').style.display = '';
-  document.getElementById('q-unit').innerHTML =
-    '<option value="">— Not linked to an apartment —</option>' +
-    UNITS.map(u => `<option value="${u.id}">${u.name} — ${u.display}</option>`).join('');
   await loadAll();
 });
 
@@ -757,13 +772,80 @@ window.savePayment = async () => {
 // ── Quick receipt (no booking/invoice required beforehand) ──
 // Firestore rules only allow payments/receipts under /bookings/{id}, so this
 // creates a lightweight booking flagged quickReceipt:true to hold them.
+// It has no unitId, so it never blocks a specific unit's availability.
+const APT_TYPES = [
+  { type:'one_bedroom', short:'One-Bedroom', display:'One-Bedroom Apartment' },
+  { type:'two_bedroom', short:'Two-Bedroom', display:'Two-Bedroom Apartment' },
+];
+window.qAmountTouched = false;
 function nightsBetween(a,b){ if(!a||!b) return 0; const n=Math.round((new Date(b)-new Date(a))/86400000); return n>0?n:0; }
+function lastRate(type){ try { return localStorage.getItem('cv_vine_rate_'+type) || ''; } catch(_) { return ''; } }
+function saveRate(type,rate){ try { localStorage.setItem('cv_vine_rate_'+type, String(rate)); } catch(_) {} }
+
+window.addQuickLine = (type = 'one_bedroom', qty = 1) => {
+  const row = document.createElement('div');
+  row.className = 'q-line';
+  row.innerHTML = `
+    <select class="form-select q-type" onchange="qTypeChanged(this)">
+      ${APT_TYPES.map(t => `<option value="${t.type}"${t.type===type?' selected':''}>${t.display}</option>`).join('')}
+    </select>
+    <input class="form-input q-qty" type="number" min="1" step="1" value="${qty}" placeholder="Qty" oninput="calcQuick()"/>
+    <input class="form-input q-rate" type="number" min="0" step="0.01" value="${lastRate(type)}" placeholder="Price / night" oninput="calcQuick()"/>
+    <div class="q-line-total">GH₵ 0.00</div>
+    <button type="button" class="q-line-del" title="Remove" onclick="removeQuickLine(this)">✕</button>`;
+  document.getElementById('q-lines').appendChild(row);
+  calcQuick();
+};
+window.removeQuickLine = (btn) => {
+  const lines = document.getElementById('q-lines');
+  if (lines.children.length <= 1) return; // keep at least one line
+  btn.closest('.q-line').remove();
+  calcQuick();
+};
+window.qTypeChanged = (sel) => {
+  const rate = sel.closest('.q-line').querySelector('.q-rate');
+  const remembered = lastRate(sel.value);
+  if (remembered) rate.value = remembered;
+  calcQuick();
+};
+window.qDatesChanged = () => {
+  const n = nightsBetween(document.getElementById('q-checkin').value, document.getElementById('q-checkout').value);
+  if (n > 0) document.getElementById('q-nights').value = n;
+  calcQuick();
+};
+
+function readQuickLines() {
+  const nights = Math.max(parseInt(document.getElementById('q-nights').value, 10) || 0, 0);
+  return [...document.querySelectorAll('#q-lines .q-line')].map(row => {
+    const t    = APT_TYPES.find(x => x.type === row.querySelector('.q-type').value) || APT_TYPES[0];
+    const qty  = Math.max(parseInt(row.querySelector('.q-qty').value, 10) || 0, 0);
+    const rate = Math.max(Number(row.querySelector('.q-rate').value) || 0, 0);
+    return { row, type: t.type, short: t.short, display: t.display, qty, nights, rate, amount: Number((qty * nights * rate).toFixed(2)) };
+  });
+}
+
+window.calcQuick = () => {
+  const lines = readQuickLines();
+  lines.forEach(l => l.row.querySelector('.q-line-total').textContent = money(l.amount));
+  const total  = lines.reduce((s,l) => s + l.amount, 0);
+  const nights = lines[0]?.nights || 0;
+  document.getElementById('q-total-val').textContent = money(total);
+  document.getElementById('q-total-calc').textContent = lines.filter(l => l.qty && l.rate)
+    .map(l => `${l.qty} × ${l.short} × ${nights} night${nights!==1?'s':''} × ${money(l.rate)}`).join('  +  ')
+    || 'Select apartment type, quantity and price per night';
+  const amtEl = document.getElementById('q-amount');
+  if (!window.qAmountTouched) amtEl.value = total ? total.toFixed(2) : '';
+  document.getElementById('q-balance').value = money(Math.max(total - Number(amtEl.value || 0), 0));
+};
 
 window.openQuickReceipt = () => {
   if (!canEdit()) { alert('You do not have permission to record payments.'); return; }
   document.getElementById('quick-error').classList.remove('visible');
-  ['q-name','q-phone','q-email','q-checkin','q-checkout','q-amount','q-total','q-ref'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('q-unit').value   = '';
+  ['q-name','q-phone','q-email','q-checkin','q-checkout','q-amount','q-ref'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('q-nights').value = 1;
+  document.getElementById('q-lines').innerHTML = '';
+  window.qAmountTouched = false;
+  addQuickLine();
   document.getElementById('q-method').value = 'bank_transfer';
   document.getElementById('q-date').value   = todayISO();
   document.getElementById('q-desc').value   = 'Payment towards The Vine apartment';
@@ -781,41 +863,44 @@ window.saveQuickReceipt = async () => {
 
   const v = id => document.getElementById(id).value.trim();
   const guestName = v('q-name');
-  const amount    = Number(v('q-amount') || 0);
-  const totalIn   = v('q-total');
-  const total     = totalIn === '' ? amount : Number(totalIn);
   const checkIn   = v('q-checkin');
   const checkOut  = v('q-checkout');
-  const unit      = UNITS.find(u => u.id === v('q-unit')) || null;
+  const n         = parseInt(v('q-nights'), 10) || 0;
+  const lines     = readQuickLines();
 
-  if (!guestName)  return fail('Please enter who the payment was received from.');
-  if (!(amount > 0)) return fail('Please enter a valid amount received.');
-  if (isNaN(total) || total < amount) return fail('Total amount due cannot be less than the amount received.');
+  if (!guestName) return fail('Please enter who the payment was received from.');
   if ((checkIn && !checkOut) || (!checkIn && checkOut)) return fail('Enter both check-in and check-out dates, or leave both empty.');
   if (checkIn && checkOut && checkOut <= checkIn) return fail('Check-out must be after check-in.');
+  if (n < 1) return fail('Number of nights must be at least 1.');
+  if (lines.some(l => l.qty < 1)) return fail('Each apartment line needs a quantity of at least 1.');
+  if (lines.some(l => !(l.rate > 0))) return fail('Please enter the price per night for each apartment type.');
 
-  const n          = nightsBetween(checkIn, checkOut);
-  const balanceDue = Math.max(total - amount, 0);
-  const payStatus  = balanceDue <= 0 ? 'fully_paid' : 'part_paid';
-  const method     = v('q-method');
-  const txnRef     = v('q-ref');
-  const payDate    = v('q-date') || todayISO();
-  const desc       = v('q-desc') || 'Payment towards The Vine apartment';
+  const items  = lines.map(({ type, short, display, qty, nights, rate, amount }) => ({ type, short, display, qty, nights, rate, amount }));
+  const total  = Number(items.reduce((s,i) => s + i.amount, 0).toFixed(2));
+  const amount = Number(v('q-amount') || 0);
+  if (!(amount > 0)) return fail('Please enter a valid amount received.');
+  if (amount > total) return fail(`Amount received cannot be more than the total (${money(total)}).`);
+
+  const balanceDue   = Math.max(Number((total - amount).toFixed(2)), 0);
+  const payStatus    = balanceDue <= 0 ? 'fully_paid' : 'part_paid';
+  const method       = v('q-method');
+  const txnRef       = v('q-ref');
+  const payDate      = v('q-date') || todayISO();
+  const desc         = v('q-desc') || 'Payment towards The Vine apartment';
+  const unitName     = items.map(i => `${i.qty} × ${i.short}`).join(', ');
+  const displayType  = items.map(i => `${i.qty} × ${i.display}`).join(', ');
+  const unitType     = new Set(items.map(i => i.type)).size === 1 ? items[0].type : 'mixed';
+  const ratePerNight = items.length === 1 ? items[0].rate : 0;
 
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving...';
   try {
-    // If tied to a unit + dates, warn (don't block) on overlap with an existing booking
-    if (unit && checkIn) {
-      const snap = await getDocs(query(collection(db,'bookings'), where('unitId','==',unit.id)));
-      const clash = snap.docs.some(d => { const b = d.data(); return b.bookingStatus !== 'cancelled' && b.checkIn && b.checkIn < checkOut && b.checkOut > checkIn; });
-      if (clash && !confirm(`${unit.name} already has a booking overlapping these dates.\n\nIf this payment is for that booking, cancel and use "Record Payment" in the Balances tab instead.\n\nCreate this receipt anyway?`)) return;
-    }
+    items.forEach(i => saveRate(i.type, i.rate));
 
     const bookingData = {
       propertyName: 'The Vine', quickReceipt: true, source: 'quick_receipt',
-      unitId: unit?.id || '', unitName: unit?.name || '', unitType: unit?.type || '', displayType: unit?.display || '',
+      unitId: '', unitName, unitType, displayType, items,
       guestName, guestPhone: v('q-phone'), guestEmail: v('q-email'),
-      checkIn, checkOut, nights: n, ratePerNight: n ? Number((total / n).toFixed(2)) : 0,
+      checkIn, checkOut, nights: n, ratePerNight,
       totalAmount: total, depositPaid: amount, balanceDue,
       bookingStatus: 'confirmed', paymentStatus: payStatus,
       notes: 'Created from Vine Finance → New Receipt',
@@ -835,8 +920,8 @@ window.saveQuickReceipt = async () => {
       amount, method, transactionRef: txnRef, paymentDate: payDate, description: desc,
       totalPaid: amount, balanceDue, totalAmount: total,
       guestName, guestPhone: bookingData.guestPhone, guestEmail: bookingData.guestEmail,
-      unitName: bookingData.unitName, unitType: bookingData.unitType, displayType: bookingData.displayType,
-      checkIn, checkOut, nights: n, ratePerNight: bookingData.ratePerNight,
+      unitName, unitType, displayType, items,
+      checkIn, checkOut, nights: n, ratePerNight,
       generatedBy: currentUser.uid, generatedByName: currentName,
       createdAt: serverTimestamp(),
     });
