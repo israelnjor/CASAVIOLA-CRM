@@ -225,6 +225,10 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); di
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         All Bookings
       </a>
+      <button class="btn btn-gold" id="quick-receipt-btn" style="display:none" onclick="openQuickReceipt()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Receipt
+      </button>
       <button class="btn btn-primary" onclick="loadAll()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         Refresh
@@ -341,17 +345,80 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); di
   </div>
 </div>
 
+<!-- QUICK RECEIPT MODAL — record a payment + receipt without creating a booking first -->
+<div class="modal-overlay" id="quick-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-row">
+        <div><div class="modal-title">New Receipt</div><div class="modal-subtitle">Record a payment and issue a receipt right away. No booking or invoice needed.</div></div>
+        <button class="modal-close" onclick="closeQuickReceipt()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-error" id="quick-error"></div>
+      <div class="form-group"><label class="form-label">Received From (Name) *</label><input class="form-input" id="q-name" placeholder="Guest / payer full name"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="q-phone" placeholder="+233..."/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="q-email" placeholder="optional"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Apartment (optional)</label>
+        <select class="form-select" id="q-unit"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Check-In (optional)</label><input class="form-input" type="date" id="q-checkin"/></div>
+        <div class="form-group"><label class="form-label">Check-Out (optional)</label><input class="form-input" type="date" id="q-checkout"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount Received (GHS) *</label><input class="form-input" type="number" min="0" step="0.01" id="q-amount" placeholder="0.00"/></div>
+        <div class="form-group"><label class="form-label">Total Amount Due (GHS)</label><input class="form-input" type="number" min="0" step="0.01" id="q-total" placeholder="Leave blank = fully paid"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Payment Method *</label>
+          <select class="form-select" id="q-method">
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="cash">Cash</option>
+            <option value="mobile_money">Mobile Money</option>
+            <option value="cheque">Cheque</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Payment Date</label><input class="form-input" type="date" id="q-date"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Transaction Reference</label><input class="form-input" id="q-ref" placeholder="TXN-..."/></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="q-desc">Payment towards The Vine apartment</textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeQuickReceipt()">Cancel</button>
+      <button class="btn btn-gold" id="save-quick-btn" onclick="saveQuickReceipt()">Save & Open Receipt</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import '../js/session.js';
 import { auth, db } from '../js/firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  collection, getDocs, addDoc, doc, getDoc, updateDoc, serverTimestamp
+  collection, getDocs, addDoc, doc, getDoc, updateDoc, serverTimestamp, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ── Constants ──
 const VIEW_ROLES = ['admin','ceo','finance','listings','cs'];
 const EDIT_ROLES = ['admin','finance','listings','cs'];
+// Keep in sync with UNITS in bookings.html
+const UNITS = [
+  { id:'vine-1a', name:'Vine 1A', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1b', name:'Vine 1B', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1c', name:'Vine 1C', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1d', name:'Vine 1D', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1e', name:'Vine 1E', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-1f', name:'Vine 1F', type:'one_bedroom', display:'One-Bedroom Apartment' },
+  { id:'vine-2a', name:'Vine 2A', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2b', name:'Vine 2B', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2c', name:'Vine 2C', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2d', name:'Vine 2D', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2e', name:'Vine 2E', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+  { id:'vine-2f', name:'Vine 2F', type:'two_bedroom', display:'Two-Bedroom Apartment' },
+];
 
 // ── State ──
 let currentUser = null, currentRole = null, currentName = '';
@@ -412,6 +479,10 @@ onAuthStateChanged(auth, async user => {
   document.getElementById('sb-role').textContent   = capitalize(currentRole);
   document.getElementById('sb-avatar').textContent = initials(currentName);
   if (['admin','ceo'].includes(currentRole)) document.getElementById('admin-nav').style.display = 'block';
+  if (canEdit()) document.getElementById('quick-receipt-btn').style.display = '';
+  document.getElementById('q-unit').innerHTML =
+    '<option value="">— Not linked to an apartment —</option>' +
+    UNITS.map(u => `<option value="${u.id}">${u.name} — ${u.display}</option>`).join('');
   await loadAll();
 });
 
@@ -554,7 +625,7 @@ function renderReceipts() {
     <tr style="animation:fadeUp 0.3s ease ${i*0.025}s both">
       <td><div class="primary-cell">${r.receiptNo||'—'}</div><div class="sub-cell">${fdate(r.paymentDate||r.createdAt)}</div></td>
       <td><div class="primary-cell">${r.guestName||'—'}</div><div class="sub-cell">${r.unitName||'—'} · The Vine</div></td>
-      <td>${r.checkIn?`${fdate(r.checkIn)} → ${fdate(r.checkOut)}`:'—'}<div class="sub-cell">${r.nights||0} night${(r.nights||0)!==1?'s':''}</div></td>
+      <td>${r.checkIn?`${fdate(r.checkIn)} → ${fdate(r.checkOut)}`:'—'}<div class="sub-cell">${r.nights ? `${r.nights} night${r.nights!==1?'s':''}` : (r.quickReceipt ? 'Quick receipt' : '0 nights')}</div></td>
       <td style="color:var(--text2);font-size:12.5px">${methodLabel(r.method)}</td>
       <td><span class="money-green">${money(r.amount)}</span></td>
       <td><span class="chip chip-generated">Generated</span></td>
@@ -672,9 +743,10 @@ window.savePayment = async () => {
       hasReceipt: true, receiptId: recRef.id, updatedAt: serverTimestamp(),
     });
 
+    // Capture the id before closePaymentModal() nulls selectedBooking
+    const bookingId = selectedBooking.id;
     closePaymentModal();
-    await loadAll();
-    window.open(docUrl('receipt', selectedBooking.id, recRef.id), '_blank');
+    window.location.href = docUrl('receipt', bookingId, recRef.id);
   } catch(e) {
     errEl.textContent = 'Error: ' + e.message; errEl.classList.add('visible');
   } finally {
@@ -682,8 +754,107 @@ window.savePayment = async () => {
   }
 };
 
+// ── Quick receipt (no booking/invoice required beforehand) ──
+// Firestore rules only allow payments/receipts under /bookings/{id}, so this
+// creates a lightweight booking flagged quickReceipt:true to hold them.
+function nightsBetween(a,b){ if(!a||!b) return 0; const n=Math.round((new Date(b)-new Date(a))/86400000); return n>0?n:0; }
+
+window.openQuickReceipt = () => {
+  if (!canEdit()) { alert('You do not have permission to record payments.'); return; }
+  document.getElementById('quick-error').classList.remove('visible');
+  ['q-name','q-phone','q-email','q-checkin','q-checkout','q-amount','q-total','q-ref'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('q-unit').value   = '';
+  document.getElementById('q-method').value = 'bank_transfer';
+  document.getElementById('q-date').value   = todayISO();
+  document.getElementById('q-desc').value   = 'Payment towards The Vine apartment';
+  document.getElementById('quick-modal').classList.add('open');
+  setTimeout(() => document.getElementById('q-name').focus(), 50);
+};
+
+window.closeQuickReceipt = () => document.getElementById('quick-modal').classList.remove('open');
+
+window.saveQuickReceipt = async () => {
+  const errEl = document.getElementById('quick-error');
+  const btn   = document.getElementById('save-quick-btn');
+  const fail  = msg => { errEl.textContent = msg; errEl.classList.add('visible'); };
+  errEl.classList.remove('visible');
+
+  const v = id => document.getElementById(id).value.trim();
+  const guestName = v('q-name');
+  const amount    = Number(v('q-amount') || 0);
+  const totalIn   = v('q-total');
+  const total     = totalIn === '' ? amount : Number(totalIn);
+  const checkIn   = v('q-checkin');
+  const checkOut  = v('q-checkout');
+  const unit      = UNITS.find(u => u.id === v('q-unit')) || null;
+
+  if (!guestName)  return fail('Please enter who the payment was received from.');
+  if (!(amount > 0)) return fail('Please enter a valid amount received.');
+  if (isNaN(total) || total < amount) return fail('Total amount due cannot be less than the amount received.');
+  if ((checkIn && !checkOut) || (!checkIn && checkOut)) return fail('Enter both check-in and check-out dates, or leave both empty.');
+  if (checkIn && checkOut && checkOut <= checkIn) return fail('Check-out must be after check-in.');
+
+  const n          = nightsBetween(checkIn, checkOut);
+  const balanceDue = Math.max(total - amount, 0);
+  const payStatus  = balanceDue <= 0 ? 'fully_paid' : 'part_paid';
+  const method     = v('q-method');
+  const txnRef     = v('q-ref');
+  const payDate    = v('q-date') || todayISO();
+  const desc       = v('q-desc') || 'Payment towards The Vine apartment';
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving...';
+  try {
+    // If tied to a unit + dates, warn (don't block) on overlap with an existing booking
+    if (unit && checkIn) {
+      const snap = await getDocs(query(collection(db,'bookings'), where('unitId','==',unit.id)));
+      const clash = snap.docs.some(d => { const b = d.data(); return b.bookingStatus !== 'cancelled' && b.checkIn && b.checkIn < checkOut && b.checkOut > checkIn; });
+      if (clash && !confirm(`${unit.name} already has a booking overlapping these dates.\n\nIf this payment is for that booking, cancel and use "Record Payment" in the Balances tab instead.\n\nCreate this receipt anyway?`)) return;
+    }
+
+    const bookingData = {
+      propertyName: 'The Vine', quickReceipt: true, source: 'quick_receipt',
+      unitId: unit?.id || '', unitName: unit?.name || '', unitType: unit?.type || '', displayType: unit?.display || '',
+      guestName, guestPhone: v('q-phone'), guestEmail: v('q-email'),
+      checkIn, checkOut, nights: n, ratePerNight: n ? Number((total / n).toFixed(2)) : 0,
+      totalAmount: total, depositPaid: amount, balanceDue,
+      bookingStatus: 'confirmed', paymentStatus: payStatus,
+      notes: 'Created from Vine Finance → New Receipt',
+      createdBy: currentUser.uid, createdByName: currentName,
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+    };
+    const bRef = await addDoc(collection(db,'bookings'), bookingData);
+
+    const payRef = await addDoc(collection(db,'bookings',bRef.id,'payments'), {
+      amount, method, transactionRef: txnRef, paymentDate: payDate, description: desc,
+      recordedBy: currentUser.uid, recordedByName: currentName, createdAt: serverTimestamp(),
+    });
+
+    const receiptNo = `CV-VNE-REC-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`;
+    const recRef = await addDoc(collection(db,'bookings',bRef.id,'receipts'), {
+      receiptNo, bookingId: bRef.id, paymentId: payRef.id, quickReceipt: true,
+      amount, method, transactionRef: txnRef, paymentDate: payDate, description: desc,
+      totalPaid: amount, balanceDue, totalAmount: total,
+      guestName, guestPhone: bookingData.guestPhone, guestEmail: bookingData.guestEmail,
+      unitName: bookingData.unitName, unitType: bookingData.unitType, displayType: bookingData.displayType,
+      checkIn, checkOut, nights: n, ratePerNight: bookingData.ratePerNight,
+      generatedBy: currentUser.uid, generatedByName: currentName,
+      createdAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db,'bookings',bRef.id), { hasReceipt: true, receiptId: recRef.id, updatedAt: serverTimestamp() });
+
+    closeQuickReceipt();
+    window.location.href = docUrl('receipt', bRef.id, recRef.id);
+  } catch(e) {
+    fail('Error: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save & Open Receipt';
+  }
+};
+
 window.handleSignOut = async () => { await signOut(auth); window.location.href = '../index.html'; };
 document.getElementById('payment-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closePaymentModal(); });
+document.getElementById('quick-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeQuickReceipt(); });
 </script>
 <script src="../assets/mobile.js"></script>
 </body>
