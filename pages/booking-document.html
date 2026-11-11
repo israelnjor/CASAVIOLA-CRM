@@ -373,10 +373,36 @@ body {
 .gold-micro { height: 2px; background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 50%, transparent 100%); }
 
 /* Print */
+/* margin:0 removes the browser's printed header/footer (URL, date, page number) */
+@page { size: A4; margin: 0; }
 @media print {
-  body { background: white; padding: 0; }
+  body { background: white; padding: 8mm; }
   .action-bar { display: none !important; }
   .doc { box-shadow: none; max-width: 100%; }
+  /* Stretch the document to fill its last page so signatures + footer sit at the bottom.
+     --print-min-h is set by the beforeprint handler (whole pages minus body padding). */
+  .doc { display: flex; flex-direction: column; min-height: var(--print-min-h, auto); }
+  .doc-body { flex: 1; display: flex; flex-direction: column; }
+  .doc-body > :nth-last-child(2) { margin-bottom: 30px; }
+  .sig-cols { margin-top: auto; break-inside: avoid; page-break-inside: avoid; }
+  .doc-foot, .gold-micro { break-inside: avoid; page-break-inside: avoid; }
+  /* Tighter print spacing so Vine documents stay within 2 pages */
+  .doc-head   { padding: 22px 40px 18px 46px; }
+  .addr-strip { padding: 16px 40px 14px 46px; }
+  .stay-card  { margin: 0 40px 0 46px; padding: 12px 18px; }
+  .doc-body   { padding: 20px 40px 22px 46px; }
+  .h-rule     { margin: 16px 0; }
+  .sec-head   { margin-bottom: 10px; }
+  .info-cell  { padding: 9px 14px; }
+  .ptbl th    { padding: 8px 14px; }
+  .ptbl td    { padding: 9px 14px; }
+  .trow       { padding: 8px 14px; }
+  .note-col   { padding: 12px 16px; }
+  .note-body  { line-height: 1.6; }
+  .disclaimer { margin-top: 10px; padding: 9px 14px; }
+  .sig-col    { padding: 14px 18px 12px; }
+  .sig-space  { height: 34px; }
+  .doc-foot   { padding: 12px 40px 12px 46px; }
   .vine-strip, .doc-head, .stay-card, .ptbl thead, .trow.grand, .doc-foot, .doc::before, .sig-cols { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .doc::after { display: none; }
   body { font-size: 12px; }
@@ -642,9 +668,16 @@ async function renderInvoice(booking) {
   if (!inv) { showError('Invoice not found for this booking.'); return; }
 
   const total   = Number(inv.totalAmount || booking.totalAmount || 0);
-  const deposit = Number(inv.depositPaid || booking.depositPaid || 0);
+  const deposit = Number(inv.depositRequired != null ? inv.depositRequired : (inv.depositPaid || booking.depositPaid || 0));
   const balance = Number(inv.balanceDue  || booking.balanceDue  || 0);
   const invNo   = inv.invoiceNo || `CV-VNE-INV-${inv.id?.substring(0,6).toUpperCase()}`;
+  const invDate = inv.invoiceDate ? fDate(inv.invoiceDate) : (fDate(inv.createdAt) || today());
+  const items   = Array.isArray(inv.items) ? inv.items : (Array.isArray(booking.items) ? booking.items : []);
+  const invUnit = inv.unitName || booking.unitName || '';
+  const iIn     = inv.checkIn  || booking.checkIn;
+  const iOut    = inv.checkOut || booking.checkOut;
+  const iNts    = inv.nights   || booking.nights || 0;
+  const invStay = iIn ? `${fDateShort(iIn)} to ${fDateShort(iOut)}${iNts ? ` · ${iNts} night${iNts!==1?'s':''}` : ''}` : '';
 
   document.title = `Invoice ${invNo} — The Vine · Casaviola Properties`;
 
@@ -653,13 +686,13 @@ async function renderInvoice(booking) {
   set('doc-kind',     'Invoice');
   set('doc-kind-sub', 'Official Booking Invoice');
   set('doc-no',       invNo);
-  set('doc-date',     fDate(inv.createdAt) || today());
+  set('doc-date',     invDate);
   set('doc-serial',   invNo);
   set('foot-serial',  invNo);
 
   set('addr-eyebrow', 'Invoiced To');
   set('addr-name',    inv.guestName || booking.guestName);
-  set('addr-sub',     `Re: ${inv.unitName||booking.unitName||'—'} · The Vine Apartment`);
+  set('addr-sub',     invUnit ? `Re: ${invUnit} · The Vine Apartment` : 'Re: The Vine — Casaviola Properties');
   set('amount-label', 'Total Invoice Amount');
   set('amount-val',   fGHS(total));
   $('amount-status').innerHTML = `<span class="status-tag tag-pending">Awaiting Payment</span>`;
@@ -682,6 +715,21 @@ async function renderInvoice(booking) {
     <div>
       <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">Booking Summary</span><span class="sec-line"></span></div>
       <div class="tbl-wrap">
+        ${items.length ? `
+        <table class="ptbl">
+          <thead><tr><th>Description</th><th>Qty</th><th>Nights</th><th>Rate / Night (GH₵)</th><th>Amount (GH₵)</th></tr></thead>
+          <tbody>
+            ${items.map(it => `
+            <tr>
+              <td>${it.display||'Apartment'} — The Vine${invStay
+                  ? `<br/><span style="font-size:11.5px;color:var(--ink3)">${invStay}</span>` : ''}</td>
+              <td>${it.qty}</td>
+              <td>${it.nights}</td>
+              <td>${fGHS(it.rate)}</td>
+              <td>${fGHS(it.amount)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>` : `
         <table class="ptbl">
           <thead><tr><th>Description</th><th>Unit</th><th>Rate / Night</th><th>Nights</th><th>Total Amount (GH₵)</th></tr></thead>
           <tbody>
@@ -693,7 +741,7 @@ async function renderInvoice(booking) {
               <td>${fGHS(total)}</td>
             </tr>
           </tbody>
-        </table>
+        </table>`}
       </div>
       <div class="totals-right">
         <div class="totals-box">
@@ -734,7 +782,7 @@ async function renderInvoice(booking) {
       </div>
       <div class="disclaimer">
         This invoice is issued by Casa Viola Properties Ltd on behalf of The Vine Apartments. Payment confirms acceptance of the stated terms.
-        Issued by: <strong>${inv.issuedByName||'Finance Department'}</strong> · ${fDate(inv.createdAt)||today()}
+        Issued by: <strong>${inv.issuedByName||'Finance Department'}</strong> · ${invDate}
       </div>
     </div>
 
@@ -909,6 +957,35 @@ async function renderReceipt(booking) {
       <div class="sig-col"><div class="sig-space"></div><div class="sig-role">Guest Acknowledgement</div><div class="sig-name">Signature & Date</div></div>
     </div>`;
 }
+
+// ── Print: pin signatures + footer to the bottom of the last page ──
+// Measure the document at A4 print width, work out how many pages it needs,
+// and set a min-height of exactly that many pages (used by the @media print rules).
+(() => {
+  const MM = 96 / 25.4;                 // CSS px per mm
+  const PAGE_H = 297 * MM;              // A4 height
+  const PAD = 8 * MM;                   // body padding used in print
+  const PRINT_W = (210 - 16) * MM;      // A4 width minus left/right padding
+
+  function fitToPages() {
+    const wrap = $('doc-wrap');
+    if (!wrap) return;
+    wrap.style.removeProperty('--print-min-h');
+    const prevW = wrap.style.width, prevMax = wrap.style.maxWidth;
+    wrap.style.maxWidth = 'none';
+    wrap.style.width = PRINT_W + 'px';
+    const h = wrap.getBoundingClientRect().height;
+    wrap.style.width = prevW; wrap.style.maxWidth = prevMax;
+    // Page breaks push rows down and add hidden gaps the screen measurement can't see,
+    // so leave a safety margin — otherwise the footer spills onto an extra page.
+    const SAFETY = 25 * MM;
+    // Vine documents are laid out for at most 2 pages; never stretch beyond that.
+    const pages = Math.min(2, Math.max(1, Math.ceil((h + 2 * PAD + SAFETY) / PAGE_H)));
+    wrap.style.setProperty('--print-min-h', `${pages * PAGE_H - 2 * PAD - SAFETY}px`);
+  }
+  window.addEventListener('beforeprint', fitToPages);
+  window.addEventListener('afterprint', () => $('doc-wrap')?.style.removeProperty('--print-min-h'));
+})();
 
 function showError(msg) {
   $('loading-state').innerHTML = `
