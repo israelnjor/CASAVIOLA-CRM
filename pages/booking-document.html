@@ -369,6 +369,9 @@ body {
 .foot-brand   { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); opacity: 0.7; }
 .foot-serial  { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; font-family: 'Courier New', monospace; }
 
+/* Page-2 wrapper (built by splitPages); on screen it continues the body seamlessly */
+.page2-body { padding-top: 0; }
+
 /* Gold micro line */
 .gold-micro { height: 2px; background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 50%, transparent 100%); }
 
@@ -379,11 +382,11 @@ body {
   body { background: white; padding: 8mm; }
   .action-bar { display: none !important; }
   .doc { box-shadow: none; max-width: 100%; }
-  /* Stretch the document to fill its last page so signatures + footer sit at the bottom.
-     --print-min-h is set by the beforeprint handler (whole pages minus body padding). */
-  .doc { display: flex; flex-direction: column; min-height: var(--print-min-h, auto); }
-  .doc-body { flex: 1; display: flex; flex-direction: column; }
-  .doc-body > :nth-last-child(2) { margin-bottom: 30px; }
+  /* Fixed 2-page layout: page 2 = section 03 + signatures + footer (see splitPages()).
+     Page 2 starts at the sheet top and ends above the 8mm body padding. */
+  .page2 { break-before: page; page-break-before: always; height: 286mm; display: flex; flex-direction: column; }
+  .page2-body { flex: 1; display: flex; flex-direction: column; padding-top: 14mm !important; }
+  .page2-body > .h-rule { display: none; }
   .sig-cols { margin-top: auto; break-inside: avoid; page-break-inside: avoid; }
   .doc-foot, .gold-micro { break-inside: avoid; page-break-inside: avoid; }
   /* Tighter print spacing so Vine documents stay within 2 pages */
@@ -644,6 +647,7 @@ async function loadDoc() {
     if (type === 'invoice') await renderInvoice(booking);
     else                    await renderReceipt(booking);
 
+    splitPages();
     $('loading-state').style.display = 'none';
     $('doc-content').style.display   = 'block';
   } catch(e) {
@@ -958,34 +962,26 @@ async function renderReceipt(booking) {
     </div>`;
 }
 
-// ── Print: pin signatures + footer to the bottom of the last page ──
-// Measure the document at A4 print width, work out how many pages it needs,
-// and set a min-height of exactly that many pages (used by the @media print rules).
-(() => {
-  const MM = 96 / 25.4;                 // CSS px per mm
-  const PAGE_H = 297 * MM;              // A4 height
-  const PAD = 8 * MM;                   // body padding used in print
-  const PRINT_W = (210 - 16) * MM;      // A4 width minus left/right padding
-
-  function fitToPages() {
-    const wrap = $('doc-wrap');
-    if (!wrap) return;
-    wrap.style.removeProperty('--print-min-h');
-    const prevW = wrap.style.width, prevMax = wrap.style.maxWidth;
-    wrap.style.maxWidth = 'none';
-    wrap.style.width = PRINT_W + 'px';
-    const h = wrap.getBoundingClientRect().height;
-    wrap.style.width = prevW; wrap.style.maxWidth = prevMax;
-    // Page breaks push rows down and add hidden gaps the screen measurement can't see,
-    // so leave a safety margin — otherwise the footer spills onto an extra page.
-    const SAFETY = 25 * MM;
-    // Vine documents are laid out for at most 2 pages; never stretch beyond that.
-    const pages = Math.min(2, Math.max(1, Math.ceil((h + 2 * PAD + SAFETY) / PAGE_H)));
-    wrap.style.setProperty('--print-min-h', `${pages * PAGE_H - 2 * PAD - SAFETY}px`);
-  }
-  window.addEventListener('beforeprint', fitToPages);
-  window.addEventListener('afterprint', () => $('doc-wrap')?.style.removeProperty('--print-min-h'));
-})();
+// ── Print layout: fixed 2 pages ──
+// Page 1: header, guest details, breakdown. Page 2: section 03 (terms/bank details),
+// signatures, gold line and footer — wrapped in .page2, which in print starts on a
+// new sheet and is exactly one page tall so the footer sits at the bottom.
+function splitPages() {
+  const wrap = $('doc-wrap'), body = $('doc-body');
+  if (!wrap || !body || wrap.querySelector('.page2')) return;
+  const rules = body.querySelectorAll(':scope > .h-rule');
+  const start = rules[rules.length - 1];          // rule just before section 03
+  if (!start) return;
+  const page2 = document.createElement('div');
+  page2.className = 'page2';
+  const p2body = document.createElement('div');
+  p2body.className = 'doc-body page2-body';
+  let el = start;
+  while (el) { const next = el.nextElementSibling; p2body.appendChild(el); el = next; }
+  page2.appendChild(p2body);
+  wrap.querySelectorAll(':scope > .gold-micro, :scope > .doc-foot').forEach(n => page2.appendChild(n));
+  wrap.appendChild(page2);
+}
 
 function showError(msg) {
   $('loading-state').innerHTML = `
